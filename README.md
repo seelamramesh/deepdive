@@ -204,6 +204,7 @@ python -m pytest tests/test_mesh_compliance.py -v  # Architecture compliance
 
 Measured production results and limitations: [`docs/evaluation-results.md`](docs/evaluation-results.md).
 Hackathon rule mapping: [`docs/hackathon-compliance.md`](docs/hackathon-compliance.md).
+Prompt-reference review: [`docs/prompt-reference-review.md`](docs/prompt-reference-review.md).
 
 ## Security
 
