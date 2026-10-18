@@ -42,3 +42,33 @@ Round-2 EV source scoring then exposed JSON truncation when six sources were sen
 ## n8n Production Validation
 
 Active workflow `vXuzyMGtoaIr2Gcu` contains 14 nodes. Invalid requests returned explicit HTTP 400 responses without starting research. One-round run `07aaf3bec1ff40f2` completed through webhook with HTTP 200 and returned both report and verification certificate. It retrieved 3 official Python sources, stored 13 evidence passages, drafted 10 claims, and rejected all 10 rather than asserting an unsupported answer. Three capped n8n research attempts were made while fixing orchestration; each allowed at most two Brave requests, so provider-side usage can be up to 6 additional requests.
+
+## Citation Mutation Evaluation
+
+On 2026-10-18, a bounded live mutation evaluation used stored evidence from run `2ed2c8150b91476e`. It made no Brave calls. The evaluator sent eight cases through the Mesh-only prosecutor, defense, and judge path, using nine Mesh calls:
+
+| Measure | Result |
+|---|---:|
+| Total cases | 8 |
+| Positive controls | 2 |
+| Citation mutations | 6 |
+| Mutation rejection rate | 100% (6/6) |
+| False acceptance rate | 0% (0/6) |
+| Supported-claim recall | 50% (1/2) |
+
+All unrelated swaps, similar-topic swaps, and altered-statistic cases were rejected or downgraded. One previously accepted claim was downgraded to `partially_supported` when re-evaluated. This is evidence of conservative behavior, not perfect verification: false acceptance was not observed in this small sample, but false rejection remains a measured weakness. A first run using only the first passage of multi-evidence claims produced the same aggregate result; the evaluator was then corrected to use every judge-approved passage for each positive control before the reported rerun.
+
+## Zero-Cost Regression Suite
+
+- `73 passed` locally after citation-link hardening, API threshold alignment, API lifecycle checks, mutation-evaluator tests, security checks, batching checks, malformed-JSON recovery checks, and report fallback checks.
+- Python bytecode compilation completed without errors.
+- Static routing scan found the only application LLM client in `app/core/mesh_gateway.py`; all agents call that gateway.
+- Live n8n invalid-input test returned HTTP 400 with `question must contain 10 to 2000 characters`; no research run or Brave search started.
+- Public deployment health returned HTTP 200 with Mesh configured, and persisted run `2ed2c8150b91476e` retained 7/7 valid judge-approved citation links.
+
+## Official Workflow Status
+
+- Public repository `seelamramesh/deepdive` is synchronized through commit `8b2e880` before this documentation update.
+- Repository secret names `MESH_API_KEY` and `SUBMISSION_TOKEN` are present; values were not read.
+- Official Agent Arena checks completed their actual checks successfully after secrets were added.
+- Organizer recording returned HTTP 403 because no hackathon submission exists. This is intentional: user requested no submission until testing is complete. Therefore the GitHub workflow remains red and must not be represented as a recorded pass.

@@ -12,14 +12,15 @@ Based on attached DeepDive challenge statement and downloaded official workflow.
 | Structured cited report | Pass with limitations | Both reports non-empty; all retained citation links valid. Coverage remains thin in several sections. |
 | Human-readable audit trail | Pass | State transitions, agent calls, search queries, claims, verdicts, sources, coverage, and certificate are exposed per run. |
 | Self-evaluation with recorded results | Pass | `docs/evaluation-results.md` records two live runs; `/runs/{id}/evaluation` computes deterministic artifact metrics. Live mutation rejection is not yet measured. |
-| Public GitHub repository | Not yet verified in this audit | Remote is configured, but current local changes are not yet confirmed pushed/public. |
+| Public GitHub repository | Pass | Public remote `github.com/seelamramesh/deepdive`; runtime hardening pushed through commit `8b2e880` before final documentation update. |
 | README architecture/run/design/evaluation | Pass locally | README contains Mermaid architecture, state machine, setup, API, security, and links to measured results. |
 | Requirements include web framework and LLM client | Pass | `requirements.txt` includes FastAPI and OpenAI-compatible client. |
 | `.gitignore` ignores `.env` | Pass | `.env` is ignored; `.env.example` contains placeholders only. |
 | Official workflow exact path | Pass locally | `.github/workflows/agent-arena-2026-checks.yml` matches official download byte-for-byte; both SHA-256 hashes are `F34C4ABA59CAA82BD992A3FB77B51C0C94D3D2C3551ACB55F72DDAF4E6E91436`. |
 | n8n deployable orchestration | Pass live | Active 14-node workflow has stable webhook registration, bounded polling, END/FAILED/timeout handling, input validation, caller-capped rounds, and sequential report/certificate response. Live run `07aaf3bec1ff40f2` returned HTTP 200 with report and certificate. |
-| GitHub secrets | Not verified | Repository must contain `MESH_API_KEY` and `SUBMISSION_TOKEN`; secret values must never be printed. |
-| Hackathon submission | Not attempted | Requires authenticated GitHub state, pushed public repository, required secrets, and submission credentials. |
+| GitHub secrets | Pass by name only | GitHub API lists repository secret names `MESH_API_KEY` and `SUBMISSION_TOKEN`; values remain unreadable and were not exposed. |
+| Official Agent Arena checks | Checks passed; result not recorded | Download and check execution succeeded. Organizer report returned 403 because no submission record exists. Workflow remains red until a submission exists and must not be described as a recorded pass. |
+| Hackathon submission | Intentionally not submitted | User requested more testing before submission. Authenticated dashboard is available, but no final submission action was taken. |
 
 ## OODA / Blind-Spot Summary
 
@@ -30,9 +31,9 @@ Based on attached DeepDive challenge statement and downloaded official workflow.
 
 ## Remaining Submission Blockers
 
-1. Push current source and official workflow to public GitHub repository.
-2. Verify GitHub secrets `MESH_API_KEY` and `SUBMISSION_TOKEN` exist.
-3. Let official Agent Arena workflow pass on pushed commit.
-4. Submit only after authenticated hackathon access confirms target repository and team.
+1. Resolve measured verifier recall weakness: one of two valid positive controls was downgraded to `partially_supported` in live mutation evaluation.
+2. Expand live evaluation beyond the current EV, AGI, and Python-documentation runs while keeping Brave usage explicitly bounded.
+3. Review submission form fields and evidence, then obtain explicit confirmation immediately before final submission.
+4. After a submission record exists, rerun official Agent Arena checks so organizer can record the result.
 
 Prompt-reference assessment: `docs/prompt-reference-review.md`.

@@ -7,7 +7,7 @@ from app.evaluation.benchmark import (
     compute_mutation_metrics,
     evaluate_run,
 )
-from app.models.schemas import ClaimJudgement, ClaimVerdict, ResearchRun, RunState
+from app.models.schemas import AtomicClaim, ClaimJudgement, ClaimVerdict, Evidence, ResearchRun, RunState
 
 
 class TestBenchmark:
@@ -49,6 +49,25 @@ class TestCitationMutation:
         assert metrics["supported_claim_recall"] == 1.0
         assert metrics["mutation_rejection_rate"] == 0.5
         assert metrics["false_acceptance_rate"] == 0.5
+
+    def test_positive_control_uses_all_judge_approved_evidence(self):
+        evidence = [
+            Evidence(id="e1", source_id="s1", passage="First supporting passage."),
+            Evidence(id="e2", source_id="s2", passage="Second supporting passage."),
+        ]
+        claim = AtomicClaim(id="c1", text="Combined claim", evidence_ids=["e1", "e2"])
+        judgement = ClaimJudgement(
+            claim_id="c1",
+            verdict=ClaimVerdict.SUPPORTED,
+            confidence=0.9,
+            supporting_evidence_ids=["e1", "e2"],
+        )
+
+        cases = create_mutation_test_cases([claim], evidence, [judgement])
+
+        original = next(case for case in cases if case["type"] == "original")
+        assert "First supporting passage." in original["passage"]
+        assert "Second supporting passage." in original["passage"]
 
 
 def test_evaluate_run_measures_persisted_artifacts(sample_claims, sample_evidence):

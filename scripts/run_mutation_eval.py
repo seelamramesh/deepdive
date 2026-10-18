@@ -16,7 +16,7 @@ from app.storage.database import load_run
 
 def build_eval_artifacts(run: ResearchRun, limit: int) -> tuple[list[dict], list[AtomicClaim], list[Evidence]]:
     supported = run.supported_claims(settings.confidence_threshold)
-    cases = create_mutation_test_cases(supported, run.evidence)[:limit]
+    cases = create_mutation_test_cases(supported, run.evidence, run.judgements)[:limit]
     claims = []
     evidence = []
     for index, case in enumerate(cases):

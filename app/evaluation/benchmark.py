@@ -75,6 +75,7 @@ BENCHMARK_QUESTIONS = [
 def create_mutation_test_cases(
     claims: list[AtomicClaim],
     evidence: list[Evidence],
+    judgements: list[ClaimJudgement] | None = None,
 ) -> list[dict]:
     """Create mutation test cases from accepted claim/evidence pairs.
 
@@ -87,27 +88,38 @@ def create_mutation_test_cases(
     """
     cases = []
     ev_map = {e.id: e for e in evidence}
+    judgement_by_claim = {
+        judgement.claim_id: judgement for judgement in (judgements or [])
+    }
 
     for claim in claims:
         if not claim.evidence_ids:
             continue
 
-        primary_eid = claim.evidence_ids[0]
-        primary_ev = ev_map.get(primary_eid)
-        if not primary_ev:
+        judgement = judgement_by_claim.get(claim.id)
+        approved_ids = [
+            evidence_id for evidence_id in (
+                judgement.supporting_evidence_ids if judgement else claim.evidence_ids
+            )
+            if evidence_id in claim.evidence_ids and evidence_id in ev_map
+        ]
+        if not approved_ids:
             continue
+        primary_eid = approved_ids[0]
+        primary_ev = ev_map[primary_eid]
+        approved_passage = "\n\n".join(ev_map[evidence_id].passage for evidence_id in approved_ids)
 
         # 1. Original
         cases.append({
             "type": "original",
             "claim": claim.text,
             "evidence_id": primary_eid,
-            "passage": primary_ev.passage,
+            "passage": approved_passage,
             "expected_verdict": "supported",
         })
 
         # 2. Swap with unrelated
-        unrelated = [e for e in evidence if e.id not in claim.evidence_ids and e.subquestion_id != claim.subquestion_id]
+        unrelated = [e for e in evidence if e.id not in approved_ids and e.subquestion_id != claim.subquestion_id]
         if unrelated:
             cases.append({
                 "type": "unrelated_swap",
@@ -118,7 +130,7 @@ def create_mutation_test_cases(
             })
 
         # 3. Topically similar but non-supporting
-        similar = [e for e in evidence if e.id not in claim.evidence_ids and e.subquestion_id == claim.subquestion_id]
+        similar = [e for e in evidence if e.id not in approved_ids and e.subquestion_id == claim.subquestion_id]
         if similar:
             cases.append({
                 "type": "similar_swap",
@@ -135,7 +147,7 @@ def create_mutation_test_cases(
                 "type": "qualifier_removed",
                 "claim": mutated_text,
                 "evidence_id": primary_eid,
-                "passage": primary_ev.passage,
+                "passage": approved_passage,
                 "expected_verdict": "partially_supported",
             })
 
@@ -148,7 +160,7 @@ def create_mutation_test_cases(
                 "type": "inflated_statistic",
                 "claim": inflated,
                 "evidence_id": primary_eid,
-                "passage": primary_ev.passage,
+                "passage": approved_passage,
                 "expected_verdict": "contradicted",
             })
 
