@@ -191,10 +191,12 @@ def evaluate_run(run) -> dict:
     supported = run.supported_claims()
     supported_ids = {item.id for item in supported}
 
+    judgement_by_claim = {judgement.claim_id: judgement for judgement in run.judgements}
     citation_links = [
         evidence_id
         for claim in supported
-        for evidence_id in claim.evidence_ids
+        for evidence_id in judgement_by_claim[claim.id].supporting_evidence_ids
+        if evidence_id in claim.evidence_ids
     ]
     valid_citation_links = sum(
         1 for evidence_id in citation_links if evidence_id in evidence_ids

@@ -1,11 +1,13 @@
 """Application configuration loaded from environment."""
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 
 
 class Settings(BaseSettings):
     """DeepDive settings — all secrets from env only."""
+
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     mesh_api_key: str = Field(default="", alias="MESH_API_KEY")
     mesh_base_url: str = "https://api.meshapi.ai/v1"
@@ -28,10 +30,5 @@ class Settings(BaseSettings):
     confidence_threshold: float = 0.7
     min_source_trust: float = Field(default=0.4, ge=0.0, le=1.0, alias="MIN_SOURCE_TRUST")
     request_timeout: int = 30
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-
 
 settings = Settings()

@@ -345,12 +345,23 @@ def _verify_report_citations(run: ResearchRun) -> None:
     evidence_ids = {e.id for e in run.evidence}
     supported_claims = run.supported_claims(settings.confidence_threshold)
     claim_ids = {c.id for c in supported_claims}
-    allowed_evidence_ids = {eid for c in supported_claims for eid in c.evidence_ids}
+    supported_claim_by_id = {claim.id: claim for claim in supported_claims}
+    allowed_links = {
+        (judgement.claim_id, evidence_id)
+        for judgement in run.judgements
+        if judgement.claim_id in supported_claim_by_id
+        and judgement.verdict == ClaimVerdict.SUPPORTED
+        and judgement.confidence >= settings.confidence_threshold
+        for evidence_id in judgement.supporting_evidence_ids
+        if evidence_id in supported_claim_by_id[judgement.claim_id].evidence_ids
+        and evidence_id in evidence_ids
+    }
 
     # Find all evidence references
     ev_refs = set(re.findall(r"\[evidence:(\w+)\]", run.final_report))
     claim_refs = set(re.findall(r"\[claim:(\w+)\]", run.final_report))
 
+    allowed_evidence_ids = {evidence_id for _, evidence_id in allowed_links}
     orphan_ev = (ev_refs - evidence_ids) | (ev_refs - allowed_evidence_ids)
     orphan_claims = claim_refs - claim_ids
 
@@ -359,13 +370,20 @@ def _verify_report_citations(run: ResearchRun) -> None:
     for line in lines:
         has_orphan = any(f"[evidence:{oid}]" in line for oid in orphan_ev)
         has_orphan = has_orphan or any(f"[claim:{oid}]" in line for oid in orphan_claims)
+        line_claims = re.findall(r"\[claim:(\w+)\]", line)
+        line_evidence = re.findall(r"\[evidence:(\w+)\]", line)
+        has_unapproved_link = bool(line_claims and line_evidence) and not any(
+            (claim_id, evidence_id) in allowed_links
+            for claim_id in line_claims
+            for evidence_id in line_evidence
+        )
         stripped = line.strip()
         is_heading = not stripped or stripped.startswith("#")
         has_required_citations = bool(
             re.search(r"\[claim:\w+\]", line)
             and re.search(r"\[evidence:\w+\]", line)
         )
-        if not has_orphan and (is_heading or has_required_citations):
+        if not has_orphan and not has_unapproved_link and (is_heading or has_required_citations):
             clean_lines.append(line)
     compact_lines = []
     for index, line in enumerate(clean_lines):
@@ -389,11 +407,23 @@ def _verify_report_citations(run: ResearchRun) -> None:
 
 def _build_certificate(run: ResearchRun) -> VerificationCertificate:
     """Build verification certificate from run data."""
-    supported_count = sum(
-        1 for j in run.judgements if j.verdict == ClaimVerdict.SUPPORTED
+    supported = run.supported_claims(settings.confidence_threshold)
+    supported_ids = {claim.id for claim in supported}
+    supported_count = len(supported)
+    rejected_count = len(run.claims) - supported_count
+    groundedness = supported_count / max(len(run.claims), 1)
+    evidence_ids = {evidence.id for evidence in run.evidence}
+    judgement_by_claim = {judgement.claim_id: judgement for judgement in run.judgements}
+    citation_links = [
+        evidence_id
+        for claim in supported
+        for evidence_id in judgement_by_claim[claim.id].supporting_evidence_ids
+        if evidence_id in claim.evidence_ids
+    ]
+    valid_citation_links = sum(
+        1 for evidence_id in citation_links if evidence_id in evidence_ids
     )
-    rejected_count = len(run.judgements) - supported_count
-    groundedness = supported_count / max(len(run.judgements), 1)
+    citation_coverage = valid_citation_links / max(len(citation_links), 1)
 
     models_used = list({c.model for c in run.agent_calls if c.model})
 
@@ -408,7 +438,7 @@ def _build_certificate(run: ResearchRun) -> VerificationCertificate:
         rejected_claim_count=rejected_count,
         contradiction_count=len(run.contradictions),
         groundedness_rate=round(groundedness, 4),
-        citation_coverage_rate=round(groundedness, 4),
+        citation_coverage_rate=round(citation_coverage, 4),
         research_rounds=run.research_round,
         source_content_hashes=[s.content_hash for s in run.sources if s.content_hash],
         prompt_versions={"all_agents": "v1"},

@@ -14,6 +14,7 @@ from app.models.schemas import (
     SubQuestion,
 )
 from app.services.orchestrator import (
+    _build_certificate,
     _insufficient_evidence_report,
     _queries_for_round,
     _trusted_evidence,
@@ -81,6 +82,66 @@ def test_report_verifier_removes_uncited_and_orphan_factual_lines():
     assert "Valid fact" in run.final_report
     assert "fabricated" not in run.final_report
     assert "Orphan" not in run.final_report
+
+
+def test_report_verifier_rejects_draft_link_not_approved_by_judge():
+    run = ResearchRun(question="question")
+    run.evidence = [
+        Evidence(id="approved", source_id="s1", passage="Approved passage"),
+        Evidence(id="draft-only", source_id="s1", passage="Draft-only passage"),
+    ]
+    run.claims = [AtomicClaim(
+        id="c1",
+        text="Supported",
+        evidence_ids=["approved", "draft-only"],
+    )]
+    run.judgements = [ClaimJudgement(
+        claim_id="c1",
+        verdict=ClaimVerdict.SUPPORTED,
+        confidence=0.9,
+        supporting_evidence_ids=["approved"],
+    )]
+    run.final_report = (
+        "# Report\n\n"
+        "Approved fact [claim:c1] [evidence:approved]\n"
+        "Unapproved fact [claim:c1] [evidence:draft-only]"
+    )
+
+    _verify_report_citations(run)
+
+    assert "Approved fact" in run.final_report
+    assert "Unapproved fact" not in run.final_report
+
+
+def test_certificate_uses_threshold_and_judge_approved_links(monkeypatch):
+    monkeypatch.setattr("app.services.orchestrator.settings.confidence_threshold", 0.7)
+    run = ResearchRun(question="question")
+    run.evidence = [Evidence(id="e1", source_id="s1", passage="Exact passage")]
+    run.claims = [
+        AtomicClaim(id="high", text="High confidence", evidence_ids=["e1"]),
+        AtomicClaim(id="low", text="Low confidence", evidence_ids=["e1"]),
+    ]
+    run.judgements = [
+        ClaimJudgement(
+            claim_id="high",
+            verdict=ClaimVerdict.SUPPORTED,
+            confidence=0.9,
+            supporting_evidence_ids=["e1"],
+        ),
+        ClaimJudgement(
+            claim_id="low",
+            verdict=ClaimVerdict.SUPPORTED,
+            confidence=0.6,
+            supporting_evidence_ids=["e1"],
+        ),
+    ]
+
+    certificate = _build_certificate(run)
+
+    assert certificate.supported_claim_count == 1
+    assert certificate.rejected_claim_count == 1
+    assert certificate.groundedness_rate == 0.5
+    assert certificate.citation_coverage_rate == 1.0
 
 
 def test_report_verifier_rebuilds_heading_only_report_from_verified_claims():

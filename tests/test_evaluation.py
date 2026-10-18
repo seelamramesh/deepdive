@@ -73,3 +73,26 @@ def test_evaluate_run_measures_persisted_artifacts(sample_claims, sample_evidenc
     assert metrics["rejected_claim_count"] == len(sample_claims) - 1
     assert metrics["citation_integrity_rate"] == 1.0
     assert metrics["report_nonempty"] is True
+
+
+def test_evaluate_run_counts_only_judge_approved_citation_links(sample_claims, sample_evidence):
+    claim = sample_claims[0]
+    claim.evidence_ids = [sample_evidence[0].id, sample_evidence[1].id]
+    run = ResearchRun(question="What evidence supports this sufficiently detailed question?")
+    run.current_state = RunState.END
+    run.claims = [claim]
+    run.evidence = sample_evidence
+    run.judgements = [
+        ClaimJudgement(
+            claim_id=claim.id,
+            verdict=ClaimVerdict.SUPPORTED,
+            confidence=0.9,
+            supporting_evidence_ids=[sample_evidence[0].id],
+        )
+    ]
+    run.final_report = "# Verified report"
+
+    metrics = evaluate_run(run)
+
+    assert metrics["citation_link_count"] == 1
+    assert metrics["valid_citation_link_count"] == 1

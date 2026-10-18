@@ -78,7 +78,7 @@ async def get_run(run_id: str):
         created_at=run.created_at,
         source_count=len(run.sources),
         claim_count=len(run.claims),
-        supported_claim_count=len(run.supported_claims()),
+        supported_claim_count=len(run.supported_claims(settings.confidence_threshold)),
         contradiction_count=len(run.contradictions),
         research_rounds=run.research_round,
         error=run.error,
@@ -104,13 +104,15 @@ async def get_claims(run_id: str):
     run = await load_run(run_id)
     if not run:
         raise HTTPException(404, "Run not found")
+    supported = run.supported_claims(settings.confidence_threshold)
+    supported_ids = {claim.id for claim in supported}
     return {
         "claims": [c.model_dump() for c in run.claims],
         "judgements": [j.model_dump() for j in run.judgements],
-        "supported": [c.model_dump() for c in run.supported_claims()],
+        "supported": [c.model_dump() for c in supported],
         "rejected": [
             c.model_dump() for c in run.claims
-            if c.id not in {sc.id for sc in run.supported_claims()}
+            if c.id not in supported_ids
         ],
     }
 
