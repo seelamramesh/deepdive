@@ -238,3 +238,14 @@ setTimeout(()=>location.reload(), 5000);
 </script>
 </body>
 </html>
+
+<script>
+// Auto-refresh while run is in progress
+const stateEl = document.querySelector('.badge');
+if(stateEl) {
+  const st = stateEl.textContent.trim();
+  if(st !== 'END' && st !== 'FAILED') {
+    setTimeout(() => location.reload(), 4000);
+  }
+}
+</script>

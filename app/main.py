@@ -43,10 +43,7 @@ templates = Jinja2Templates(directory=_template_dir)
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
     runs = await list_runs()
-    return templates.TemplateResponse("dashboard.html", {
-        "request": request,
-        "runs": runs,
-    })
+    return templates.TemplateResponse(request=request, name="dashboard.html", context={"runs": runs})
 
 
 @app.get("/run/{run_id}", response_class=HTMLResponse)
@@ -54,7 +51,4 @@ async def run_detail(request: Request, run_id: str):
     run = await load_run(run_id)
     if not run:
         return HTMLResponse("<h1>Run not found</h1>", status_code=404)
-    return templates.TemplateResponse("run_detail.html", {
-        "request": request,
-        "run": run,
-    })
+    return templates.TemplateResponse(request=request, name="run_detail.html", context={"run": run})

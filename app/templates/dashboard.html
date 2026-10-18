@@ -73,17 +73,30 @@ button:hover{opacity:.9}
 <script>
 async function startResearch(e) {
   e.preventDefault();
+  const btn = e.target.querySelector('button');
+  btn.disabled = true;
+  btn.textContent = 'Starting…';
   const q = document.getElementById('question').value;
   const urlText = document.getElementById('urls').value;
   const urls = urlText.split('\n').map(u=>u.trim()).filter(u=>u);
-  const res = await fetch('/research', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({question:q, source_urls:urls})
-  });
-  const data = await res.json();
-  if(data.run_id) window.location.href = '/run/' + data.run_id;
+  try {
+    const res = await fetch('/research', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({question:q, source_urls:urls.length?urls:undefined})
+    });
+    const data = await res.json();
+    if(data.run_id) window.location.href = '/run/' + data.run_id;
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = 'Start Research';
+    alert('Failed: ' + err.message);
+  }
 }
+// Auto-refresh page if any run is in-progress
+const badges = document.querySelectorAll('.badge');
+const hasActive = [...badges].some(b => !b.textContent.includes('END') && !b.textContent.includes('FAILED') && b.classList.contains('badge-blue'));
+if(hasActive) setTimeout(() => location.reload(), 5000);
 </script>
 </body>
 </html>
