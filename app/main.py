@@ -43,6 +43,17 @@ if os.path.isdir(_static_dir):
 templates = Jinja2Templates(directory=_template_dir)
 
 
+def _display_warning(warning: str) -> str:
+    if "Later research stage failed; report uses last verified checkpoint" in warning:
+        agent_match = re.search(r"Agent (\w+)", warning)
+        agent = agent_match.group(1).replace("_", " ").title() if agent_match else "Agent"
+        return (
+            f"Partial recovery: {agent} returned malformed structured output. "
+            "Report uses last verified checkpoint; unsupported material was not added."
+        )
+    return warning
+
+
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
     runs = await list_runs()
@@ -68,5 +79,6 @@ async def run_detail(request: Request, run_id: str):
             "run": run,
             "report_html": Markup(render_report_markdown(run.final_report)),
             "report_evidence": report_evidence,
+            "display_warnings": [_display_warning(warning) for warning in run.warnings],
         },
     )

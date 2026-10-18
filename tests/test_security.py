@@ -99,6 +99,8 @@ class TestReportMarkdown:
         assert "<h1>Report</h1>" in rendered
         assert "<li>Fact" in rendered
         assert 'href="#evidence-e1"' in rendered
+        assert "claim:c1" not in rendered
+        assert 'title="Verified claim">✓</span>' in rendered
 
     def test_escapes_raw_html(self):
         rendered = render_report_markdown("<script>alert(1)</script>")

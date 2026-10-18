@@ -37,6 +37,7 @@ th{color:var(--muted);font-weight:600}
 .verdict-partially_supported{border-left-color:var(--yellow)}
 .report{background:var(--bg);padding:20px;border-radius:var(--radius);font-size:.9rem;line-height:1.65;max-height:700px;overflow-y:auto}
 .report h1{font-size:1.45rem;margin:0 0 14px}.report h2{font-size:1.15rem;margin:22px 0 8px}.report h3{font-size:1rem;margin:18px 0 6px}.report p{margin:8px 0}.report ul{padding-left:22px;margin:8px 0}.citation{display:inline-block;background:#1e3a5f;color:#93c5fd;border-radius:4px;padding:0 4px;font-size:.72rem;font-family:monospace}
+.claim-marker{display:inline-flex;align-items:center;justify-content:center;width:1rem;height:1rem;border-radius:50%;background:#14532d;color:#86efac;font-size:.68rem;font-weight:700;vertical-align:middle}
 .tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
 .tab{padding:6px 14px;border-radius:var(--radius);cursor:pointer;font-size:.8rem;background:var(--surface);border:1px solid var(--border);color:var(--muted)}
 .tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -57,7 +58,7 @@ th{color:var(--muted);font-weight:600}
     {% if run.warnings %}<span class="badge badge-yellow">{{ run.warnings|length }} warning(s)</span>{% endif %}
   </p>
 
-  {% for warning in run.warnings %}
+  {% for warning in display_warnings %}
   <div class="card" style="border-left:3px solid var(--yellow)">{{ warning }}</div>
   {% endfor %}
 

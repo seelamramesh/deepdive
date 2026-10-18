@@ -41,7 +41,11 @@ def render_report_markdown(markdown_text: str) -> str:
             r'<a class="citation" href="#evidence-\1">evidence:\1</a>',
             safe,
         )
-        safe = re.sub(r"\[claim:(\w+)\]", r'<span class="citation">claim:\1</span>', safe)
+        safe = re.sub(
+            r"\[claim:(\w+)\]",
+            r'<span class="claim-marker" title="Verified claim">✓</span>',
+            safe,
+        )
         safe = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", safe)
         safe = re.sub(r"`([^`]+)`", r"<code>\1</code>", safe)
         return safe
