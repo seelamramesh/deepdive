@@ -65,7 +65,9 @@ Output JSON:
 
 Rules:
 - Extract EXACT passages — do not paraphrase or invent text.
-- Each passage must be a direct quote or close paraphrase from the source.
+- Each passage must be a short verbatim excerpt from the source.
+- Return at most 6 strongest evidence passages for the supplied source.
+- Keep each passage under 500 characters.
 - Assign relevance based on how directly the passage answers the subquestion.
 - You CANNOT create claims unsupported by retrieved text.
 - If source has no relevant content, return empty evidence list.
@@ -115,6 +117,7 @@ Output JSON:
 
 Rules:
 - Each claim must be atomic: one verifiable fact per claim.
+- Return no more than 12 claims, prioritizing strongest and most decision-relevant evidence.
 - Every claim MUST reference at least one evidence ID.
 - Do not combine multiple facts into one claim.
 - Do not add information beyond what evidence supports.
@@ -223,6 +226,8 @@ Rules:
 - Do not silently choose one source over another.
 - If unresolved, mark as unresolved — the final report must state the disagreement.
 - Severity: high = directly affects conclusions, medium = notable discrepancy, low = minor.
+- Return at most 3 strongest contradictions.
+- Keep each explanation under 300 characters.
 """
 
 COVERAGE_ANALYST_PROMPT = """\

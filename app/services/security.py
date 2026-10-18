@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import ipaddress
+import html
 import re
+import socket
 from urllib.parse import urlparse
 
 import bleach
@@ -26,6 +28,61 @@ _BLOCKED_HOSTS = {"localhost", "metadata.google.internal", "169.254.169.254"}
 MAX_RESPONSE_SIZE = 5 * 1024 * 1024  # 5MB
 
 
+def render_report_markdown(markdown_text: str) -> str:
+    """Render the small report Markdown subset without allowing raw HTML."""
+    rendered: list[str] = []
+    paragraph: list[str] = []
+    in_list = False
+
+    def inline(value: str) -> str:
+        safe = html.escape(value)
+        safe = re.sub(
+            r"\[evidence:(\w+)\]",
+            r'<a class="citation" href="#evidence-\1">evidence:\1</a>',
+            safe,
+        )
+        safe = re.sub(r"\[claim:(\w+)\]", r'<span class="citation">claim:\1</span>', safe)
+        safe = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", safe)
+        safe = re.sub(r"`([^`]+)`", r"<code>\1</code>", safe)
+        return safe
+
+    def flush_paragraph() -> None:
+        if paragraph:
+            rendered.append(f"<p>{inline(' '.join(paragraph))}</p>")
+            paragraph.clear()
+
+    for raw_line in markdown_text.splitlines():
+        line = raw_line.strip()
+        if not line:
+            flush_paragraph()
+            if in_list:
+                rendered.append("</ul>")
+                in_list = False
+            continue
+        heading = re.match(r"^(#{1,6})\s+(.+)$", line)
+        if heading:
+            flush_paragraph()
+            if in_list:
+                rendered.append("</ul>")
+                in_list = False
+            level = len(heading.group(1))
+            rendered.append(f"<h{level}>{inline(heading.group(2))}</h{level}>")
+            continue
+        if line.startswith("- "):
+            flush_paragraph()
+            if not in_list:
+                rendered.append("<ul>")
+                in_list = True
+            rendered.append(f"<li>{inline(line[2:])}</li>")
+            continue
+        paragraph.append(line)
+
+    flush_paragraph()
+    if in_list:
+        rendered.append("</ul>")
+    return "\n".join(rendered)
+
+
 def validate_url(url: str) -> tuple[bool, str]:
     """Validate URL for SSRF protection. Returns (is_valid, reason)."""
     try:
@@ -43,14 +100,21 @@ def validate_url(url: str) -> tuple[bool, str]:
     if hostname.lower() in _BLOCKED_HOSTS:
         return False, f"Blocked host: {hostname}"
 
-    # Check if hostname is an IP address in a blocked range
+    # Check literal and DNS-resolved addresses.
     try:
-        addr = ipaddress.ip_address(hostname)
-        for network in _BLOCKED_RANGES:
-            if addr in network:
-                return False, f"Blocked private IP: {hostname}"
+        addresses = {ipaddress.ip_address(hostname)}
     except ValueError:
-        pass  # Not an IP address, hostname is fine
+        try:
+            addresses = {
+                ipaddress.ip_address(item[4][0])
+                for item in socket.getaddrinfo(hostname, parsed.port or 443)
+            }
+        except (socket.gaierror, ValueError):
+            return False, f"Hostname could not be resolved: {hostname}"
+
+    for addr in addresses:
+        if any(addr in network for network in _BLOCKED_RANGES):
+            return False, f"Blocked private IP: {addr}"
 
     return True, "ok"
 

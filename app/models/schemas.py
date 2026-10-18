@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 
@@ -73,7 +73,7 @@ def _id() -> str:
 
 
 def _now() -> str:
-    return datetime.utcnow().isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _hash(text: str) -> str:
@@ -188,6 +188,10 @@ class AgentCall(BaseModel):
     input_hash: str = ""
     output_hash: str = ""
     duration_ms: int = 0
+    success: bool = True
+    finish_reason: str = ""
+    error: str = ""
+    response_preview: str = ""
 
 
 class VerificationCertificate(BaseModel):
@@ -234,6 +238,7 @@ class ResearchRun(BaseModel):
     final_report: str = ""
     certificate: Optional[VerificationCertificate] = None
     error: Optional[str] = None
+    warnings: list[str] = Field(default_factory=list)
 
     def transition(self, new_state: RunState, reason: str = "") -> None:
         self.state_transitions.append(
@@ -245,10 +250,12 @@ class ResearchRun(BaseModel):
         )
         self.current_state = new_state
 
-    def supported_claims(self) -> list[AtomicClaim]:
+    def supported_claims(self, confidence_threshold: float = 0.0) -> list[AtomicClaim]:
         supported_ids = {
             j.claim_id for j in self.judgements
             if j.verdict == ClaimVerdict.SUPPORTED
+            and j.confidence >= confidence_threshold
+            and j.supporting_evidence_ids
         }
         return [c for c in self.claims if c.id in supported_ids]
 
@@ -268,14 +275,14 @@ class ResearchRun(BaseModel):
 # ── API Request/Response ──────────────────────────────────────────────
 
 class ResearchRequest(BaseModel):
-    question: str
-    source_urls: list[str] = Field(default_factory=list)
-    max_rounds: Optional[int] = None
-    confidence_threshold: Optional[float] = None
+    question: str = Field(min_length=10, max_length=2000)
+    source_urls: list[str] = Field(default_factory=list, max_length=20)
+    max_rounds: Optional[int] = Field(default=None, ge=1, le=5)
+    confidence_threshold: Optional[float] = Field(default=None, ge=0.5, le=1.0)
 
 
 class FollowUpRequest(BaseModel):
-    question: str
+    question: str = Field(min_length=10, max_length=2000)
 
 
 class HealthResponse(BaseModel):

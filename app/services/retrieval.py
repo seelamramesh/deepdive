@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from typing import Optional
+from urllib.parse import urljoin
 
 import httpx
 from bs4 import BeautifulSoup
@@ -32,13 +33,26 @@ async def fetch_url(url: str, timeout: int | None = None) -> Optional[dict]:
     try:
         async with httpx.AsyncClient(
             timeout=timeout,
-            follow_redirects=True,
-            max_redirects=3,
+            follow_redirects=False,
         ) as client:
-            response = await client.get(
-                url,
-                headers={"User-Agent": "DeepDive-Research/1.0"},
-            )
+            current_url = url
+            for _ in range(4):
+                is_valid, _ = validate_url(current_url)
+                if not is_valid:
+                    return None
+                response = await client.get(
+                    current_url,
+                    headers={"User-Agent": "DeepDive-Research/1.0"},
+                )
+                if response.is_redirect:
+                    location = response.headers.get("location")
+                    if not location:
+                        return None
+                    current_url = urljoin(str(response.url), location)
+                    continue
+                break
+            else:
+                return None
             response.raise_for_status()
 
             # Size check
@@ -81,16 +95,27 @@ async def fetch_url(url: str, timeout: int | None = None) -> Optional[dict]:
 
 
 async def search_web(query: str) -> list[str]:
-    """Simple web search returning URLs.
-
-    Uses a search API if available, otherwise returns empty.
-    In production, integrate with a search API.
-    For hackathon demo, this returns placeholder results that
-    the orchestrator can supplement with user-provided URLs.
-    """
-    # This is a stub — in production, wire to a search API
-    # For the hackathon, users can provide source URLs directly
-    return []
+    """Search Brave for public source URLs when configured."""
+    if not settings.brave_search_api_key:
+        return []
+    try:
+        async with httpx.AsyncClient(timeout=settings.request_timeout) as client:
+            response = await client.get(
+                "https://api.search.brave.com/res/v1/web/search",
+                params={"q": query, "count": settings.max_sources_per_round},
+                headers={"Accept": "application/json", "X-Subscription-Token": settings.brave_search_api_key},
+            )
+            response.raise_for_status()
+            results = response.json().get("web", {}).get("results", [])
+            urls = []
+            for item in results:
+                candidate = item.get("url", "")
+                valid, _ = validate_url(candidate)
+                if valid and candidate not in urls:
+                    urls.append(candidate)
+            return urls[: settings.max_sources_per_round]
+    except (httpx.HTTPError, ValueError, TypeError):
+        return []
 
 
 async def fetch_sources(urls: list[str]) -> list[Source]:

@@ -1,7 +1,8 @@
 """Tests for security utilities — SSRF protection, sanitization."""
 
 import pytest
-from app.services.security import validate_url, sanitize_html, strip_prompt_injection
+import socket
+from app.services.security import render_report_markdown, validate_url, sanitize_html, strip_prompt_injection
 
 
 class TestSSRFProtection:
@@ -38,13 +39,24 @@ class TestSSRFProtection:
         valid, reason = validate_url("https://www.example.com/page")
         assert valid
 
-    def test_allows_https(self):
+    def test_allows_https(self, monkeypatch):
+        monkeypatch.setattr(socket, "getaddrinfo", lambda *args: [
+            (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 443))
+        ])
         valid, reason = validate_url("https://api.example.com/data.json")
         assert valid
 
     def test_rejects_empty(self):
         valid, reason = validate_url("")
         assert not valid
+
+    def test_blocks_hostname_resolving_to_private_ip(self, monkeypatch):
+        monkeypatch.setattr(socket, "getaddrinfo", lambda *args: [
+            (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("127.0.0.1", 443))
+        ])
+        valid, reason = validate_url("https://public-looking.example/resource")
+        assert not valid
+        assert "Blocked private IP" in reason
 
 
 class TestSanitization:
@@ -77,3 +89,18 @@ class TestPromptInjection:
         text = "The GDP of the United States was $25.5 trillion in 2023."
         cleaned = strip_prompt_injection(text)
         assert cleaned == text
+
+
+class TestReportMarkdown:
+    def test_renders_headings_lists_and_citations(self):
+        rendered = render_report_markdown(
+            "# Report\n\n## Findings\n\n- Fact [claim:c1] [evidence:e1]"
+        )
+        assert "<h1>Report</h1>" in rendered
+        assert "<li>Fact" in rendered
+        assert 'href="#evidence-e1"' in rendered
+
+    def test_escapes_raw_html(self):
+        rendered = render_report_markdown("<script>alert(1)</script>")
+        assert "<script>" not in rendered
+        assert "&lt;script&gt;" in rendered

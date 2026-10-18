@@ -5,7 +5,9 @@ from app.evaluation.benchmark import (
     BENCHMARK_QUESTIONS,
     create_mutation_test_cases,
     compute_mutation_metrics,
+    evaluate_run,
 )
+from app.models.schemas import ClaimJudgement, ClaimVerdict, ResearchRun, RunState
 
 
 class TestBenchmark:
@@ -47,3 +49,27 @@ class TestCitationMutation:
         assert metrics["supported_claim_recall"] == 1.0
         assert metrics["mutation_rejection_rate"] == 0.5
         assert metrics["false_acceptance_rate"] == 0.5
+
+
+def test_evaluate_run_measures_persisted_artifacts(sample_claims, sample_evidence):
+    run = ResearchRun(question="What evidence supports this sufficiently detailed question?")
+    run.current_state = RunState.END
+    run.claims = sample_claims
+    run.evidence = sample_evidence
+    run.judgements = [
+        ClaimJudgement(
+            claim_id=sample_claims[0].id,
+            verdict=ClaimVerdict.SUPPORTED,
+            confidence=0.9,
+            supporting_evidence_ids=[sample_evidence[0].id],
+        )
+    ]
+    run.final_report = "# Verified report"
+
+    metrics = evaluate_run(run)
+
+    assert metrics["state"] == "END"
+    assert metrics["supported_claim_count"] == 1
+    assert metrics["rejected_claim_count"] == len(sample_claims) - 1
+    assert metrics["citation_integrity_rate"] == 1.0
+    assert metrics["report_nonempty"] is True

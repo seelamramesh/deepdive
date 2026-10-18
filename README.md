@@ -91,14 +91,14 @@ All LLM calls route through the **Mesh API** gateway (`https://api.meshapi.ai/v1
 
 - **Gateway**: `app/core/mesh_gateway.py` — singleton `AsyncOpenAI` client with `base_url` override
 - **Key**: `MESH_API_KEY` environment variable (prefix `rsk_`)
-- **Model**: Configurable via `MESH_MODEL` (default: `gpt-4o-mini`)
+- **Model**: Configurable via `MESH_MODEL` (default: `anthropic/claude-haiku-5.5`)
 - **Temperature**: 0 for deterministic outputs
 - **Output**: JSON-only responses with Pydantic validation
 
 ### Anti-Drift Controls
 
 - Pydantic schemas enforce structured output at every agent boundary
-- Temperature 0 eliminates sampling variance
+- Temperature 0 reduces sampling variance; provider behavior can still vary
 - Content hashing on evidence prevents mutation
 - Immutable original question threaded through all agents
 - Max 3 research loop rounds with deterministic termination
@@ -111,9 +111,11 @@ graph LR
     Validate -->|valid| Start[Start Research]
     Validate -->|invalid| Error[400 Error]
     Start --> Poll[Poll Status]
-    Poll --> Check{Complete?}
-    Check -->|yes| Fetch[Get Report + Certificate]
-    Check -->|no| Wait[Wait 5s] --> Poll
+    Poll --> Check{Terminal?}
+    Check -->|END| Fetch[Get Report + Certificate]
+    Check -->|FAILED| Failed[Return 500 + run error]
+    Check -->|10 minute timeout| Timeout[Return 504]
+    Check -->|running| Wait[Wait 5s] --> Poll
     Fetch --> Respond[Return Results]
 ```
 
@@ -149,6 +151,7 @@ cd deepdive
 # Environment
 cp .env.example .env
 # Edit .env and set MESH_API_KEY=rsk_your_key_here
+# Optional autonomous search: BRAVE_SEARCH_API_KEY=your_key_here
 
 # Install
 pip install -r requirements.txt
@@ -184,12 +187,12 @@ python -m pytest tests/test_mesh_compliance.py -v  # Architecture compliance
 
 ### Citation Mutation Test
 
-5 mutation types verify the system catches tampered citations:
-- **swap_source**: Attribute evidence to wrong source
-- **inflate_confidence**: Artificially raise confidence scores
-- **remove_citation**: Strip source references
-- **fabricate_source**: Inject non-existent sources
-- **alter_quote**: Modify quoted evidence text
+5 mutation types generate adversarial claim/evidence pairs:
+- **original**: Positive control
+- **unrelated_swap**: Replace citation with unrelated evidence
+- **similar_swap**: Replace citation with topically similar, non-supporting evidence
+- **qualifier_removed**: Change approximate language into an exact assertion
+- **inflated_statistic**: Alter first numeric value
 
 ### Metrics
 
@@ -197,7 +200,10 @@ python -m pytest tests/test_mesh_compliance.py -v  # Architecture compliance
 - **Source diversity**: Unique domains cited
 - **Contradiction detection rate**: Contradictions found per run
 - **Coverage completeness**: % of sub-questions adequately covered
-- **Mutation detection rate**: % of citation mutations caught
+- **Mutation rejection rate**: % of evaluated citation mutations rejected
+
+Measured production results and limitations: [`docs/evaluation-results.md`](docs/evaluation-results.md).
+Hackathon rule mapping: [`docs/hackathon-compliance.md`](docs/hackathon-compliance.md).
 
 ## Security
 
@@ -219,7 +225,7 @@ python -m pytest tests/test_mesh_compliance.py -v  # Architecture compliance
 | GET | `/runs/{id}/certificate` | Verification certificate |
 | GET | `/runs/{id}/report` | Final synthesized report |
 | POST | `/runs/{id}/follow-up` | Ask follow-up question |
-| POST | `/evaluate` | Run benchmark suite |
+| GET | `/runs/{id}/evaluation` | Deterministic metrics from persisted run artifacts |
 
 ## Project Structure
 
@@ -260,7 +266,9 @@ deepdive/
 ├── docker-compose.yml
 ├── requirements.txt
 ├── .env.example
-└── .github/workflows/ci.yml
+└── .github/workflows/
+    ├── ci.yml
+    └── agent-arena-2026-checks.yml
 ```
 
 ## License

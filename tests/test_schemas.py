@@ -41,12 +41,28 @@ class TestResearchRun:
             AtomicClaim(id="c2", text="Claim 2", evidence_ids=["e2"]),
         ]
         run.judgements = [
-            ClaimJudgement(claim_id="c1", verdict=ClaimVerdict.SUPPORTED, confidence=0.9),
+            ClaimJudgement(
+                claim_id="c1",
+                verdict=ClaimVerdict.SUPPORTED,
+                confidence=0.9,
+                supporting_evidence_ids=["e1"],
+            ),
             ClaimJudgement(claim_id="c2", verdict=ClaimVerdict.UNSUPPORTED, confidence=0.3),
         ]
         supported = run.supported_claims()
         assert len(supported) == 1
         assert supported[0].id == "c1"
+
+    def test_supported_claims_enforces_confidence(self):
+        run = ResearchRun(question="Test")
+        run.claims = [AtomicClaim(id="c1", text="Claim", evidence_ids=["e1"])]
+        run.judgements = [ClaimJudgement(
+            claim_id="c1",
+            verdict=ClaimVerdict.SUPPORTED,
+            confidence=0.6,
+            supporting_evidence_ids=["e1"],
+        )]
+        assert run.supported_claims(0.7) == []
 
     def test_get_evidence_by_id(self):
         run = ResearchRun(question="Test")

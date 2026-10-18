@@ -18,11 +18,17 @@ from app.models.schemas import (
 )
 from app.services.orchestrator import run_research
 from app.storage.database import load_run, list_runs
+from app.evaluation.benchmark import evaluate_run
 
 router = APIRouter()
 
 # In-memory tracking of background tasks
 _running: dict[str, asyncio.Task] = {}
+
+
+def _track_task(run_id: str, task: asyncio.Task) -> None:
+    _running[run_id] = task
+    task.add_done_callback(lambda _: _running.pop(run_id, None))
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -55,7 +61,7 @@ async def start_research(req: ResearchRequest, bg: BackgroundTasks):
         )
 
     task = asyncio.create_task(_run())
-    _running[run.id] = task
+    _track_task(run.id, task)
 
     return {"run_id": run.id, "status": "started", "question": req.question}
 
@@ -158,18 +164,19 @@ async def follow_up(run_id: str, req: FollowUpRequest, bg: BackgroundTasks):
         await run_research(
             question=req.question,
             source_urls=source_urls,
+            run_id=child.id,
         )
 
     task = asyncio.create_task(_run())
-    _running[child.id] = task
+    _track_task(child.id, task)
 
     return {"run_id": child.id, "parent_run_id": run_id, "status": "started"}
 
 
-@router.post("/evaluate")
-async def evaluate():
-    """Run the evaluation benchmark (placeholder for live testing)."""
-    return {
-        "status": "evaluation_requires_mesh_key",
-        "message": "Set MESH_API_KEY to run live evaluation. Deterministic tests available via pytest.",
-    }
+@router.get("/runs/{run_id}/evaluation")
+async def get_run_evaluation(run_id: str):
+    """Return deterministic quality metrics from persisted run artifacts."""
+    run = await load_run(run_id)
+    if not run:
+        raise HTTPException(404, "Run not found")
+    return evaluate_run(run)

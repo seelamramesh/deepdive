@@ -6,9 +6,10 @@ import json
 import aiosqlite
 from typing import Optional
 
+from app.core.config import settings
 from app.models.schemas import ResearchRun
 
-DB_PATH = "deepdive.db"
+DB_PATH = settings.database_path
 
 
 async def init_db() -> None:

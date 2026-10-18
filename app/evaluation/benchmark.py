@@ -182,3 +182,53 @@ def compute_mutation_metrics(results: list[dict]) -> dict:
         "mutation_rejection_rate": mutation_rejected / max(len(mutations), 1),
         "false_acceptance_rate": false_accepts / max(len(mutations), 1),
     }
+
+
+def evaluate_run(run) -> dict:
+    """Compute deterministic, auditable quality metrics for a completed run."""
+    evidence_ids = {item.id for item in run.evidence}
+    source_ids = {item.id for item in run.sources}
+    supported = run.supported_claims()
+    supported_ids = {item.id for item in supported}
+
+    citation_links = [
+        evidence_id
+        for claim in supported
+        for evidence_id in claim.evidence_ids
+    ]
+    valid_citation_links = sum(
+        1 for evidence_id in citation_links if evidence_id in evidence_ids
+    )
+    evidence_with_sources = sum(
+        1 for item in run.evidence if item.source_id in source_ids
+    )
+    rejected_claims = [
+        claim for claim in run.claims if claim.id not in supported_ids
+    ]
+    agent_names = sorted({call.agent for call in run.agent_calls if call.success})
+
+    return {
+        "run_id": run.id,
+        "question": run.question,
+        "state": run.current_state.value,
+        "research_rounds": run.research_round,
+        "source_count": len(run.sources),
+        "evidence_count": len(run.evidence),
+        "claim_count": len(run.claims),
+        "supported_claim_count": len(supported),
+        "rejected_claim_count": len(rejected_claims),
+        "contradiction_count": len(run.contradictions),
+        "successful_agent_count": len(agent_names),
+        "successful_agents": agent_names,
+        "citation_link_count": len(citation_links),
+        "valid_citation_link_count": valid_citation_links,
+        "citation_integrity_rate": valid_citation_links / max(len(citation_links), 1),
+        "evidence_source_integrity_rate": evidence_with_sources / max(len(run.evidence), 1),
+        "coverage": {
+            status.value: sum(1 for entry in run.coverage if entry.status == status)
+            for status in type(run.coverage[0].status)
+        } if run.coverage else {},
+        "report_nonempty": bool(run.final_report.strip()),
+        "error": run.error,
+        "warnings": list(run.warnings),
+    }

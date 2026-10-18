@@ -22,16 +22,70 @@ from app.core.config import settings
 from app.core.mesh_gateway import mesh
 from app.models.schemas import (
     ClaimVerdict,
+    CoverageEntry,
     CoverageStatus,
     ResearchRun,
     RunState,
     VerificationCertificate,
     _hash,
 )
-from app.services.retrieval import fetch_sources, fetch_url
+from app.services.retrieval import fetch_sources, fetch_url, search_web
 from app.storage.database import save_run
 
 logger = logging.getLogger(__name__)
+
+
+def _queries_for_round(queries: list, round_number: int, limit: int) -> list:
+    """Select bounded queries while spreading coverage across subquestions."""
+    if not queries or limit <= 0:
+        return []
+    first_by_subquestion = {}
+    for query in queries:
+        first_by_subquestion.setdefault(query.subquestion_id, query)
+    diverse = list(first_by_subquestion.values())
+    start = ((round_number - 1) * limit) % len(diverse)
+    selected = [
+        diverse[(start + offset) % len(diverse)]
+        for offset in range(min(limit, len(diverse)))
+    ]
+    if len(selected) < limit:
+        selected_ids = {query.id for query in selected}
+        selected.extend(
+            query for query in queries
+            if query.id not in selected_ids
+        )
+    return selected[:limit]
+
+
+def _insufficient_evidence_report(run: ResearchRun) -> str:
+    """Return an honest terminal report when no claims passed verification."""
+    return (
+        f"# {run.question}: Research Report\n\n"
+        "## Outcome\n\n"
+        "**Insufficient verified evidence to produce a factual report.**\n\n"
+        "DeepDive found no claims that passed source-grounding and verification checks. "
+        "Rather than fill sections with unsupported text, this run withheld conclusions.\n\n"
+        "## Run Diagnostics\n\n"
+        f"- Research rounds: {run.research_round}\n"
+        f"- Sources successfully retrieved: {len(run.sources)}\n"
+        f"- Exact source passages accepted as evidence: {len(run.evidence)}\n"
+        f"- Atomic claims drafted: {len(run.claims)}\n"
+        f"- Claims passing verification: {len(run.supported_claims(settings.confidence_threshold))}\n\n"
+        "## Recommended Next Step\n\n"
+        "Run again with additional authoritative source URLs, or broaden retrieval coverage. "
+        "No market forecast should be inferred from this incomplete run.\n"
+    )
+
+
+def _trusted_evidence(run: ResearchRun) -> list:
+    trusted_source_ids = {
+        source.id for source in run.sources
+        if source.trust_score >= settings.min_source_trust
+    }
+    return [
+        evidence for evidence in run.evidence
+        if evidence.source_id in trusted_source_ids
+    ]
 
 
 async def run_research(
@@ -65,15 +119,19 @@ async def run_research(
             # ── SEARCH ─────────────────────────────────────────
             run.transition(RunState.SEARCH, f"Round {run.research_round}: generating queries")
             queries = await run_search_strategist(run, run.subquestions)
-            run.search_queries.extend(queries)
+            selected_queries = _queries_for_round(
+                queries, run.research_round, settings.max_search_queries_per_round
+            )
+            run.search_queries.extend(selected_queries)
             await save_run(run)
 
             # ── RETRIEVE ───────────────────────────────────────
             run.transition(RunState.RETRIEVE, "Fetching sources")
             # Collect URLs: user-provided + search results
             urls_to_fetch = list(source_urls)
-            # In production, add URLs from a search API here
-            # For each query, you'd call search_web(q.query)
+            for query in selected_queries:
+                urls_to_fetch.extend(await search_web(query.query))
+            urls_to_fetch = list(dict.fromkeys(urls_to_fetch))[: settings.max_sources_per_round]
 
             if urls_to_fetch:
                 new_sources = await fetch_sources(urls_to_fetch)
@@ -93,7 +151,7 @@ async def run_research(
                         "source_id": source.id,
                         "url": source.url,
                         "title": source.title,
-                        "content": result["content"][:10000],  # Truncate for LLM context
+                        "content": result["content"][:7000],
                     })
             await save_run(run)
 
@@ -101,7 +159,12 @@ async def run_research(
             run.transition(RunState.EXTRACT_EVIDENCE, "Extracting evidence")
             if source_contents:
                 new_evidence = await run_researcher(run, source_contents, run.subquestions)
-                run.evidence.extend(new_evidence)
+                existing_hashes = {(e.source_id, e.passage_hash) for e in run.evidence}
+                for evidence in new_evidence:
+                    key = (evidence.source_id, evidence.passage_hash)
+                    if key not in existing_hashes:
+                        run.evidence.append(evidence)
+                        existing_hashes.add(key)
             await save_run(run)
 
             # ── SCORE_SOURCES ──────────────────────────────────
@@ -121,7 +184,11 @@ async def run_research(
 
             # ── DRAFT_ATOMIC_CLAIMS ────────────────────────────
             run.transition(RunState.DRAFT_ATOMIC_CLAIMS, "Drafting claims")
-            new_claims = await run_claim_drafter(run, run.evidence, run.subquestions)
+            trusted_evidence = _trusted_evidence(run)
+            new_claims = (
+                await run_claim_drafter(run, trusted_evidence, run.subquestions)
+                if trusted_evidence else []
+            )
             # Deduplicate claims
             existing_texts = {c.text.lower().strip() for c in run.claims}
             for c in new_claims:
@@ -136,26 +203,35 @@ async def run_research(
 
             # ── CLAIM_COURTROOM ────────────────────────────────
             run.transition(RunState.CLAIM_COURTROOM, "Running Claim Courtroom")
-            prosecution = await run_prosecutor(run, run.claims, run.evidence)
-            defense = await run_defense(run, run.claims, run.evidence)
-            judgements = await run_judge(
-                run, run.claims, prosecution, defense, conf_threshold
-            )
-            run.judgements = judgements
+            if run.claims:
+                prosecution = await run_prosecutor(run, run.claims, trusted_evidence)
+                defense = await run_defense(run, run.claims, trusted_evidence)
+                run.judgements = await run_judge(
+                    run, run.claims, prosecution, defense, conf_threshold
+                )
+            else:
+                run.judgements = []
             await save_run(run)
 
             # ── DETECT_CONTRADICTIONS ──────────────────────────
             run.transition(RunState.DETECT_CONTRADICTIONS, "Detecting contradictions")
-            run.contradictions = await run_contradiction_analyst(
-                run, run.claims, run.evidence
+            run.contradictions = (
+                await run_contradiction_analyst(run, run.claims, run.evidence)
+                if run.claims else []
             )
             await save_run(run)
 
             # ── MEASURE_COVERAGE ───────────────────────────────
             run.transition(RunState.MEASURE_COVERAGE, "Measuring coverage")
-            run.coverage = await run_coverage_analyst(
-                run, run.subquestions, run.evidence, run.judgements, run.contradictions
-            )
+            if run.evidence:
+                run.coverage = await run_coverage_analyst(
+                    run, run.subquestions, run.evidence, run.judgements, run.contradictions
+                )
+            else:
+                run.coverage = [
+                    CoverageEntry(subquestion_id=s.id, subquestion_text=s.text)
+                    for s in run.subquestions
+                ]
             await save_run(run)
 
             # Check if we need more research
@@ -170,10 +246,13 @@ async def run_research(
 
         # ── SYNTHESIZE ─────────────────────────────────────────
         run.transition(RunState.SYNTHESIZE, "Synthesizing final report")
-        supported = run.supported_claims()
-        run.final_report = await run_synthesizer(
-            run, supported, run.evidence, run.contradictions, run.subquestions
-        )
+        supported = run.supported_claims(conf_threshold)
+        if supported:
+            run.final_report = await run_synthesizer(
+                run, supported, run.evidence, run.contradictions, run.subquestions
+            )
+        else:
+            run.final_report = _insufficient_evidence_report(run)
         await save_run(run)
 
         # ── VERIFY_FINAL_REPORT ────────────────────────────────
@@ -184,8 +263,8 @@ async def run_research(
 
         # ── EXPORT ─────────────────────────────────────────────
         run.transition(RunState.EXPORT, "Generating certificate")
-        run.certificate = _build_certificate(run)
         run.agent_calls.extend(mesh.drain_calls())
+        run.certificate = _build_certificate(run)
         await save_run(run)
 
         # ── END ────────────────────────────────────────────────
@@ -194,6 +273,26 @@ async def run_research(
 
     except Exception as e:
         logger.exception("Research run failed")
+        supported = run.supported_claims(conf_threshold)
+        if supported:
+            try:
+                warning = f"Later research stage failed; report uses last verified checkpoint: {e}"
+                run.warnings.append(warning)
+                run.error = None
+                run.transition(RunState.SYNTHESIZE, "Recovering from last verified checkpoint")
+                run.final_report = await run_synthesizer(
+                    run, supported, run.evidence, run.contradictions, run.subquestions
+                )
+                _verify_report_citations(run)
+                run.agent_calls.extend(mesh.drain_calls())
+                run.certificate = _build_certificate(run)
+                run.certificate.evaluation_limitations.append(warning)
+                run.transition(RunState.END, "Research complete with partial-results warning")
+                await save_run(run)
+                return run
+            except Exception as recovery_error:
+                logger.exception("Partial-result recovery failed")
+                e = recovery_error
         run.error = str(e)
         run.transition(RunState.FAILED, str(e))
         run.agent_calls.extend(mesh.drain_calls())
@@ -206,32 +305,71 @@ def _verify_report_citations(run: ResearchRun) -> None:
     """Validate that all citation references in the report map to real evidence."""
     import re
     evidence_ids = {e.id for e in run.evidence}
-    claim_ids = {c.id for c in run.claims}
+    supported_claims = run.supported_claims(settings.confidence_threshold)
+    claim_ids = {c.id for c in supported_claims}
+    allowed_evidence_ids = {eid for c in supported_claims for eid in c.evidence_ids}
 
     # Find all evidence references
     ev_refs = set(re.findall(r"\[evidence:(\w+)\]", run.final_report))
     claim_refs = set(re.findall(r"\[claim:(\w+)\]", run.final_report))
 
-    orphan_ev = ev_refs - evidence_ids
+    orphan_ev = (ev_refs - evidence_ids) | (ev_refs - allowed_evidence_ids)
     orphan_claims = claim_refs - claim_ids
 
-    if orphan_ev or orphan_claims:
-        # Remove sentences with orphan references
-        lines = run.final_report.split("\n")
-        clean_lines = []
-        for line in lines:
-            has_orphan = False
-            for oid in orphan_ev:
-                if f"[evidence:{oid}]" in line:
-                    has_orphan = True
+    lines = run.final_report.split("\n")
+    clean_lines = []
+    for line in lines:
+        has_orphan = any(f"[evidence:{oid}]" in line for oid in orphan_ev)
+        has_orphan = has_orphan or any(f"[claim:{oid}]" in line for oid in orphan_claims)
+        stripped = line.strip()
+        is_heading = not stripped or stripped.startswith("#")
+        has_required_citations = bool(
+            re.search(r"\[claim:\w+\]", line)
+            and re.search(r"\[evidence:\w+\]", line)
+        )
+        if not has_orphan and (is_heading or has_required_citations):
+            clean_lines.append(line)
+    compact_lines = []
+    for index, line in enumerate(clean_lines):
+        stripped = line.strip()
+        heading = re.match(r"^(#{2,6})\s+", stripped)
+        if heading:
+            current_level = len(heading.group(1))
+            next_content = ""
+            for candidate in clean_lines[index + 1:]:
+                if candidate.strip():
+                    next_content = candidate.strip()
                     break
-            for oid in orphan_claims:
-                if f"[claim:{oid}]" in line:
-                    has_orphan = True
-                    break
-            if not has_orphan:
-                clean_lines.append(line)
-        run.final_report = "\n".join(clean_lines)
+            next_heading = re.match(r"^(#{1,6})\s+", next_content)
+            if not next_content or (next_heading and len(next_heading.group(1)) <= current_level):
+                continue
+        compact_lines.append(line)
+    run.final_report = "\n".join(compact_lines)
+    if not re.search(r"\[claim:\w+\].*\[evidence:\w+\]", run.final_report):
+        judgement_by_claim = {judgement.claim_id: judgement for judgement in run.judgements}
+        verified_lines = []
+        for claim in supported_claims:
+            judgement = judgement_by_claim.get(claim.id)
+            if not judgement:
+                continue
+            valid_ids = [
+                evidence_id for evidence_id in judgement.supporting_evidence_ids
+                if evidence_id in claim.evidence_ids and evidence_id in evidence_ids
+            ]
+            if valid_ids:
+                verified_lines.append(
+                    f"- {claim.text} [claim:{claim.id}] [evidence:{valid_ids[0]}]"
+                )
+        if verified_lines:
+            run.final_report = (
+                f"# {run.question}: Verified Research Report\n\n"
+                "## Verified Findings\n\n"
+                + "\n".join(verified_lines)
+                + "\n\n## Limitations\n\n"
+                "Only claims with validated claim-to-evidence links are shown."
+            )
+        else:
+            run.final_report = _insufficient_evidence_report(run)
 
 
 def _build_certificate(run: ResearchRun) -> VerificationCertificate:
@@ -260,7 +398,7 @@ def _build_certificate(run: ResearchRun) -> VerificationCertificate:
         source_content_hashes=[s.content_hash for s in run.sources if s.content_hash],
         prompt_versions={"all_agents": "v1"},
         evaluation_limitations=[
-            "Source retrieval limited to provided URLs in demo mode",
-            "Citation mutation test requires live Mesh API key",
+            "Search coverage depends on Brave Search results and retrievable public pages",
+            "Certificate metrics measure internal claim-to-evidence integrity, not external truth",
         ],
     )

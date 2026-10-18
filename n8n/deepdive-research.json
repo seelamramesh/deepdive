@@ -107,6 +107,46 @@
     },
     {
       "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.state }}",
+              "rightValue": "FAILED",
+              "operator": { "type": "string", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "check-failed",
+      "name": "Is Failed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1000, 360]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "conditions": [
+            {
+              "leftValue": "={{ Date.now() - new Date($execution.startedAt).getTime() }}",
+              "rightValue": 600000,
+              "operator": { "type": "number", "operation": "gte" }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "check-timeout",
+      "name": "Is Timed Out?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1180, 420]
+    },
+    {
+      "parameters": {
         "amount": 5,
         "unit": "seconds"
       },
@@ -164,6 +204,30 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [600, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'failed', run_id: $('Start Research Run').item.json.run_id, error: $json.error || 'Research run failed' }) }}",
+        "options": { "responseCode": 500 }
+      },
+      "id": "respond-failed",
+      "name": "Respond Failed",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'timeout', run_id: $('Start Research Run').item.json.run_id, error: 'Research run exceeded 10 minute orchestration timeout' }) }}",
+        "options": { "responseCode": 504 }
+      },
+      "id": "respond-timeout",
+      "name": "Respond Timeout",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1380, 420]
     }
   ],
   "connections": {
@@ -191,6 +255,18 @@
     "Is Complete?": {
       "main": [
         [{"node": "Get Report", "type": "main", "index": 0}, {"node": "Get Certificate", "type": "main", "index": 0}],
+        [{"node": "Is Failed?", "type": "main", "index": 0}]
+      ]
+    },
+    "Is Failed?": {
+      "main": [
+        [{"node": "Respond Failed", "type": "main", "index": 0}],
+        [{"node": "Is Timed Out?", "type": "main", "index": 0}]
+      ]
+    },
+    "Is Timed Out?": {
+      "main": [
+        [{"node": "Respond Timeout", "type": "main", "index": 0}],
         [{"node": "Wait", "type": "main", "index": 0}]
       ]
     },
