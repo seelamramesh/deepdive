@@ -51,6 +51,7 @@ async def start_research(req: ResearchRequest, bg: BackgroundTasks):
             source_urls=req.source_urls,
             max_rounds=req.max_rounds,
             confidence_threshold=req.confidence_threshold,
+            run_id=run.id,
         )
 
     task = asyncio.create_task(_run())

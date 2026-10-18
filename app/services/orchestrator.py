@@ -39,9 +39,13 @@ async def run_research(
     source_urls: list[str] | None = None,
     max_rounds: int | None = None,
     confidence_threshold: float | None = None,
+    run_id: str | None = None,
 ) -> ResearchRun:
     """Execute a full research run through the state machine."""
-    run = ResearchRun(question=question)
+    if run_id:
+        run = ResearchRun(question=question, id=run_id)
+    else:
+        run = ResearchRun(question=question)
     max_rounds = max_rounds or settings.max_research_rounds
     conf_threshold = confidence_threshold or settings.confidence_threshold
     source_urls = source_urls or []
