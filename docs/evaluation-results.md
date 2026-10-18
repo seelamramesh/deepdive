@@ -29,7 +29,7 @@ Date: 2026-10-18. Environment: production deployment at `deepdive.srv1493167.hst
 
 Initial EV run `4142fd35d392462b` ended safely but produced 1 low-trust source, 6 evidence passages, and 0 claims. Root cause: bounded search selected multiple queries for one subquestion, starving other sections. Query selection now spreads searches across subquestions and adds deterministic fallback queries when Mesh omits a subquestion. Retest increased retrieved sources from 1 to 6 and verified claims from 0 to 6.
 
-Round-2 EV source scoring then exposed JSON truncation when six sources were sent in one Mesh call. Source Critic now processes batches of three. This batching patch has deterministic test coverage but was not re-run against paid search after deployment; do not treat it as a measured live improvement yet.
+Round-2 EV source scoring then exposed JSON truncation when six sources were sent in one Mesh call. Source Critic now processes batches of three. A non-mutating production replay on the same six stored sources scored 6/6 successfully with no missing source IDs. This validates batching against Mesh without another Brave search, but it does not rewrite the historical run warning.
 
 ## Honest Limits
 
