@@ -1,0 +1,47 @@
+name: DeepDive CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile check
+        run: python -m py_compile app/main.py
+
+      - name: Run tests
+        run: python -m pytest tests/ -v --tb=short
+
+      - name: Scan for unauthorized AI endpoints
+        run: |
+          if grep -r "api.openai.com\|api.anthropic.com\|api.cohere.ai\|api-inference.huggingface.co" app/; then
+            echo "ERROR: Unauthorized AI endpoint found"
+            exit 1
+          fi
+
+      - name: Check .env not committed
+        run: |
+          if [ -f .env ]; then
+            echo "ERROR: .env file committed"
+            exit 1
+          fi
+
+      - name: Verify README exists
+        run: test -f README.md
+
+      - name: Validate n8n workflow JSON
+        run: python -c "import json; json.load(open('n8n/deepdive-research.json'))"

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeepDive — Self-Verifying Research Analyst</title>
+<style>
+:root{--bg:#0f172a;--surface:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#3b82f6;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--radius:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:16px}
+.container{max-width:960px;margin:0 auto}
+h1{font-size:1.5rem;margin-bottom:4px}
+.subtitle{color:var(--muted);font-size:.875rem;margin-bottom:24px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.card h3{font-size:1rem;margin-bottom:4px}
+.card p{color:var(--muted);font-size:.875rem}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.75rem;font-weight:600}
+.badge-green{background:#166534;color:#86efac}
+.badge-yellow{background:#854d0e;color:#fde047}
+.badge-red{background:#991b1b;color:#fca5a5}
+.badge-blue{background:#1e3a5f;color:#93c5fd}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.form-group{margin-bottom:16px}
+label{display:block;font-size:.875rem;color:var(--muted);margin-bottom:4px}
+input,textarea{width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:.875rem}
+textarea{min-height:80px;resize:vertical}
+button{background:var(--accent);color:#fff;border:none;padding:10px 20px;border-radius:var(--radius);font-size:.875rem;cursor:pointer;font-weight:600}
+button:hover{opacity:.9}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center}
+.stat .value{font-size:1.5rem;font-weight:700}
+.stat .label{font-size:.75rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🔬 DeepDive</h1>
+  <p class="subtitle">Self-Verifying Research Analyst — every claim checked against its source</p>
+
+  <div class="card">
+    <h3>New Research</h3>
+    <form id="researchForm" method="POST" action="/research" onsubmit="return startResearch(event)">
+      <div class="form-group">
+        <label for="question">Research Question</label>
+        <input type="text" id="question" name="question" placeholder="e.g. What are the main risks of investing in the EV battery market in 2026?" required>
+      </div>
+      <div class="form-group">
+        <label for="urls">Source URLs (one per line, optional)</label>
+        <textarea id="urls" name="urls" placeholder="https://example.com/report&#10;https://example.com/data"></textarea>
+      </div>
+      <button type="submit">Start Research</button>
+    </form>
+  </div>
+
+  <h3 style="margin:20px 0 12px">Recent Runs</h3>
+  {% if runs %}
+  {% for r in runs %}
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h3><a href="/run/{{ r.id }}">{{ r.question[:80] }}</a></h3>
+        <p>{{ r.created_at[:19] }} · <span class="badge {% if r.state == 'END' %}badge-green{% elif r.state == 'FAILED' %}badge-red{% else %}badge-blue{% endif %}">{{ r.state }}</span></p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="card"><p>No research runs yet. Start one above.</p></div>
+  {% endif %}
+</div>
+
+<script>
+async function startResearch(e) {
+  e.preventDefault();
+  const q = document.getElementById('question').value;
+  const urlText = document.getElementById('urls').value;
+  const urls = urlText.split('\n').map(u=>u.trim()).filter(u=>u);
+  const res = await fetch('/research', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({question:q, source_urls:urls})
+  });
+  const data = await res.json();
+  if(data.run_id) window.location.href = '/run/' + data.run_id;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeepDive — Run {{ run.id }}</title>
+<style>
+:root{--bg:#0f172a;--surface:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#3b82f6;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--radius:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:16px}
+.container{max-width:1200px;margin:0 auto}
+h1{font-size:1.25rem;margin-bottom:4px}
+h2{font-size:1.1rem;margin:20px 0 8px;color:var(--accent)}
+h3{font-size:.95rem;margin:12px 0 6px}
+.subtitle{color:var(--muted);font-size:.875rem;margin-bottom:16px}
+a{color:var(--accent);text-decoration:none}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:768px){.grid{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.75rem;font-weight:600}
+.badge-green{background:#166534;color:#86efac}
+.badge-yellow{background:#854d0e;color:#fde047}
+.badge-red{background:#991b1b;color:#fca5a5}
+.badge-blue{background:#1e3a5f;color:#93c5fd}
+.badge-gray{background:#374151;color:#9ca3af}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:16px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px;text-align:center}
+.stat .value{font-size:1.3rem;font-weight:700}
+.stat .label{font-size:.7rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:8px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--border);text-align:left}
+th{color:var(--muted);font-weight:600}
+.passage{background:var(--bg);padding:6px 8px;border-radius:4px;font-size:.8rem;margin:4px 0;border-left:3px solid var(--accent)}
+.verdict-supported{border-left-color:var(--green)}
+.verdict-contradicted{border-left-color:var(--red)}
+.verdict-unsupported{border-left-color:var(--red)}
+.verdict-partially_supported{border-left-color:var(--yellow)}
+.report{background:var(--bg);padding:16px;border-radius:var(--radius);font-size:.875rem;line-height:1.6;white-space:pre-wrap;max-height:600px;overflow-y:auto}
+.tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:6px 14px;border-radius:var(--radius);cursor:pointer;font-size:.8rem;background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.panel{display:none}
+.panel.active{display:block}
+.timeline{border-left:2px solid var(--border);padding-left:16px;margin:8px 0}
+.timeline-item{margin-bottom:8px;font-size:.8rem}
+.timeline-item .time{color:var(--muted);font-size:.7rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <p><a href="/">← Back</a></p>
+  <h1>{{ run.question }}</h1>
+  <p class="subtitle">Run {{ run.id }} · {{ run.created_at[:19] }} ·
+    <span class="badge {% if run.current_state.value == 'END' %}badge-green{% elif run.current_state.value == 'FAILED' %}badge-red{% else %}badge-blue{% endif %}">{{ run.current_state.value }}</span>
+    {% if run.error %}<span class="badge badge-red">Error: {{ run.error[:60] }}</span>{% endif %}
+  </p>
+
+  <div class="stats">
+    <div class="stat"><div class="value">{{ run.sources|length }}</div><div class="label">Sources</div></div>
+    <div class="stat"><div class="value">{{ run.evidence|length }}</div><div class="label">Evidence</div></div>
+    <div class="stat"><div class="value">{{ run.claims|length }}</div><div class="label">Claims</div></div>
+    <div class="stat"><div class="value">{{ run.supported_claims()|length }}</div><div class="label">Verified</div></div>
+    <div class="stat"><div class="value">{{ run.contradictions|length }}</div><div class="label">Contradictions</div></div>
+    <div class="stat"><div class="value">{{ run.research_round }}</div><div class="label">Rounds</div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('report')">Report</div>
+    <div class="tab" onclick="showTab('claims')">Claim Courtroom</div>
+    <div class="tab" onclick="showTab('sources')">Sources</div>
+    <div class="tab" onclick="showTab('coverage')">Coverage Map</div>
+    <div class="tab" onclick="showTab('contradictions')">Contradictions</div>
+    <div class="tab" onclick="showTab('audit')">Audit Trail</div>
+    <div class="tab" onclick="showTab('certificate')">Certificate</div>
+  </div>
+
+  <!-- REPORT -->
+  <div id="report" class="panel active">
+    <h2>Final Report</h2>
+    {% if run.final_report %}
+    <div class="report">{{ run.final_report }}</div>
+    {% else %}
+    <div class="card"><p>Report not yet generated.</p></div>
+    {% endif %}
+  </div>
+
+  <!-- CLAIMS -->
+  <div id="claims" class="panel">
+    <h2>Claim Courtroom</h2>
+    {% for j in run.judgements %}
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <div style="flex:1">
+          {% set claim = None %}
+          {% for c in run.claims %}{% if c.id == j.claim_id %}
+          <strong>{{ c.text }}</strong>
+          {% endif %}{% endfor %}
+        </div>
+        <span class="badge {% if j.verdict.value == 'supported' %}badge-green{% elif j.verdict.value == 'contradicted' %}badge-red{% elif j.verdict.value == 'unsupported' %}badge-red{% else %}badge-yellow{% endif %}">
+          {{ j.verdict.value }} ({{ (j.confidence * 100)|round|int }}%)
+        </span>
+      </div>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:6px">{{ j.explanation }}</p>
+      {% if j.missing_evidence %}
+      <p style="font-size:.75rem;color:var(--yellow);margin-top:4px">Missing: {{ j.missing_evidence }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+    {% if not run.judgements %}
+    <div class="card"><p>No claims judged yet.</p></div>
+    {% endif %}
+  </div>
+
+  <!-- SOURCES -->
+  <div id="sources" class="panel">
+    <h2>Sources</h2>
+    <table>
+      <tr><th>Title</th><th>URL</th><th>Trust</th><th>Hash</th></tr>
+      {% for s in run.sources %}
+      <tr>
+        <td>{{ s.title[:50] }}</td>
+        <td><a href="{{ s.url }}" target="_blank">{{ s.url[:40] }}…</a></td>
+        <td><span class="badge {% if s.trust_score >= 0.7 %}badge-green{% elif s.trust_score >= 0.4 %}badge-yellow{% else %}badge-red{% endif %}">{{ (s.trust_score * 100)|round|int }}%</span></td>
+        <td style="font-size:.7rem;color:var(--muted)">{{ s.content_hash[:8] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% if not run.sources %}
+    <div class="card"><p>No sources retrieved yet.</p></div>
+    {% endif %}
+  </div>
+
+  <!-- COVERAGE -->
+  <div id="coverage" class="panel">
+    <h2>Coverage Map</h2>
+    {% for c in run.coverage %}
+    <div class="card">
+      <div style="display:flex;justify-content:space-between">
+        <strong>{{ c.subquestion_text[:60] }}</strong>
+        <span class="badge {% if c.status.value == 'green' %}badge-green{% elif c.status.value == 'yellow' %}badge-yellow{% else %}badge-red{% endif %}">{{ c.status.value }} · {{ (c.coverage_score * 100)|round|int }}%</span>
+      </div>
+      <p style="font-size:.8rem;color:var(--muted)">Evidence: {{ c.evidence_count }} · Sources: {{ c.source_count }} · Verified claims: {{ c.verified_claim_count }} · Contradictions: {{ c.contradiction_count }}</p>
+    </div>
+    {% endfor %}
+    {% if not run.coverage %}
+    <div class="card"><p>Coverage not measured yet.</p></div>
+    {% endif %}
+  </div>
+
+  <!-- CONTRADICTIONS -->
+  <div id="contradictions" class="panel">
+    <h2>Contradiction Radar</h2>
+    {% for c in run.contradictions %}
+    <div class="card">
+      <div style="display:flex;justify-content:space-between">
+        <strong>{{ c.topic }}</strong>
+        <span class="badge {% if c.severity.value == 'high' %}badge-red{% elif c.severity.value == 'medium' %}badge-yellow{% else %}badge-gray{% endif %}">{{ c.severity.value }} · {{ c.type.value }}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <div class="passage">{{ c.claim_a }}</div>
+        <div class="passage" style="border-left-color:var(--red)">{{ c.claim_b }}</div>
+      </div>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:6px">{{ c.explanation }}</p>
+      <span class="badge {% if c.resolution.value == 'resolved' %}badge-green{% elif c.resolution.value == 'unresolved' %}badge-red{% else %}badge-yellow{% endif %}">{{ c.resolution.value }}</span>
+    </div>
+    {% endfor %}
+    {% if not run.contradictions %}
+    <div class="card"><p>No contradictions detected.</p></div>
+    {% endif %}
+  </div>
+
+  <!-- AUDIT -->
+  <div id="audit" class="panel">
+    <h2>Audit Trail</h2>
+    <h3>State Transitions</h3>
+    <div class="timeline">
+      {% for t in run.state_transitions %}
+      <div class="timeline-item">
+        <span class="badge badge-blue">{{ t.to_state.value }}</span>
+        <span class="time">{{ t.timestamp[:19] }}</span>
+        <span style="font-size:.8rem"> — {{ t.reason }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    <h3>Subquestions</h3>
+    {% for sq in run.subquestions %}
+    <div class="card"><strong>{{ sq.text }}</strong><p style="font-size:.8rem;color:var(--muted)">Criteria: {{ sq.completion_criteria }}</p></div>
+    {% endfor %}
+    <h3>Search Queries</h3>
+    {% for q in run.search_queries %}
+    <div class="card" style="font-size:.85rem">{{ q.query }} <span style="color:var(--muted)">({{ q.source_preference }})</span></div>
+    {% endfor %}
+  </div>
+
+  <!-- CERTIFICATE -->
+  <div id="certificate" class="panel">
+    <h2>DeepDive Verification Certificate</h2>
+    {% if run.certificate %}
+    <div class="card">
+      <table>
+        <tr><td>Run ID</td><td>{{ run.certificate.run_id }}</td></tr>
+        <tr><td>Question</td><td>{{ run.certificate.original_question }}</td></tr>
+        <tr><td>Timestamp</td><td>{{ run.certificate.execution_timestamp }}</td></tr>
+        <tr><td>Models</td><td>{{ run.certificate.mesh_models_used|join(', ') }}</td></tr>
+        <tr><td>Sources</td><td>{{ run.certificate.source_count }}</td></tr>
+        <tr><td>Evidence</td><td>{{ run.certificate.evidence_count }}</td></tr>
+        <tr><td>Claims Drafted</td><td>{{ run.certificate.drafted_claim_count }}</td></tr>
+        <tr><td>Supported</td><td>{{ run.certificate.supported_claim_count }}</td></tr>
+        <tr><td>Rejected</td><td>{{ run.certificate.rejected_claim_count }}</td></tr>
+        <tr><td>Contradictions</td><td>{{ run.certificate.contradiction_count }}</td></tr>
+        <tr><td>Groundedness Rate</td><td><strong>{{ (run.certificate.groundedness_rate * 100)|round(1) }}%</strong></td></tr>
+        <tr><td>Research Rounds</td><td>{{ run.certificate.research_rounds }}</td></tr>
+      </table>
+      {% if run.certificate.evaluation_limitations %}
+      <h3>Limitations</h3>
+      <ul style="font-size:.8rem;color:var(--muted);padding-left:16px">
+        {% for l in run.certificate.evaluation_limitations %}<li>{{ l }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+    <p style="font-size:.75rem;color:var(--muted);margin-top:8px">This is a DeepDive Verification Certificate. It does not imply certification by any external authority.</p>
+    {% else %}
+    <div class="card"><p>Certificate not generated yet — run must complete first.</p></div>
+    {% endif %}
+  </div>
+
+</div>
+<script>
+function showTab(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+{% if run.current_state.value not in ('END','FAILED') %}
+setTimeout(()=>location.reload(), 5000);
+{% endif %}
+</script>
+</body>
+</html>
