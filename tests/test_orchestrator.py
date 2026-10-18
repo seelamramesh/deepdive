@@ -17,6 +17,7 @@ from app.services.orchestrator import (
     _insufficient_evidence_report,
     _queries_for_round,
     _trusted_evidence,
+    _verified_claim_report,
     _verify_report_citations,
     run_research,
 )
@@ -98,6 +99,24 @@ def test_report_verifier_rebuilds_heading_only_report_from_verified_claims():
 
     assert "Verified fact [claim:c1] [evidence:e1]" in run.final_report
     assert "Unsupported prose" not in run.final_report
+
+
+def test_verified_claim_report_uses_only_valid_judgement_links():
+    run = ResearchRun(question="Technology outlook")
+    run.evidence = [Evidence(id="e1", source_id="s1", passage="Exact passage")]
+    run.claims = [AtomicClaim(id="c1", text="Verified fact", evidence_ids=["e1"])]
+    run.judgements = [ClaimJudgement(
+        claim_id="c1",
+        verdict=ClaimVerdict.SUPPORTED,
+        confidence=0.9,
+        supporting_evidence_ids=["e1", "invented"],
+    )]
+
+    report = _verified_claim_report(run, run.supported_claims())
+
+    assert "Verified fact [claim:c1] [evidence:e1]" in report
+    assert "invented" not in report
+    assert "Synthesizer output was unavailable" in report
 
 
 def test_report_verifier_removes_empty_sections_but_keeps_populated_sections():

@@ -9,9 +9,10 @@
         "options": {}
       },
       "id": "webhook-trigger",
+      "webhookId": "7d9d1ade-0546-43a7-963a-5d282446baac",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
+      "typeVersion": 2.1,
       "position": [200, 300]
     },
     {
@@ -27,6 +28,22 @@
               "operator": {
                 "type": "string",
                 "operation": "notEmpty"
+              }
+            },
+            {
+              "leftValue": "={{ ($json.body.question || '').trim().length }}",
+              "rightValue": 10,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "leftValue": "={{ ($json.body.question || '').length }}",
+              "rightValue": 2000,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
               }
             }
           ],
@@ -53,6 +70,10 @@
             {
               "name": "source_urls",
               "value": "={{ $json.body.source_urls || [] }}"
+            },
+            {
+              "name": "max_rounds",
+              "value": "={{ Math.min(Math.max(Number($json.body.max_rounds || 3), 1), 5) }}"
             }
           ]
         },
@@ -69,7 +90,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "={{ $env.DEEPDIVE_BACKEND_URL }}/runs/{{ $json.run_id }}",
+        "url": "={{ $env.DEEPDIVE_BACKEND_URL }}/runs/{{ $('Start Research Run').item.json.run_id }}",
         "options": {
           "timeout": 10000
         }
@@ -194,7 +215,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ error: 'Missing required field: question' }) }}",
+        "responseBody": "={{ JSON.stringify({ error: 'question must contain 10 to 2000 characters' }) }}",
         "options": {
           "responseCode": 400
         }
@@ -254,7 +275,7 @@
     },
     "Is Complete?": {
       "main": [
-        [{"node": "Get Report", "type": "main", "index": 0}, {"node": "Get Certificate", "type": "main", "index": 0}],
+        [{"node": "Get Report", "type": "main", "index": 0}],
         [{"node": "Is Failed?", "type": "main", "index": 0}]
       ]
     },
@@ -276,6 +297,11 @@
       ]
     },
     "Get Report": {
+      "main": [
+        [{"node": "Get Certificate", "type": "main", "index": 0}]
+      ]
+    },
+    "Get Certificate": {
       "main": [
         [{"node": "Respond Success", "type": "main", "index": 0}]
       ]

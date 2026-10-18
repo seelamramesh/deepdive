@@ -88,6 +88,35 @@ def _trusted_evidence(run: ResearchRun) -> list:
     ]
 
 
+def _verified_claim_report(run: ResearchRun, supported_claims: list) -> str:
+    """Build a deterministic report from validated claim/evidence links."""
+    evidence_ids = {evidence.id for evidence in run.evidence}
+    judgement_by_claim = {judgement.claim_id: judgement for judgement in run.judgements}
+    verified_lines = []
+    for claim in supported_claims:
+        judgement = judgement_by_claim.get(claim.id)
+        if not judgement:
+            continue
+        valid_ids = [
+            evidence_id for evidence_id in judgement.supporting_evidence_ids
+            if evidence_id in claim.evidence_ids and evidence_id in evidence_ids
+        ]
+        if valid_ids:
+            verified_lines.append(
+                f"- {claim.text} [claim:{claim.id}] [evidence:{valid_ids[0]}]"
+            )
+    if not verified_lines:
+        return _insufficient_evidence_report(run)
+    return (
+        f"# {run.question}: Verified Research Report\n\n"
+        "## Verified Findings\n\n"
+        + "\n".join(verified_lines)
+        + "\n\n## Limitations\n\n"
+        "Synthesizer output was unavailable. Only claims with validated "
+        "claim-to-evidence links are shown."
+    )
+
+
 async def run_research(
     question: str,
     source_urls: list[str] | None = None,
@@ -248,9 +277,18 @@ async def run_research(
         run.transition(RunState.SYNTHESIZE, "Synthesizing final report")
         supported = run.supported_claims(conf_threshold)
         if supported:
-            run.final_report = await run_synthesizer(
-                run, supported, run.evidence, run.contradictions, run.subquestions
-            )
+            try:
+                run.final_report = await run_synthesizer(
+                    run, supported, run.evidence, run.contradictions, run.subquestions
+                )
+            except Exception as synthesis_error:
+                warning = (
+                    "Synthesizer returned malformed structured output; "
+                    "deterministic verified-claim report used"
+                )
+                logger.warning("%s: %s", warning, synthesis_error)
+                run.warnings.append(warning)
+                run.final_report = _verified_claim_report(run, supported)
         else:
             run.final_report = _insufficient_evidence_report(run)
         await save_run(run)
@@ -346,30 +384,7 @@ def _verify_report_citations(run: ResearchRun) -> None:
         compact_lines.append(line)
     run.final_report = "\n".join(compact_lines)
     if not re.search(r"\[claim:\w+\].*\[evidence:\w+\]", run.final_report):
-        judgement_by_claim = {judgement.claim_id: judgement for judgement in run.judgements}
-        verified_lines = []
-        for claim in supported_claims:
-            judgement = judgement_by_claim.get(claim.id)
-            if not judgement:
-                continue
-            valid_ids = [
-                evidence_id for evidence_id in judgement.supporting_evidence_ids
-                if evidence_id in claim.evidence_ids and evidence_id in evidence_ids
-            ]
-            if valid_ids:
-                verified_lines.append(
-                    f"- {claim.text} [claim:{claim.id}] [evidence:{valid_ids[0]}]"
-                )
-        if verified_lines:
-            run.final_report = (
-                f"# {run.question}: Verified Research Report\n\n"
-                "## Verified Findings\n\n"
-                + "\n".join(verified_lines)
-                + "\n\n## Limitations\n\n"
-                "Only claims with validated claim-to-evidence links are shown."
-            )
-        else:
-            run.final_report = _insufficient_evidence_report(run)
+        run.final_report = _verified_claim_report(run, supported_claims)
 
 
 def _build_certificate(run: ResearchRun) -> VerificationCertificate:

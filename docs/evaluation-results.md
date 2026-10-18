@@ -38,3 +38,7 @@ Round-2 EV source scoring then exposed JSON truncation when six sources were sen
 - Citation integrity proves references resolve to stored evidence; it does not independently prove real-world truth.
 - Mutation test-case generation and metric computation are tested, but no live Mesh mutation score has been measured. Certificate field remains `null`.
 - Three two-round production runs were executed. Audit records retain six search-query entries total. Configuration permits up to two Brave requests per round, so provider-side usage can be as high as 12 requests; Brave dashboard is authoritative for billing.
+
+## n8n Production Validation
+
+Active workflow `vXuzyMGtoaIr2Gcu` contains 14 nodes. Invalid requests returned explicit HTTP 400 responses without starting research. One-round run `07aaf3bec1ff40f2` completed through webhook with HTTP 200 and returned both report and verification certificate. It retrieved 3 official Python sources, stored 13 evidence passages, drafted 10 claims, and rejected all 10 rather than asserting an unsupported answer. Three capped n8n research attempts were made while fixing orchestration; each allowed at most two Brave requests, so provider-side usage can be up to 6 additional requests.

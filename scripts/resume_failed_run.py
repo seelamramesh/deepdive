@@ -21,6 +21,7 @@ from app.services.orchestrator import (
     _build_certificate,
     _insufficient_evidence_report,
     _trusted_evidence,
+    _verified_claim_report,
     _verify_report_citations,
 )
 from app.storage.database import load_run, save_run
@@ -64,12 +65,21 @@ async def resume(run_id: str) -> None:
 
         run.transition(RunState.SYNTHESIZE, "Synthesizing final report")
         supported = run.supported_claims(settings.confidence_threshold)
-        run.final_report = (
-            await run_synthesizer(
-                run, supported, run.evidence, run.contradictions, run.subquestions
-            )
-            if supported else _insufficient_evidence_report(run)
-        )
+        if supported:
+            try:
+                run.final_report = await run_synthesizer(
+                    run, supported, run.evidence, run.contradictions, run.subquestions
+                )
+            except Exception as synthesis_error:
+                warning = (
+                    "Synthesizer returned malformed structured output; "
+                    "deterministic verified-claim report used"
+                )
+                logger.warning("%s: %s", warning, synthesis_error)
+                run.warnings.append(warning)
+                run.final_report = _verified_claim_report(run, supported)
+        else:
+            run.final_report = _insufficient_evidence_report(run)
         await save_run(run)
 
         run.transition(RunState.VERIFY_FINAL_REPORT, "Verifying final report")
