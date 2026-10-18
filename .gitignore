@@ -16,3 +16,4 @@ htmlcov/
 venv/
 .venv/
 node_modules/
+archive.b64.*
