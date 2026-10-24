@@ -229,8 +229,8 @@ Output JSON:
       "topic": "...",
       "claim_a": "...",
       "claim_b": "...",
-      "evidence_a": ["..."],
-      "evidence_b": ["..."],
+      "evidence_a": ["provided_evidence_id_for_side_a"],
+      "evidence_b": ["provided_evidence_id_for_side_b"],
       "type": "numeric|date|definition|causal|forecast|scope",
       "severity": "low|medium|high",
       "resolution": "resolved|unresolved|context-dependent",
@@ -240,6 +240,10 @@ Output JSON:
 }
 
 Rules:
+- evidence_a and evidence_b MUST contain only IDs copied exactly from the input evidence[].id fields.
+- Never put passage text, claim text, source IDs or URLs inside evidence_a or evidence_b.
+- claim_a and claim_b contain the two conflicting statements as text; evidence_a and evidence_b identify their supporting passages.
+- Return an empty contradictions array when no comparable conflict exists.
 - Check for incompatible numbers, dates, definitions, causal claims, forecasts.
 - Compare original passages from different sources, not just the wording of drafted claims.
 - A disagreement requires comparable subject, metric, period, population, units and conditions.

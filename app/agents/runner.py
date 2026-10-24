@@ -474,7 +474,7 @@ async def run_contradiction_analyst(
                                   "source_id": evidence_by_id[eid].source_id} for eid in sorted(evidence_ids)],
                 }),
                 response_format={"type": "json_object"},
-                prompt_version="contradiction-cross-source-v2",
+                prompt_version="contradiction-evidence-ids-v3",
             )
         except Exception:
             batch_audit["status"] = "failed"
