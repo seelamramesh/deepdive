@@ -1,6 +1,6 @@
 # DeepDive readiness audit — 2026-10-24
 
-Status: incomplete overall; latest runtime revision `9c9180df011624830b45b9632a6a246896b7ce24` is deployed as `deepdive:quality-20261024t161607z` (image and revision independently rechecked over SSH). See [release evidence](release-evidence-2026-10-24.md). Phase 1 mobile UI and tested hardening were deployed after the user authorized proceeding with Phase 1 and the goal. No submission performed. This is a fresh audit, not a replacement of historical measured results.
+Status: incomplete overall; latest runtime revision `1c0fbb7ebf04701c699cd2c8ce817e7f9f9e1f0b` is deployed as `deepdive:extraction-20261024-r1` (image and revision independently rechecked over SSH). See [release evidence](release-evidence-2026-10-24.md). Phase 1 mobile UI and tested hardening were deployed after the user authorized proceeding with Phase 1 and the goal. No submission performed. This is a fresh audit, not a replacement of historical measured results.
 
 ## OODA evidence and action
 
@@ -83,8 +83,8 @@ The shared “How commands travel” explanation is now explicitly labelled as s
 Goal remains active. Deployment of the named revision is verified. Hackathon readiness, complete feature coverage and submission success are not established.
 
 
-## Subsequent extraction-window change — local, not deployed
+## Subsequent extraction-window release — deployed
 
 The first-slice cutoff was reproduced with a source containing relevant text after character 7,000. A bounded lexical selector now scores overlapping contiguous windows against the original question, prioritizes distinct matching terms, caps repeated-term contributions and uses the earliest window on ties. Short/no-match sources keep their original first-slice behavior. The same immutable source snapshot is used; extraction audit records actual start/end offsets, slice hash and `query_lexical_window_v1`. Character budget remains 7,000 per source; no additional AI calls are introduced.
 
-Fresh local backend result: 120 passed, one existing deprecation warning, 3.09 seconds. A seventh mocked end-to-end fixture proves late-page content reaches the researcher and persisted report with correct source offsets. This includes late-page, tie/no-match, Unicode/short-source and invalid-budget checks plus six existing mocked end-to-end integrations. No paid calls or new live quality measurements. The selector is a heuristic: it can miss synonyms or relevant context outside the chosen window. Production remains revision 9c9180d until a separately validated rollout.
+Fresh local backend result: 120 passed, one existing deprecation warning, 3.09 seconds. A seventh mocked end-to-end fixture proves late-page content reaches the researcher and persisted report with correct source offsets. This includes late-page, tie/no-match, Unicode/short-source and invalid-budget checks plus six existing mocked end-to-end integrations. No paid calls or new live quality measurements. The selector is a heuristic: it can miss synonyms or relevant context outside the chosen window. Subsequent candidate validation passed 120 backend tests on Linux in 2.42 seconds. Deployed image `deepdive:extraction-20261024-r1`, runtime revision `1c0fbb7ebf04701c699cd2c8ce817e7f9f9e1f0b`; public readiness and 15-run listing independently verified. Backup: `/docker/deepdive-extraction-20261024-r1/validation-data/deepdive.db`; rollback: `deepdive-rollback-ui-20261024163017`. Frontend unchanged; prior tested build reused from Docker cache. No new live model accuracy result.

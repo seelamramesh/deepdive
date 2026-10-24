@@ -28,3 +28,10 @@ Rollback container: `deepdive-rollback-ui-20261024161807`.
 Shared architecture text is common across searches; actual recorded queries, evidence and events differ by run. Historical missing contradiction diagnostics are unavailable, not reconstructed. The new contradiction comparison policy has deterministic regression coverage but no fresh live model accuracy measurement.
 
 Final report citation-ID checks do not prove every sentence is entailed by its sources. Source extraction currently uses the first 7,000 characters; challenge pages and later-page relevant material remain quality risks. No vector database is implemented. Observed token records are not a transactional billing ledger; dollar costs remain unknown without verified account rates. Expanded labelled live evaluations and section-by-section review remain outstanding; a numeric paid-test cap or explicit bounded scope is still needed.
+
+
+## Subsequent extraction release (latest runtime)
+
+Revision `1c0fbb7ebf04701c699cd2c8ce817e7f9f9e1f0b`, image `deepdive:extraction-20261024-r1`, independently confirmed after promotion. Linux candidate: 120 backend tests passed (2.42 seconds). Seven mocked end-to-end fixtures now include late-page extraction. Frontend unchanged; previous tested build reused. Public readiness passed; 15 saved runs listed. No paid runs started. Backup `/docker/deepdive-extraction-20261024-r1/validation-data/deepdive.db`; rollback `deepdive-rollback-ui-20261024163017`.
+
+Extraction now selects one bounded overlapping window using lexical question matches, with exact snapshot offsets/hashes. This supersedes the first-7,000-character limitation described above but does not prove comprehensive retrieval or semantic relevance. Other live accuracy, billing and submission limits remain open. CI links above refer specifically to revision 9c9180d, not this subsequent revision.
