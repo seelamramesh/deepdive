@@ -250,6 +250,8 @@ class ResearchRun(BaseModel):
     agent_calls: list[AgentCall] = Field(default_factory=list)
 
     report_grounding_audit: list[dict] = Field(default_factory=list)
+    report_grounding_status: str = "not_available"
+    report_fallback_reason: str = ""
     final_report: str = ""
     certificate: Optional[VerificationCertificate] = None
     error: Optional[str] = None

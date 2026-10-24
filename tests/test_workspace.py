@@ -67,3 +67,20 @@ def test_workspace_derives_counts_without_rewriting_recorded_assessment(monkeypa
     assert data['coverage'][0]['verified_claim_count']==1
     assert data['recorded_coverage'][0]['verified_claim_count']==0
     assert run.coverage[0].verified_claim_count==0
+
+
+def test_workspace_exposes_review_status_and_final_inclusion_without_backfill(monkeypatch):
+    run=ResearchRun(question="Reviewed fixture",report_grounding_status="accepted_claim_fallback",
+        report_fallback_reason="All prose withheld",report_grounding_audit=[{
+            "unit_id":"0","text":"Unapproved detail","kept":False,
+            "included_in_final_report":False,"reason":"Unsupported"}])
+    async def load(_): return run
+    monkeypatch.setattr(routes,"load_run",load)
+    data=api().get(f"/runs/{run.id}/workspace").json()
+    assert data["report_grounding_status"]=="accepted_claim_fallback"
+    assert data["report_grounding_audit"][0]["reason"]=="Unsupported"
+    run.report_grounding_audit=[]
+    run.report_grounding_status="not_available"
+    historical=api().get(f"/runs/{run.id}/workspace").json()
+    assert historical["report_grounding_audit"]==[]
+    assert historical["report_grounding_status"]=="not_available"

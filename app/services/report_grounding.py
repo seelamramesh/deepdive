@@ -23,9 +23,11 @@ async def review_report(run):
     ids = {eid for c in accepted for eid in c["evidence_ids"]}
     evidence = [{"id":eid,"source_id":evidence_by_id[eid].source_id,
                  "passage":evidence_by_id[eid].passage} for eid in sorted(ids)]
+    run.report_grounding_status = "reviewing"
     lines = run.final_report.splitlines()
     units = [{"unit_id":str(i),"text":line} for i,line in enumerate(lines) if line.strip()]
     kept = set()
+    review_failed = False
     for offset in range(0,len(units),12):
         batch = units[offset:offset+12]
         try:
@@ -37,6 +39,7 @@ async def review_report(run):
             if not isinstance(decisions,list):
                 decisions = []
         except Exception as exc:
+            review_failed = True
             decisions = []
             run.warnings.append("Report grounding review failed; affected units withheld: " + type(exc).__name__)
         for unit in batch:
@@ -48,3 +51,5 @@ async def review_report(run):
             if approved:
                 kept.add(int(unit["unit_id"]))
     run.final_report = "\n".join(line for i,line in enumerate(lines) if not line.strip() or i in kept)
+
+    run.report_grounding_status = "review_failed" if review_failed else ("reviewed_partial" if len(kept) < len(units) else "reviewed")

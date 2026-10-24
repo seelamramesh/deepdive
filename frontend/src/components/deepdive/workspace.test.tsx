@@ -85,3 +85,9 @@ it('shows report review decisions and preserves missing historical diagnostics',
   expect(screen.getByText('Withheld · report unit 2')).toBeInTheDocument();
   expect(screen.getByText('Adds an unverified number')).toBeInTheDocument();
 });
+
+it('labels partial fallback and model limitations in the report view', () => {
+  render(<ReportPanel run={{...run,report_grounding_status:'accepted_claim_fallback',report_fallback_reason:'All generated prose withheld'}}/>);
+  expect(screen.getByRole('alert')).toHaveTextContent('Partial accepted-claim fallback');
+  expect(screen.getByText(/not a hallucination-free guarantee or independent human verification/)).toBeInTheDocument();
+});

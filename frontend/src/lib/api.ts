@@ -19,7 +19,9 @@ export interface Workspace {
   retrieval_audit?: Record<string, unknown>[];
   contradiction_audit?: Record<string, unknown>[];
   claim_selection_audit?: Record<string, unknown>[];
-  report_grounding_audit?: {unit_id: string; text: string; kept: boolean; reason: string; method: string; prompt_version: string}[];
+  report_grounding_status?: string;
+  report_fallback_reason?: string;
+  report_grounding_audit?: {unit_id: string; text: string; kept: boolean; included_in_final_report?: boolean; reason: string; method: string; prompt_version: string}[];
   coverage_derivation?: string;
   recorded_coverage?: Coverage[];
   prosecution?: {claim_id: string; weaknesses: string[]; unsupported_components: string[]}[];

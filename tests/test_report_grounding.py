@@ -54,3 +54,36 @@ async def test_reviewer_failure_leaves_audit_and_warning_without_prose(monkeypat
     assert not run.final_report.strip()
     assert len(run.report_grounding_audit)==3
     assert run.warnings
+
+
+@pytest.mark.asyncio
+async def test_all_withheld_fallback_is_labelled_and_audit_survives(monkeypatch):
+    from app.services.orchestrator import _verify_report_citations,_build_certificate
+    run=report()
+    async def complete(**kwargs):
+        return {"decisions":[]}
+    monkeypatch.setattr("app.services.report_grounding.mesh.complete",complete)
+    await review_report(run)
+    _verify_report_citations(run)
+    assert run.report_grounding_status=="accepted_claim_fallback"
+    assert run.report_fallback_reason in run.final_report
+    assert "Revenue was 10 million." in run.final_report
+    assert "profit was" not in run.final_report
+    assert run.warnings
+    assert all(not a["included_in_final_report"] for a in run.report_grounding_audit)
+    assert any("independent human" in item for item in _build_certificate(run).evaluation_limitations)
+
+
+@pytest.mark.asyncio
+async def test_model_kept_invalid_citation_is_recorded_as_not_in_final_report(monkeypatch):
+    from app.services.orchestrator import _verify_report_citations
+    run=report()
+    run.final_report="Revenue was 10 million. [claim:c] [evidence:invented]"
+    async def complete(**kwargs):
+        return {"decisions":[{"unit_id":"0","supported":True,"reason":"Fixture approval"}]}
+    monkeypatch.setattr("app.services.report_grounding.mesh.complete",complete)
+    await review_report(run)
+    _verify_report_citations(run)
+    assert run.report_grounding_audit[0]["kept"] is True
+    assert run.report_grounding_audit[0]["included_in_final_report"] is False
+    assert "invented" not in run.final_report

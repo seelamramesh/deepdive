@@ -146,7 +146,7 @@ def _trusted_evidence(run: ResearchRun) -> list:
     ]
 
 
-def _verified_claim_report(run: ResearchRun, supported_claims: list) -> str:
+def _verified_claim_report(run: ResearchRun, supported_claims: list, reason: str = "Synthesizer output was unavailable.") -> str:
     """Build a deterministic report from validated claim/evidence links."""
     evidence_ids = {evidence.id for evidence in run.evidence}
     judgement_by_claim = {judgement.claim_id: judgement for judgement in run.judgements}
@@ -170,7 +170,7 @@ def _verified_claim_report(run: ResearchRun, supported_claims: list) -> str:
         "## Verified Findings\n\n"
         + "\n".join(verified_lines)
         + "\n\n## Limitations\n\n"
-        "Synthesizer output was unavailable. Only claims with validated "
+        f"{reason} Only claims with validated "
         "claim-to-evidence links are shown."
     )
 
@@ -511,7 +511,16 @@ def _verify_report_citations(run: ResearchRun) -> None:
         compact_lines.append(line)
     run.final_report = "\n".join(compact_lines)
     if not re.search(r"\[claim:\w+\].*\[evidence:\w+\]", run.final_report):
-        run.final_report = _verified_claim_report(run, supported_claims)
+        reason = "Generated prose did not survive report review or citation validation."
+        run.report_fallback_reason = reason
+        run.report_grounding_status = "accepted_claim_fallback"
+        warning = reason + " Deterministic accepted-claim fallback shown; this is not a fully reviewed synthesis."
+        if warning not in run.warnings:
+            run.warnings.append(warning)
+        run.final_report = _verified_claim_report(run, supported_claims, reason)
+    final_lines = set(run.final_report.splitlines())
+    for decision in run.report_grounding_audit:
+        decision["included_in_final_report"] = bool(decision.get("kept") is True and decision.get("text") in final_lines)
 
 
 def _build_certificate(run: ResearchRun) -> VerificationCertificate:
@@ -554,6 +563,9 @@ def _build_certificate(run: ResearchRun) -> VerificationCertificate:
         evaluation_limitations=[
             "Search coverage depends on Brave Search results and retrievable public pages",
             "Certificate metrics measure internal claim-to-evidence integrity, not external truth",
+            "Model report review is not a hallucination-free guarantee or independent human verification",
+            f"Report review status: {run.report_grounding_status}; accepted-claim fallback may be used when generated prose is withheld",
+            "Audit kept decisions describe model review; included_in_final_report records subsequent citation filtering",
             "Claim counts and verification rates refer to active claims; budget exclusions and prior decisions are recorded separately in claim_selection_audit",
         ],
     )
