@@ -1,6 +1,6 @@
 # DeepDive readiness audit — 2026-10-24
 
-Status: incomplete overall; latest runtime revision `1c0fbb7ebf04701c699cd2c8ce817e7f9f9e1f0b` is deployed as `deepdive:extraction-20261024-r1` (image and revision independently rechecked over SSH). See [release evidence](release-evidence-2026-10-24.md). Phase 1 mobile UI and tested hardening were deployed after the user authorized proceeding with Phase 1 and the goal. No submission performed. This is a fresh audit, not a replacement of historical measured results.
+Status: incomplete overall; latest runtime revision `f6b375f071a3ec6e144a1ca0a754ca9ae6d2effb` is deployed as `deepdive:scoring-20261024-r1` (image and revision independently rechecked over SSH). See [release evidence](release-evidence-2026-10-24.md). Phase 1 mobile UI and tested hardening were deployed after the user authorized proceeding with Phase 1 and the goal. No submission performed. This is a fresh audit, not a replacement of historical measured results.
 
 ## OODA evidence and action
 
@@ -97,6 +97,8 @@ User authorized up to $3 combined Mesh/Brave spend. Single live run `eval2026102
 A new local regression reproduced partially unlinked multi-citation lines surviving when any one pair was approved. The corrected guard requires each claim reference to have an approved cited evidence link and each evidence reference to have an approved cited claim link. A fully linked multi-claim positive case remains allowed. This is link integrity, not semantic entailment. Local backend suite: 128 passed, one existing warning (3.19 seconds before the additional positive assertion). This citation fix is not deployed; do not redeploy while the live evaluation is active.
 
 
-## Source-critic window correction (candidate)
+## Source-critic window correction (deployed)
 
 Seven end-to-end fixture assertions now require the critic to receive the selected immutable window with exact offsets/hash, the original question and a partial-window scope label. Missing/tampered snapshots are excluded from scoring as well as extraction. New prompt version `source-critic-window-v2` separates opening snippet from selected content, relevance from authority and unknown dates from inferred recency. Local suite: 128 passed, one existing warning, 3.06 seconds. This does not prove improved model calibration; live retest is still needed. A second guarded uncertainty case shares the existing reservation ledger rather than resetting the budget.
+
+Candidate subsequently passed 128 tests on Linux and was deployed as f6b375f. See latest release evidence for exact backup and rollback. Completed SQLite baseline is documented separately; uncertainty live evaluation is now active.

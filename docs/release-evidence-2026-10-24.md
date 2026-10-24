@@ -35,3 +35,10 @@ Final report citation-ID checks do not prove every sentence is entailed by its s
 Revision `1c0fbb7ebf04701c699cd2c8ce817e7f9f9e1f0b`, image `deepdive:extraction-20261024-r1`, independently confirmed after promotion. Linux candidate: 120 backend tests passed (2.42 seconds). Seven mocked end-to-end fixtures now include late-page extraction. Frontend unchanged; previous tested build reused. Public readiness passed; 15 saved runs listed. No paid runs started. Backup `/docker/deepdive-extraction-20261024-r1/validation-data/deepdive.db`; rollback `deepdive-rollback-ui-20261024163017`.
 
 Extraction now selects one bounded overlapping window using lexical question matches, with exact snapshot offsets/hashes. This supersedes the first-7,000-character limitation described above but does not prove comprehensive retrieval or semantic relevance. Other live accuracy, billing and submission limits remain open. CI links above refer specifically to revision 9c9180d, not this subsequent revision.
+
+
+## Source-scoring and citation correction release (latest runtime)
+
+Runtime revision `f6b375f071a3ec6e144a1ca0a754ca9ae6d2effb`, image `deepdive:scoring-20261024-r1`, independently read from production after promotion. Linux candidate: 128 backend tests passed, one existing warning, 6.30 seconds. Unchanged frontend reused its previously tested build. Backup contains 16 runs: `/docker/deepdive-scoring-20261024-r1/validation-data/deepdive.db`. Rollback: `deepdive-rollback-ui-20261024164007`. Public database readiness passed.
+
+Critic now receives question, selected content and partial-window offsets/hash; invalid snapshots are excluded. Report citation guard requires every cited claim and evidence reference to have an approved counterpart on the line. Neither change proves sentence entailment or calibrated source reliability. Live uncertainty test `eval20261024exo01` started on this release under the same persistent reservation ledger as the completed SQLite test; results pending at this checkpoint.
