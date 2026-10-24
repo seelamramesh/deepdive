@@ -296,10 +296,18 @@ async def run_research(
 
             # ── SCORE_SOURCES ──────────────────────────────────
             run.transition(RunState.SCORE_SOURCES, "Scoring source quality")
+            selected_by_id = {item["source_id"]: item for item in source_contents}
+            audit_by_id = {item["source_id"]: item for item in retrieval_event["extraction_inputs"]}
             source_data = [
                 {"source_id": s.id, "url": s.url, "title": s.title,
-                 "content_snippet": s.content_snippet}
-                for s in run.sources
+                 "content_snippet": s.content_snippet,
+                 "selected_content": selected_by_id[s.id]["content"],
+                 "content_scope": "partial_snapshot_window",
+                 "snapshot_hash": s.content_hash,
+                 "snapshot_start": audit_by_id[s.id]["snapshot_start"],
+                 "snapshot_end": audit_by_id[s.id]["snapshot_end"],
+                 "snapshot_characters": audit_by_id[s.id]["snapshot_characters"]}
+                for s in run.sources if s.id in selected_by_id
             ]
             if source_data:
                 scores = await run_source_critic(run, source_data)

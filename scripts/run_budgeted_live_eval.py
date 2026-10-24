@@ -4,6 +4,7 @@ Run once on Linux. Reservations intentionally never refunded. This does not
 claim invoice-level cost enforcement; it uses conservative published rates.
 """
 import asyncio
+import argparse
 import fcntl
 import json
 import sys
@@ -19,11 +20,14 @@ from app.storage import database
 
 
 async def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--case", choices=["sqlite", "uncertainty"], default="sqlite")
+    args = parser.parse_args()
     root = Path("/app/data/evaluation-20261024")
     root.mkdir(exist_ok=True)
     with (root / "process.lock").open("w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        marker = root / "started.json"
+        marker = root / ("started.json" if args.case == "sqlite" else "started-uncertainty.json")
         if marker.exists():
             raise RuntimeError("Evaluation already started; inspect existing run before any restart")
         if not settings.brave_search_api_key:
@@ -41,6 +45,9 @@ async def main():
         orchestrator.search_web = search
         question = "How does SQLite WAL mode differ from rollback journaling for reader/writer concurrency, and what limitations remain?"
         run_id = "eval20261024sql01"
+        if args.case == "uncertainty":
+            question = "What does the published evidence about K2-18 b establish about extraterrestrial life, and what remains unconfirmed?"
+            run_id = "eval20261024exo01"
         marker.write_text(json.dumps({"run_id":run_id,"question":question,
             "max_rounds":1,"configuration":"deployed defaults; one research round",
             "cap_usd":3,"reservation_stop_usd":2.5}),encoding="utf-8")
@@ -54,7 +61,7 @@ async def main():
             "missing_usage":sum(c.total_tokens is None for c in run.agent_calls),
             "reserved_usd":str(budget.reserved),"billing_verified":False,
             "warnings":run.warnings,"error":run.error}
-        (root / "result.json").write_text(json.dumps(summary,indent=2),encoding="utf-8")
+        (root / ("result.json" if args.case == "sqlite" else "result-uncertainty.json")).write_text(json.dumps(summary,indent=2),encoding="utf-8")
         print(json.dumps(summary),flush=True)
 
 

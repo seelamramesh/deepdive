@@ -183,8 +183,9 @@ async def run_source_critic(
         result = await mesh.complete(
             agent_name="source_critic",
             system_prompt=prompts.SOURCE_CRITIC_PROMPT,
-            user_prompt=json.dumps({"sources": batch}),
+            user_prompt=json.dumps({"question": run.question, "sources": batch}),
             response_format={"type": "json_object"},
+            prompt_version="source-critic-window-v2",
         )
         batch_ids = {source["source_id"] for source in batch}
         for item in result.get("scores", []):

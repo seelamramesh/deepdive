@@ -65,6 +65,15 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
                 result = {'evidence':[{'source_id':payload['sources'][0]['source_id'],
                                       'subquestion_id':payload['subquestions'][0]['id'], 'passage':passage}]}
             elif system == prompts.SOURCE_CRITIC_PROMPT:
+                assert scenario != 'tampered_snapshot', 'Tampered snapshot must not reach critic'
+                scored = payload['sources'][0]
+                assert passage in scored['selected_content']
+                assert scored['content_scope'] == 'partial_snapshot_window'
+                assert scored['selected_content'] == snapshot[scored['snapshot_start']:scored['snapshot_end']]
+                assert scored['snapshot_hash'] == _hash(snapshot)
+                if scenario == 'late_relevant_snapshot':
+                    assert scored['snapshot_start'] > 0
+                    assert passage not in scored['content_snippet']
                 result = {'scores':[{'source_id':'source','trust_score':0.9,'factors':{'primary_source':True}}]}
             elif system == prompts.CLAIM_DRAFTER_PROMPT:
                 result = {'claims':[{'text':text,'evidence_ids':[payload['evidence'][0]['id']],
