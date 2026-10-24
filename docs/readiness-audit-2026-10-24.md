@@ -81,3 +81,10 @@ The shared “How commands travel” explanation is now explicitly labelled as s
 7. Keep submission on hold until the user explicitly authorizes it after validation. Passing automated organizer checks alone does not prove claim correctness or complete submission.
 
 Goal remains active. Deployment of the named revision is verified. Hackathon readiness, complete feature coverage and submission success are not established.
+
+
+## Subsequent extraction-window change — local, not deployed
+
+The first-slice cutoff was reproduced with a source containing relevant text after character 7,000. A bounded lexical selector now scores overlapping contiguous windows against the original question, prioritizes distinct matching terms, caps repeated-term contributions and uses the earliest window on ties. Short/no-match sources keep their original first-slice behavior. The same immutable source snapshot is used; extraction audit records actual start/end offsets, slice hash and `query_lexical_window_v1`. Character budget remains 7,000 per source; no additional AI calls are introduced.
+
+Fresh local backend result: 120 passed, one existing deprecation warning, 3.09 seconds. A seventh mocked end-to-end fixture proves late-page content reaches the researcher and persisted report with correct source offsets. This includes late-page, tie/no-match, Unicode/short-source and invalid-budget checks plus six existing mocked end-to-end integrations. No paid calls or new live quality measurements. The selector is a heuristic: it can miss synonyms or relevant context outside the chosen window. Production remains revision 9c9180d until a separately validated rollout.

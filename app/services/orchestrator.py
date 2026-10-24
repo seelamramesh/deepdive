@@ -31,7 +31,7 @@ from app.models.schemas import (
     VerificationCertificate,
     _hash,
 )
-from app.services.retrieval import fetch_sources, search_web
+from app.services.retrieval import fetch_sources, search_web, select_extraction_window
 from app.storage.database import save_run as _persist_run
 
 logger = logging.getLogger(__name__)
@@ -256,14 +256,17 @@ async def run_research(
             for source in run.sources:
                 snapshot = source.content_snapshot
                 if snapshot is not None and _hash(snapshot) == source.content_hash:
-                    extraction_text = snapshot[:7000]
+                    extraction_text, extraction_start, extraction_end = select_extraction_window(
+                        snapshot, run.question
+                    )
                     retrieval_event["extraction_inputs"].append({
                         "source_id": source.id, "url": source.url,
                         "characters_sent": len(extraction_text),
                         "analyzed_content_hash": _hash(extraction_text),
                         "source_record_hash": source.content_hash,
                         "snapshot_hash": _hash(snapshot),
-                        "snapshot_start": 0, "snapshot_end": len(extraction_text),
+                        "snapshot_start": extraction_start, "snapshot_end": extraction_end,
+                        "selection_policy": "query_lexical_window_v1",
                         "snapshot_characters": len(snapshot),
                     })
                     source_contents.append({

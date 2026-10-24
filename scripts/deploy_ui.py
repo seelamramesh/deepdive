@@ -76,6 +76,9 @@ def main():
         try:
             labels = []
             for key, value in original["Config"].get("Labels", {}).items():
+                # Keep routing configuration, but let the new image identify itself.
+                if key.startswith("org.opencontainers.image."):
+                    continue
                 labels.extend(["--label", f"{key}={value}"])
             docker("run", "-d", "--name", "deepdive", "--restart", "unless-stopped", *common, "-v", f"{data_dir}:/app/data", *labels, args.image)
             for attempt in range(40):

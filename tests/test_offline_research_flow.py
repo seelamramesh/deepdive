@@ -18,12 +18,14 @@ from app.storage import database
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('scenario', ['supported_and_withheld', 'gap_then_recover', 'malformed_synthesis', 'no_sources', 'tampered_snapshot', 'long_snapshot'])
+@pytest.mark.parametrize('scenario', ['supported_and_withheld', 'gap_then_recover', 'malformed_synthesis', 'no_sources', 'tampered_snapshot', 'long_snapshot', 'late_relevant_snapshot'])
 async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, scenario):
     monkeypatch.setattr(database, 'DB_PATH', str(tmp_path/'runs.db'))
     await database.init_db()
     passage = 'Fixture revenue was 10 million in 2025.'
     snapshot = passage + ('\n' + 'x'*9000 if scenario == 'long_snapshot' else '')
+    if scenario == 'late_relevant_snapshot':
+        snapshot = 'Unrelated navigation. ' * 600 + passage + ' Other content.' * 500
     source = Source(id='source',url='https://fixture.example/revenue',title='Offline fixture',
                     content_hash=_hash(snapshot),content_snippet=snapshot[:500],
                     content_snapshot='Tampered contents' if scenario=='tampered_snapshot' else snapshot)
@@ -54,7 +56,12 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
                 search_count += 1
                 result = {'queries':[{'subquestion_id':payload['subquestions'][0]['id'],'query':f'fixture query {search_count}'}]}
             elif system == prompts.RESEARCHER_PROMPT:
-                assert payload['sources'][0]['content'] == snapshot[:7000]
+                if scenario == 'late_relevant_snapshot':
+                    assert passage not in snapshot[:7000]
+                    assert passage in payload['sources'][0]['content']
+                    assert len(payload['sources'][0]['content']) == 7000
+                else:
+                    assert payload['sources'][0]['content'] == snapshot[:7000]
                 result = {'evidence':[{'source_id':payload['sources'][0]['source_id'],
                                       'subquestion_id':payload['subquestions'][0]['id'], 'passage':passage}]}
             elif system == prompts.SOURCE_CRITIC_PROMPT:
@@ -96,7 +103,7 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
     app = FastAPI()
     app.include_router(routes.router)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),base_url='http://test') as client:
-        response = await client.post('/research',json={'question':f'Offline fixture scenario {scenario}', 'max_rounds':2 if scenario=='gap_then_recover' else 1})
+        response = await client.post('/research',json={'question':('What was fixture revenue in 2025?' if scenario == 'late_relevant_snapshot' else f'Offline fixture scenario {scenario}'), 'max_rounds':2 if scenario=='gap_then_recover' else 1})
         assert response.status_code == 200
         run_id = response.json()['run_id']
         task = routes._running.get(run_id)
@@ -122,7 +129,14 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
             assert saved.sources[0].content_snapshot == snapshot
             extraction = workspace['retrieval_audit'][0]['extraction_inputs'][0]
             assert extraction['snapshot_hash'] == _hash(snapshot)
-            assert extraction['analyzed_content_hash'] == _hash(snapshot[:7000])
+            start, end = extraction['snapshot_start'], extraction['snapshot_end']
+            assert extraction['analyzed_content_hash'] == _hash(snapshot[start:end])
+            assert extraction['selection_policy'] == 'query_lexical_window_v1'
+            if scenario == 'late_relevant_snapshot':
+                assert start > 0
+                assert passage in snapshot[start:end]
+            else:
+                assert start == 0
         assert source_fetches == (0 if scenario=='no_sources' else 1)
         if scenario == 'tampered_snapshot':
             assert any('hash mismatch' in warning for warning in workspace['warnings'])

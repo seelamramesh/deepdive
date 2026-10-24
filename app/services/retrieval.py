@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import hashlib
+import re
+from collections import Counter
 from typing import Optional
 from urllib.parse import urljoin
 
@@ -143,3 +145,29 @@ async def fetch_sources(urls: list[str]) -> list[Source]:
         sources.append(source)
 
     return sources
+
+
+def select_extraction_window(snapshot: str, question: str, limit: int = 7000) -> tuple[str, int, int]:
+    """Choose one bounded, contiguous source slice using lexical query coverage.
+
+    This is a retrieval heuristic, not evidence verification. Ties retain the
+    earliest window; no matching terms retain the historical first slice.
+    """
+    if limit <= 0:
+        raise ValueError("Extraction limit must be positive")
+    if len(snapshot) <= limit:
+        return snapshot, 0, len(snapshot)
+    stopwords = {"what", "which", "when", "where", "with", "from", "that", "this",
+                 "have", "does", "about", "will", "could", "would", "should", "into"}
+    terms = set(re.findall(r"[^\W_]{3,}", question.casefold())) - stopwords
+    matches = [(match.start(), match.group().casefold())
+               for match in re.finditer(r"[^\W_]{3,}", snapshot)
+               if match.group().casefold() in terms]
+    starts = set(range(0, len(snapshot) - limit + 1, max(1, limit // 2)))
+    starts.add(len(snapshot) - limit)
+    def score(start):
+        counts = Counter(term for position, term in matches if start <= position < start + limit)
+        return len(counts), sum(min(count, 3) for count in counts.values()), -start
+    start = max(starts, key=score)
+    end = min(start + limit, len(snapshot))
+    return snapshot[start:end], start, end
