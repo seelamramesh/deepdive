@@ -99,6 +99,7 @@ class MeshGateway:
         kwargs["max_tokens"] = settings.mesh_max_output_tokens
         last_error: ValueError | None = None
         for _ in range(max(settings.mesh_json_attempts, 1)):
+            attempt_user_prompt = "\n".join(message["content"] for message in kwargs["messages"][1:])
             start = time.monotonic()
             client = self.client  # Configuration errors are not sent requests.
             try:
@@ -108,7 +109,7 @@ class MeshGateway:
                     agent=agent_name,
                     model=model,
                     prompt_version=prompt_version,
-                    input_hash=_hash(system_prompt + user_prompt),
+                    input_hash=_hash(system_prompt + attempt_user_prompt),
                     duration_ms=int((time.monotonic() - start) * 1000),
                     success=False,
                     error=type(exc).__name__,
@@ -144,7 +145,7 @@ class MeshGateway:
                     agent=agent_name,
                     model=model,
                     prompt_version=prompt_version,
-                    input_hash=_hash(system_prompt + user_prompt),
+                    input_hash=_hash(system_prompt + attempt_user_prompt),
                     output_hash=_hash(content),
                     duration_ms=duration_ms,
                     success=False,
@@ -153,12 +154,20 @@ class MeshGateway:
                     response_preview=content[:300],
                     **token_usage,
                 ))
+                if finish_reason == "length":
+                    kwargs["messages"] = [*messages, {
+                        "role": "user", "content":
+                        "The previous response was truncated at the output limit. "
+                        "Return a compact complete JSON object only, without code fences "
+                        "or commentary. Keep required fields and evidence IDs; shorten "
+                        "explanations and avoid repetition. Do not add facts or alter evidence."
+                    }]
                 continue
             self._record_call(AgentCall(
                 agent=agent_name,
                 model=model,
                 prompt_version=prompt_version,
-                input_hash=_hash(system_prompt + user_prompt),
+                input_hash=_hash(system_prompt + attempt_user_prompt),
                 output_hash=_hash(content),
                 duration_ms=duration_ms,
                 finish_reason=finish_reason,

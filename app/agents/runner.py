@@ -581,5 +581,6 @@ async def run_synthesizer(
             "subquestions": sq_data,
         }),
         response_format={"type": "json_object"},
+        prompt_version="synthesizer-compact-v2",
     )
     return result.get("report", "")

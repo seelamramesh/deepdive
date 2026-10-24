@@ -66,6 +66,7 @@ async def test_gateway_retries_invalid_json_and_records_attempts(monkeypatch):
     assert result == {"arguments": []}
     assert [call.success for call in calls] == [False, True]
     assert calls[0].finish_reason == "length"
+    assert calls[0].input_hash != calls[1].input_hash
 
 
 @pytest.mark.asyncio

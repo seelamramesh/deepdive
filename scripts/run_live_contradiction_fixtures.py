@@ -1,5 +1,6 @@
 """Synthetic component test with real Mesh, shared conservative budget."""
 import asyncio
+import argparse
 import fcntl
 import json
 import sys
@@ -13,10 +14,14 @@ from app.models.schemas import AtomicClaim, Evidence, ResearchRun
 
 
 async def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--label", choices=["baseline", "id-contract-v3"], default="baseline")
+    args = parser.parse_args()
+    suffix = "" if args.label == "baseline" else "-" + args.label
     root = Path("/app/data/evaluation-20261024")
     with (root / "process.lock").open("w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        marker = root / "contradiction-fixtures-started.json"
+        marker = root / ("contradiction-fixtures-started" + suffix + ".json")
         if marker.exists():
             raise RuntimeError("Already started; inspect existing results")
         budget = EvaluationBudget(root / "budget.json")
@@ -38,7 +43,7 @@ async def main():
             results.append({"case":case,"detected":[c.model_dump() for c in detected],
                 "matches_expected":bool(detected)==case["expected_contradiction"],
                 "audit":run.contradiction_audit,"calls":[c.model_dump() for c in calls]})
-            (root / "contradiction-fixture-results.json").write_text(json.dumps({
+            (root / ("contradiction-fixture-results" + suffix + ".json")).write_text(json.dumps({
                 "synthetic":True,"results":results,"reserved_usd":str(budget.reserved),
                 "billing_verified":False},indent=2),encoding="utf-8")
             print(json.dumps({"case":case["id"],"matches_expected":results[-1]["matches_expected"],

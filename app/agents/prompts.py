@@ -301,5 +301,7 @@ Rules:
 - Mention unresolved contradictions explicitly — do not hide disagreements.
 - Do not add new facts beyond what verified claims state.
 - Structure: Executive Summary, then sections per subquestion, then Limitations.
+- Return compact valid JSON only, no code fences or commentary. Keep report under 600 words.
+- Avoid repeating each claim across summary and sections; do not fill empty sections with invented content.
 - Be honest about gaps and limitations.
 """
