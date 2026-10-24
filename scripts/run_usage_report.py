@@ -12,7 +12,7 @@ from urllib.request import urlopen
 
 def summarize(run: dict) -> dict:
     calls = run.get('agent_calls', [])
-    fields = ('prompt_tokens', 'completion_tokens', 'total_tokens')
+    fields = ('prompt_tokens', 'completion_tokens', 'total_tokens', 'cached_prompt_tokens')
 
     def usage(items):
         result = {}
@@ -38,6 +38,9 @@ def summarize(run: dict) -> dict:
         'run_id': run['id'], 'question': run['question'], 'state': run['current_state'],
         'observed_at': datetime.now(timezone.utc).isoformat(),
         'recorded_response_attempts': len(calls),
+        'local_exact_cache_hits': sum(call.get('cache_hit') is True for call in calls),
+        'confirmed_sent_requests': sum(call.get('request_sent') is True for call in calls),
+        'request_sent_unknown': sum(call.get('request_sent') is None for call in calls),
         'recorded_unsuccessful_responses': sum(call.get('success') is False for call in calls),
         'usage': usage(calls),
         'by_agent_model': [{'agent': agent, 'model': model, 'recorded_response_attempts': len(items),

@@ -97,3 +97,9 @@ it('explains duplicate material skip without claiming source independence', () =
   expect(screen.getByRole('status')).toHaveTextContent('probable duplicate publication material');
   expect(screen.getByRole('status')).toHaveTextContent('Different URLs do not provide independent corroboration');
 });
+
+it('labels local exact cache reuse without claiming a new provider request', () => {
+  render(<AuditPanel run={{...run,agent_calls:[{id:'cached',agent:'judge',model:'Mesh/model',duration_ms:0,success:true,total_tokens:0,cache_hit:true,request_sent:false}]}}/>);
+  expect(screen.getByText(/1 local exact-cache reuses/)).toBeInTheDocument();
+  expect(screen.getAllByText('cached').length).toBeGreaterThan(0);
+});

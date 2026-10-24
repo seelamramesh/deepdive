@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import copy
+import hashlib
 import asyncio
 import re
 import time
@@ -41,6 +43,13 @@ class MeshGateway:
     def __init__(self) -> None:
         self._client: AsyncOpenAI | None = None
         self._calls: ContextVar[tuple[AgentCall, ...]] = ContextVar("mesh_calls", default=())
+        self._cache = ContextVar("mesh_run_cache", default=None)
+
+    def begin_cache_scope(self):
+        return self._cache.set({} if settings.mesh_run_cache else None)
+
+    def end_cache_scope(self, token):
+        self._cache.reset(token)
 
     def _record_call(self, call: AgentCall) -> None:
         self._calls.set(self._calls.get() + (call,))
@@ -101,6 +110,20 @@ class MeshGateway:
         for _ in range(max(settings.mesh_json_attempts, 1)):
             attempt_user_prompt = "\n".join(message["content"] for message in kwargs["messages"][1:])
             start = time.monotonic()
+            cache = self._cache.get() if temperature == 0 else None
+            cache_key = hashlib.sha256(json.dumps({"endpoint": settings.mesh_base_url,
+                "agent": agent_name, "prompt_version": prompt_version, "request": kwargs},
+                sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
+            if cache is not None and cache_key in cache and start-cache[cache_key]["created_at"] > 300:
+                del cache[cache_key]
+            if cache is not None and cache_key in cache:
+                cached = cache[cache_key]
+                self._record_call(AgentCall(agent=agent_name, model=model, prompt_version=prompt_version,
+                    input_hash=_hash(system_prompt + attempt_user_prompt), output_hash=cached["output_hash"],
+                    cache_hit=True, request_sent=False, cache_source_call_id=cached["call_id"],
+                    usage_source="local_cache_incremental", prompt_tokens=0, completion_tokens=0, total_tokens=0,
+                    finish_reason="local_exact_cache"))
+                return copy.deepcopy(cached["parsed"])
             client = self.client  # Configuration errors are not sent requests.
             try:
                 response = await client.chat.completions.create(**kwargs)
@@ -111,7 +134,7 @@ class MeshGateway:
                     prompt_version=prompt_version,
                     input_hash=_hash(system_prompt + attempt_user_prompt),
                     duration_ms=int((time.monotonic() - start) * 1000),
-                    success=False,
+                    success=False, request_sent=True, usage_source="unknown",
                     error=type(exc).__name__,
                 ))
                 # No response metadata means usage and charge remain unknown.
@@ -126,6 +149,13 @@ class MeshGateway:
                 field: value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else None
                 for field, value in token_usage.items()
             }
+            details = getattr(usage,"prompt_tokens_details",None) if usage else None
+            cached_tokens = details.get("cached_tokens") if isinstance(details,dict) else getattr(details,"cached_tokens",None)
+            request_id = getattr(response,"_request_id",None)
+            token_usage["provider_request_id"] = request_id if isinstance(request_id,str) else ""
+            token_usage["cached_prompt_tokens"] = cached_tokens if (
+                type(cached_tokens) is int and cached_tokens >= 0
+                and (token_usage["prompt_tokens"] is None or cached_tokens <= token_usage["prompt_tokens"])) else None
             content = ""
             finish_reason = ""
             try:
@@ -148,7 +178,7 @@ class MeshGateway:
                     input_hash=_hash(system_prompt + attempt_user_prompt),
                     output_hash=_hash(content),
                     duration_ms=duration_ms,
-                    success=False,
+                    success=False, request_sent=True, usage_source="provider_response",
                     finish_reason=finish_reason,
                     error=str(exc),
                     response_preview=content[:300],
@@ -163,7 +193,7 @@ class MeshGateway:
                         "explanations and avoid repetition. Do not add facts or alter evidence."
                     }]
                 continue
-            self._record_call(AgentCall(
+            call = AgentCall(
                 agent=agent_name,
                 model=model,
                 prompt_version=prompt_version,
@@ -171,9 +201,20 @@ class MeshGateway:
                 output_hash=_hash(content),
                 duration_ms=duration_ms,
                 finish_reason=finish_reason,
-                response_preview=content[:300],
+                response_preview=content[:300], request_sent=True, usage_source="provider_response",
                 **token_usage,
-            ))
+            )
+            self._record_call(call)
+            contracts = {"planner":"subquestions", "search_strategist":"queries", "researcher":"evidence",
+                "source_critic":"scores", "claim_drafter":"claims", "prosecutor":"arguments",
+                "defense":"defenses", "judge":"verdicts", "contradiction_analyst":"contradictions",
+                "coverage_analyst":"coverage", "synthesizer":"report", "report_verifier":"decisions"}
+            required = parsed.get(contracts.get(agent_name,""))
+            cacheable = (isinstance(required,str) and bool(required.strip())) or (
+                isinstance(required,list) and bool(required) and all(isinstance(item,dict) for item in required))
+            if cache is not None and len(cache) < 128 and cacheable:
+                cache[cache_key] = {"parsed": copy.deepcopy(parsed), "call_id": call.id,
+                                    "output_hash": call.output_hash, "created_at": time.monotonic()}
             return parsed
 
         raise ValueError(

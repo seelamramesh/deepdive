@@ -199,6 +199,12 @@ class AgentCall(BaseModel):
     finish_reason: str = ""
     error: str = ""
     response_preview: str = ""
+    cache_hit: bool = False
+    request_sent: Optional[bool] = None
+    cache_source_call_id: str = ""
+    cached_prompt_tokens: Optional[int] = None
+    usage_source: str = "unknown"
+    provider_request_id: str = ""
     prompt_tokens: Optional[int] = None
     completion_tokens: Optional[int] = None
     total_tokens: Optional[int] = None

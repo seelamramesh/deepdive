@@ -25,7 +25,25 @@ def test_mesh_budget_rejects_unpriced_or_unbounded_requests(tmp_path):
     assert len(budget.entries) == 1
 
 
-@pytest.mark.parametrize("amount", ["NaN", "Infinity", "-1", "0", "3.01"])
+@pytest.mark.parametrize("amount", ["NaN", "Infinity", "-1", "0", "4.01"])
 def test_budget_rejects_invalid_caps(tmp_path, amount):
     with pytest.raises(ValueError):
         EvaluationBudget(tmp_path / "budget.json", amount)
+
+
+def test_explicit_cap_increase_preserves_reservations_and_history(tmp_path):
+    path=tmp_path/'budget.json'
+    budget=EvaluationBudget(path)
+    budget.reserve_search()
+    prior=list(budget.entries)
+    budget.increase_cap('3.50','4')
+    reopened=EvaluationBudget(path)
+    assert reopened.entries==prior
+    assert str(reopened.reserved)=='0.01'
+    assert str(reopened.cap)=='3.50'
+    reopened.reserve_search()
+    final=EvaluationBudget(path)
+    assert len(final.metadata['cap_changes'])==1
+    assert final.metadata['authorized_total_usd']=='4'
+    assert len(final.entries)==2
+    with pytest.raises(ValueError): final.increase_cap('4.50','5')

@@ -197,6 +197,7 @@ async def run_research(
     # Collected source contents for the researcher agent
     source_contents: list[dict[str, str]] = []
 
+    cache_token = mesh.begin_cache_scope()
     try:
         # ── PLAN ───────────────────────────────────────────────
         run.transition(RunState.PLAN, "Starting research planning")
@@ -459,6 +460,8 @@ async def run_research(
         run.transition(RunState.FAILED, str(e))
         run.agent_calls.extend(mesh.drain_calls())
         await save_run(run)
+    finally:
+        mesh.end_cache_scope(cache_token)
 
     return run
 

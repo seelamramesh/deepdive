@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     mesh_model: str = Field(default="anthropic/claude-haiku-5.5", alias="MESH_MODEL")
     mesh_max_output_tokens: int = Field(default=4096, ge=256, le=16384, alias="MESH_MAX_OUTPUT_TOKENS")
     mesh_json_attempts: int = Field(default=2, ge=1, le=3, alias="MESH_JSON_ATTEMPTS")
+    mesh_run_cache: bool = Field(default=True, alias="MESH_RUN_CACHE")
     brave_search_api_key: str = Field(default="", alias="BRAVE_SEARCH_API_KEY")
 
     app_host: str = "0.0.0.0"

@@ -19,8 +19,10 @@ from app.storage import database
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('cache_enabled', [False, True])
 @pytest.mark.parametrize('scenario', ['supported_and_withheld', 'gap_then_recover', 'malformed_synthesis', 'no_sources', 'tampered_snapshot', 'long_snapshot', 'late_relevant_snapshot'])
-async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, scenario):
+async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, scenario, cache_enabled):
+    monkeypatch.setattr('app.core.mesh_gateway.settings.mesh_run_cache', cache_enabled)
     monkeypatch.setattr(database, 'DB_PATH', str(tmp_path/'runs.db'))
     await database.init_db()
     passage = 'Fixture revenue was 10 million in 2025.'
@@ -135,7 +137,8 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
         assert workspace['current_state'] == 'END', workspace.get('error')
         assert workspace['final_report'].strip()
         assert workspace['agent_calls']
-        assert all(call['total_tokens'] == 12 for call in workspace['agent_calls'])
+        assert all(call['total_tokens'] == (0 if call.get('cache_hit') else 12) for call in workspace['agent_calls'])
+        assert all(call.get('request_sent') is False for call in workspace['agent_calls'] if call.get('cache_hit'))
         assert all('response_preview' not in call for call in workspace['agent_calls'])
         saved = await database.load_run(run_id)
         assert len(saved.agent_calls) == len(workspace['agent_calls'])
@@ -164,6 +167,7 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
             assert any('hash mismatch' in warning for warning in workspace['warnings'])
         if scenario == 'gap_then_recover':
             assert workspace['research_round'] == 2
+            assert any(call.get('cache_hit') for call in workspace['agent_calls']) is cache_enabled
             first_window = workspace['retrieval_audit'][0]['extraction_inputs'][0]
             later_window = workspace['retrieval_audit'][1]['extraction_inputs'][0]
             assert first_window['snapshot_start'] == 0
