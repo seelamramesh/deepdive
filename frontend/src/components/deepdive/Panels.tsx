@@ -82,6 +82,7 @@ export function ContradictionsPanel({run, onCourtroom}: {run: Workspace; onCourt
   const count = (key: string) => typeof audit?.[key] === 'number' ? String(audit[key]) : 'Not recorded';
   const status = audit?.['status'];
   const reason = status === 'skipped_single_source' ? 'Cross-source detection skipped: current claims cite fewer than two distinct sources. No detector call was needed for this round.'
+    : status === 'skipped_same_material' ? 'Cross-source detection skipped: source records identify matching or probable duplicate publication material. Different URLs do not provide independent corroboration.'
     : status === 'limited_comparison' ? `Comparison limited by configured call budget. ${count('uncompared_candidate_pairs')} candidate pairs remain unchecked.`
     : status === 'failed' ? 'Detection failed during a comparison. Earlier retained disagreements may still be shown; inspect the audit trail.'
     : status === 'completed_comparison' ? 'Scheduled candidate pairs were compared. This does not prove all retrieved sources agree or that every disagreement was detected.'

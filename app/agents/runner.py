@@ -10,6 +10,7 @@ from app.agents import prompts
 from app.core.config import settings
 from app.core.mesh_gateway import mesh
 from app.services.coverage import derive_coverage, verified_claims_with_sources
+from app.services.provenance import material_groups
 from app.models.schemas import (
     AtomicClaim,
     ClaimJudgement,
@@ -185,7 +186,7 @@ async def run_source_critic(
             system_prompt=prompts.SOURCE_CRITIC_PROMPT,
             user_prompt=json.dumps({"question": run.question, "sources": batch}),
             response_format={"type": "json_object"},
-            prompt_version="source-critic-window-v2",
+            prompt_version="source-critic-provenance-v3",
         )
         batch_ids = {source["source_id"] for source in batch}
         for item in result.get("scores", []):
@@ -195,9 +196,21 @@ async def run_source_critic(
                 trust_score = max(0.0, min(1.0, float(item.get("trust_score", 0.5))))
             except (TypeError, ValueError):
                 trust_score = 0.0
+            factors = item.get("factors", {})
+            factors = dict(factors) if isinstance(factors, dict) else {}
+            supplied_source = next(source for source in batch if source["source_id"] == item["source_id"])
+            if not supplied_source.get("publication_date"):
+                factors["publication_recency"] = "unknown"
+            group = supplied_source.get("material_group")
+            if group and sum(source.get("material_group") == group for source in sources) > 1:
+                factors["reported_independence"] = factors.get("independence")
+                factors["reported_corroborated"] = factors.get("corroborated")
+                factors["independence"] = False
+                factors["corroborated"] = False
+                factors["material_group_note"] = "Matching or probable duplicate material does not establish independent corroboration"
             scores[item["source_id"]] = {
                 "trust_score": trust_score,
-                "factors": item.get("factors", {}),
+                "factors": factors,
                 "limitations": item.get("limitations", ""),
             }
     return scores
@@ -435,16 +448,20 @@ async def run_contradiction_analyst(
     claims_by_id = {claim.id: claim for claim in claims}
     linked = {claim.id: {evidence_by_id[eid].source_id for eid in claim.evidence_ids
                         if eid in evidence_by_id and evidence_by_id[eid].source_id} for claim in claims}
+    groups = material_groups(run.sources)
     remaining = [(a.id, b.id) for a, b in combinations(claims, 2)
-                 if any(sa != sb for sa in linked[a.id] for sb in linked[b.id])]
+                 if any(groups.get(sa,sa) != groups.get(sb,sb) for sa in linked[a.id] for sb in linked[b.id])]
     audit = {"round": run.research_round, "status": "running",
              "claim_linked_source_count": len(set().union(*linked.values())) if linked else 0,
              "eligible_cross_source_pairs": len(remaining), "compared_candidate_pairs": 0,
              "uncompared_candidate_pairs": len(remaining), "rejected_candidates": 0, "batches": []}
+    audit["claim_linked_material_count"] = len({groups.get(sid,sid) for ids in linked.values() for sid in ids})
+    audit["independence_note"] = "Distinct groups do not prove independence; shared identifiers/snapshots and probable matching journal/preprint titles are grouped."
     run.contradiction_audit.append(audit)
     contradictions = list(run.contradictions)
     if not remaining:
-        audit["status"] = "skipped_single_source" if audit["claim_linked_source_count"] < 2 else "no_cross_source_pairs"
+        audit["status"] = ("skipped_single_source" if audit["claim_linked_source_count"] < 2 else
+                           "skipped_same_material" if audit["claim_linked_material_count"] < 2 else "no_cross_source_pairs")
         return contradictions
 
     for _ in range(settings.max_contradiction_batches):
@@ -474,7 +491,7 @@ async def run_contradiction_analyst(
                                   "source_id": evidence_by_id[eid].source_id} for eid in sorted(evidence_ids)],
                 }),
                 response_format={"type": "json_object"},
-                prompt_version="contradiction-evidence-ids-v3",
+                prompt_version="contradiction-material-groups-v4",
             )
         except Exception:
             batch_audit["status"] = "failed"
@@ -488,7 +505,7 @@ async def run_contradiction_analyst(
             batch_audit["returned_candidates"] += 1
             a = [eid for eid in item.get("evidence_a", []) if isinstance(eid, str) and eid in evidence_ids]
             b = [eid for eid in item.get("evidence_b", []) if isinstance(eid, str) and eid in evidence_ids]
-            if (not a or not b or not any(evidence_by_id[x].source_id != evidence_by_id[y].source_id for x in a for y in b)
+            if (not a or not b or not any(groups.get(evidence_by_id[x].source_id,evidence_by_id[x].source_id) != groups.get(evidence_by_id[y].source_id,evidence_by_id[y].source_id) for x in a for y in b)
                     or not item.get("claim_a") or not item.get("claim_b")):
                 audit["rejected_candidates"] += 1
                 continue
@@ -542,6 +559,8 @@ async def run_coverage_analyst(
             "subquestions": sq_data,
             "evidence": ev_data,
             "verified_claims": [claim.model_dump() for claim in verified_claims],
+            "source_material_groups": material_groups(run.sources),
+            "independence_note": "Different URLs or material groups do not establish independent studies.",
             "judgement_count": len(judgements),
             "contradiction_count": len(contradictions),
         }),

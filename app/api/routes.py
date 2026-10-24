@@ -54,7 +54,10 @@ async def get_workspace(run_id: str):
     run = await load_run(run_id)
     if not run:
         raise HTTPException(404, "Run not found")
+    from app.services.provenance import material_groups
     data = run.model_dump(mode="json")
+    data["source_material_groups"] = material_groups(run.sources)
+    data["source_independence_note"] = "Shared publication identifiers, matching snapshots or probable identical journal/preprint titles are grouped. Title matches are heuristic; distinct groups do not prove independence."
     data["warnings"] = [
         "Partial recovery: a later research agent returned malformed output. This report uses the last verified checkpoint; findings remain partial."
         if warning.startswith("Later research stage failed; report uses last verified checkpoint")

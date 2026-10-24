@@ -84,3 +84,17 @@ def test_workspace_exposes_review_status_and_final_inclusion_without_backfill(mo
     historical=api().get(f"/runs/{run.id}/workspace").json()
     assert historical["report_grounding_audit"]==[]
     assert historical["report_grounding_status"]=="not_available"
+
+
+def test_workspace_discloses_shared_material_without_rewriting_sources(monkeypatch):
+    from app.models.schemas import Source
+    run=ResearchRun(question='Source provenance',sources=[
+        Source(id='a',url='https://a.example',work_identifiers=['doi:10.1234/shared']),
+        Source(id='b',url='https://b.example',work_identifiers=['doi:10.1234/shared'])])
+    async def load(_): return run
+    monkeypatch.setattr(routes,'load_run',load)
+    data=api().get(f'/runs/{run.id}/workspace').json()
+    assert data['source_material_groups']['a']==data['source_material_groups']['b']
+    assert 'do not prove independence' in data['source_independence_note']
+    assert len(data['sources'])==2
+    assert all(s['publication_date'] is None for s in data['sources'])

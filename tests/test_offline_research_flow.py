@@ -27,12 +27,16 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
     snapshot = passage + ('\n' + 'x'*9000 if scenario == 'long_snapshot' else '')
     if scenario == 'late_relevant_snapshot':
         snapshot = 'Unrelated navigation. ' * 600 + passage + ' Other content.' * 500
+    late_gap = 'Fixture revenue has a publication date.'
+    if scenario == 'gap_then_recover':
+        snapshot = passage + '\n' + 'x'*9000 + '\n' + late_gap
     source = Source(id='source',url='https://fixture.example/revenue',title='Offline fixture',
                     content_hash=_hash(snapshot),content_snippet=snapshot[:500],
                     content_snapshot='Tampered contents' if scenario=='tampered_snapshot' else snapshot)
     search_count = 0
     coverage_count = 0
     source_fetches = 0
+    researcher_count = 0
 
     async def search(query):
         return [] if scenario == 'no_sources' else [source.url]
@@ -47,7 +51,7 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
 
     class Completions:
         async def create(self, **kwargs):
-            nonlocal search_count, coverage_count
+            nonlocal search_count, coverage_count, researcher_count
             system = kwargs['messages'][0]['content']
             raw = kwargs['messages'][1]['content']
             payload = {} if system == prompts.PLANNER_PROMPT else json.loads(raw)
@@ -57,7 +61,11 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
                 search_count += 1
                 result = {'queries':[{'subquestion_id':payload['subquestions'][0]['id'],'query':f'fixture query {search_count}'}]}
             elif system == prompts.RESEARCHER_PROMPT:
-                if scenario == 'late_relevant_snapshot':
+                researcher_count += 1
+                if scenario == 'gap_then_recover' and researcher_count == 2:
+                    assert late_gap in payload['sources'][0]['content']
+                    assert payload['sources'][0]['content'] != snapshot[:7000]
+                elif scenario == 'late_relevant_snapshot':
                     assert passage not in snapshot[:7000]
                     assert passage in payload['sources'][0]['content']
                     assert len(payload['sources'][0]['content']) == 7000
@@ -65,10 +73,12 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
                     assert payload['sources'][0]['content'] == snapshot[:7000]
                 result = {'evidence':[{'source_id':payload['sources'][0]['source_id'],
                                       'subquestion_id':payload['subquestions'][0]['id'], 'passage':passage}]}
+                if scenario == 'gap_then_recover' and researcher_count == 2:
+                    result = {'evidence':[]}
             elif system == prompts.SOURCE_CRITIC_PROMPT:
                 assert scenario != 'tampered_snapshot', 'Tampered snapshot must not reach critic'
                 scored = payload['sources'][0]
-                assert passage in scored['selected_content']
+                assert (late_gap if scenario == 'gap_then_recover' and researcher_count == 2 else passage) in scored['selected_content']
                 assert scored['content_scope'] == 'partial_snapshot_window'
                 assert scored['selected_content'] == snapshot[scored['snapshot_start']:scored['snapshot_end']]
                 assert scored['snapshot_hash'] == _hash(snapshot)
@@ -143,7 +153,7 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
             assert extraction['snapshot_hash'] == _hash(snapshot)
             start, end = extraction['snapshot_start'], extraction['snapshot_end']
             assert extraction['analyzed_content_hash'] == _hash(snapshot[start:end])
-            assert extraction['selection_policy'] == 'query_lexical_window_v1'
+            assert extraction['selection_policy'] == 'gap_lexical_window_v2'
             if scenario == 'late_relevant_snapshot':
                 assert start > 0
                 assert passage in snapshot[start:end]
@@ -154,6 +164,13 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
             assert any('hash mismatch' in warning for warning in workspace['warnings'])
         if scenario == 'gap_then_recover':
             assert workspace['research_round'] == 2
+            first_window = workspace['retrieval_audit'][0]['extraction_inputs'][0]
+            later_window = workspace['retrieval_audit'][1]['extraction_inputs'][0]
+            assert first_window['snapshot_start'] == 0
+            assert later_window['snapshot_start'] > 0
+            assert later_window['characters_sent'] <= 7000
+            assert later_window['selection_query'] != first_window['selection_query']
+            assert later_window['previous_windows']
             assert any(t['to_state']=='RESEARCH_GAPS' for t in workspace['state_transitions'])
         if scenario == 'malformed_synthesis':
             assert workspace['warnings']

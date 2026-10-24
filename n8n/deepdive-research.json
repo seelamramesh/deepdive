@@ -23,7 +23,7 @@
           },
           "conditions": [
             {
-              "leftValue": "={{ $json.body.question }}",
+              "leftValue": "={{ typeof $json.body?.question === 'string' ? $json.body.question : '' }}",
               "rightValue": "",
               "operator": {
                 "type": "string",
@@ -31,7 +31,7 @@
               }
             },
             {
-              "leftValue": "={{ ($json.body.question || '').trim().length }}",
+              "leftValue": "={{ typeof $json.body?.question === 'string' ? $json.body.question.trim().length : 0 }}",
               "rightValue": 10,
               "operator": {
                 "type": "number",
@@ -39,7 +39,7 @@
               }
             },
             {
-              "leftValue": "={{ ($json.body.question || '').length }}",
+              "leftValue": "={{ typeof $json.body?.question === 'string' ? $json.body.question.length : 2001 }}",
               "rightValue": 2000,
               "operator": {
                 "type": "number",

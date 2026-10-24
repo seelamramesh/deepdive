@@ -91,3 +91,9 @@ it('labels partial fallback and model limitations in the report view', () => {
   expect(screen.getByRole('alert')).toHaveTextContent('Partial accepted-claim fallback');
   expect(screen.getByText(/not a hallucination-free guarantee or independent human verification/)).toBeInTheDocument();
 });
+
+it('explains duplicate material skip without claiming source independence', () => {
+  render(<ContradictionsPanel run={{...run,contradiction_audit:[{status:'skipped_same_material'}]}} onCourtroom={vi.fn()}/>);
+  expect(screen.getByRole('status')).toHaveTextContent('probable duplicate publication material');
+  expect(screen.getByRole('status')).toHaveTextContent('Different URLs do not provide independent corroboration');
+});

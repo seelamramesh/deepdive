@@ -31,8 +31,9 @@ from app.models.schemas import (
     VerificationCertificate,
     _hash,
 )
-from app.services.retrieval import fetch_sources, search_web, select_extraction_window
+from app.services.retrieval import fetch_sources, search_web, select_extraction_window, drain_fetch_events
 from app.services.report_grounding import review_report
+from app.services.provenance import material_groups
 from app.storage.database import save_run as _persist_run
 
 logger = logging.getLogger(__name__)
@@ -238,6 +239,7 @@ async def run_research(
             retrieval_event["reused_source_ids"] = [source.id for source in run.sources]
             retrieval_event["fetched_sources"] = []
 
+            drain_fetch_events()
             if urls_to_fetch:
                 new_sources = await fetch_sources(urls_to_fetch)
                 retrieval_event["fetched_sources"] = [
@@ -251,14 +253,23 @@ async def run_research(
                         run.sources.append(s)
                         existing_urls.add(s.url)
 
+            retrieval_event["fetch_outcomes"] = drain_fetch_events()
             # Source identity, metadata and extraction share one immutable snapshot.
             source_contents = []
             retrieval_event["extraction_inputs"] = []
             for source in run.sources:
                 snapshot = source.content_snapshot
                 if snapshot is not None and _hash(snapshot) == source.content_hash:
+                    weak_ids = {entry.subquestion_id for entry in run.coverage
+                                if entry.status in (CoverageStatus.RED, CoverageStatus.YELLOW)}
+                    gap_questions = [sq.text + " " + sq.completion_criteria for sq in run.subquestions if sq.id in weak_ids]
+                    selection_query = " ".join(gap_questions) if run.research_round > 1 and gap_questions else run.question
+                    previous_windows = [(item["snapshot_start"], item["snapshot_end"])
+                        for event in run.retrieval_audit[:-1] for item in event.get("extraction_inputs", [])
+                        if item.get("source_id") == source.id and item.get("snapshot_hash") == source.content_hash
+                        and "snapshot_start" in item and "snapshot_end" in item]
                     extraction_text, extraction_start, extraction_end = select_extraction_window(
-                        snapshot, run.question
+                        snapshot, selection_query, previous_windows=previous_windows if gap_questions else None
                     )
                     retrieval_event["extraction_inputs"].append({
                         "source_id": source.id, "url": source.url,
@@ -267,7 +278,9 @@ async def run_research(
                         "source_record_hash": source.content_hash,
                         "snapshot_hash": _hash(snapshot),
                         "snapshot_start": extraction_start, "snapshot_end": extraction_end,
-                        "selection_policy": "query_lexical_window_v1",
+                        "selection_policy": "gap_lexical_window_v2",
+                        "selection_query": selection_query,
+                        "previous_windows": previous_windows,
                         "snapshot_characters": len(snapshot),
                     })
                     source_contents.append({
@@ -302,6 +315,8 @@ async def run_research(
             source_data = [
                 {"source_id": s.id, "url": s.url, "title": s.title,
                  "content_snippet": s.content_snippet,
+                 "publication_date": s.publication_date,
+                 "material_group": material_groups(run.sources)[s.id],
                  "selected_content": selected_by_id[s.id]["content"],
                  "content_scope": "partial_snapshot_window",
                  "snapshot_hash": s.content_hash,
@@ -316,6 +331,7 @@ async def run_research(
                     if source.id in scores:
                         source.trust_score = scores[source.id]["trust_score"]
                         source.trust_factors = scores[source.id]["factors"]
+                        source.trust_limitations = str(scores[source.id].get("limitations") or "")
             await save_run(run)
 
             # ── DRAFT_ATOMIC_CLAIMS ────────────────────────────
@@ -562,6 +578,7 @@ def _build_certificate(run: ResearchRun) -> VerificationCertificate:
         prompt_versions={call.agent: call.prompt_version for call in run.agent_calls},
         evaluation_limitations=[
             "Search coverage depends on Brave Search results and retrievable public pages",
+            "Source counts refer to URL records; shared identifiers/snapshots and probable journal/preprint title matches are grouped, but distinct material does not prove independence",
             "Certificate metrics measure internal claim-to-evidence integrity, not external truth",
             "Model report review is not a hallucination-free guarantee or independent human verification",
             f"Report review status: {run.report_grounding_status}; accepted-claim fallback may be used when generated prose is withheld",

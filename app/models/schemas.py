@@ -103,8 +103,11 @@ class Source(BaseModel):
     content_snippet: str = ""
     # Exact sanitized/truncated retrieval snapshot; absent on historical records.
     content_snapshot: Optional[str] = None
+    work_identifiers: list[str] = Field(default_factory=list)
+    publication_date: Optional[str] = None
     trust_score: float = 0.0
     trust_factors: dict = Field(default_factory=dict)
+    trust_limitations: str = ""
 
 
 class Evidence(BaseModel):
@@ -169,6 +172,7 @@ class CoverageEntry(BaseModel):
     evidence_count: int = 0
     source_count: int = 0
     primary_source_count: int = 0
+    distinct_material_count: int = 0
     verified_claim_count: int = 0
     contradiction_count: int = 0
     coverage_score: float = 0.0

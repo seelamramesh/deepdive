@@ -90,7 +90,7 @@ Output JSON:
         "government_regulatory": true/false,
         "peer_reviewed": true/false,
         "publisher_reputation": "high|medium|low|unknown",
-        "publication_recency": "current|recent|dated|outdated",
+        "publication_recency": "current|recent|dated|outdated|unknown",
         "direct_relevance": 0.0-1.0,
         "independence": true/false,
         "methodology_present": true/false,
@@ -278,6 +278,7 @@ Output JSON:
 
 Rules:
 - green: adequate evidence from multiple independent sources, verified claims exist.
+- Shared source_material_groups indicate duplicate material, not corroboration. Different URLs/groups alone do not establish independent studies.
 - yellow: some evidence but gaps remain, or relies on single source.
 - red: insufficient evidence, no verified claims, or major contradictions.
 - coverage_score: weighted combination of evidence count, source diversity, verification rate.
