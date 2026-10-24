@@ -214,7 +214,7 @@ python -m pytest tests/test_mesh_compliance.py -v  # Architecture compliance
 - **Coverage completeness**: % of sub-questions adequately covered
 - **Mutation rejection rate**: % of evaluated citation mutations rejected
 
-Latest deployed runtime and CI evidence: [`docs/release-evidence-2026-10-24.md`](docs/release-evidence-2026-10-24.md). Latest release validation: 116 backend tests and 22 frontend tests passed; these are not live model accuracy measurements.
+Latest deployed runtime and CI evidence: [`docs/deployment-prejury-2026-10-24.md`](docs/deployment-prejury-2026-10-24.md). Runtime revision 03e239a: Linux candidate had 150 backend tests pass and 1 Node-dependent test skip; 25 frontend tests, build and TypeScript passed. These are not live model accuracy measurements.
 
 Measured production results and limitations: [`docs/evaluation-results.md`](docs/evaluation-results.md).
 

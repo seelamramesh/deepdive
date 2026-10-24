@@ -1,6 +1,8 @@
 # DeepDive readiness audit — 2026-10-24
 
-Status: incomplete overall; latest runtime revision `f6b375f071a3ec6e144a1ca0a754ca9ae6d2effb` is deployed as `deepdive:scoring-20261024-r1` (image and revision independently rechecked over SSH). See [release evidence](release-evidence-2026-10-24.md). Phase 1 mobile UI and tested hardening were deployed after the user authorized proceeding with Phase 1 and the goal. No submission performed. This is a fresh audit, not a replacement of historical measured results.
+Status: incomplete overall; latest runtime revision `03e239a8ea387b0e799073b10c9f83a7964079fd` is deployed as `deepdive:prejury-03e239a` (image and revision independently rechecked over SSH). See [release evidence](release-evidence-2026-10-24.md). Phase 1 mobile UI and tested hardening were deployed after the user authorized proceeding with Phase 1 and the goal. No submission performed. This is a fresh audit, not a replacement of historical measured results.
+
+Historical sections below describe earlier checkpoints. Latest [deployment evidence](deployment-prejury-2026-10-24.md) supersedes their pending-deployment labels; fresh full research evaluation remains pending.
 
 ## OODA evidence and action
 

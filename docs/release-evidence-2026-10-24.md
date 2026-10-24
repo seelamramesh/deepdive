@@ -1,5 +1,7 @@
 # DeepDive quality release evidence — 2026-10-24
 
+Latest runtime is now 03e239a; see [pre-submission deployment verification](deployment-prejury-2026-10-24.md). Sections below retain historical release evidence.
+
 Runtime revision: `9c9180df011624830b45b9632a6a246896b7ce24`.
 Image: `deepdive:quality-20261024t161607z`. Both values were independently read from the running production container after deployment. Documentation-only commits after this revision do not imply a new runtime deployment.
 

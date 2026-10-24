@@ -47,3 +47,6 @@ Organizer CI: https://github.com/seelamramesh/deepdive/actions/runs/40117278212
 4. Update final jury architecture, examples and self-evaluation to match measured deployed behavior. Keep submission on hold until the remaining gates pass and the user approves.
 
 Artifacts: DeepDive-User-Run-c324ed4de85d4e3c-workspace.json and DeepDive-n8n-RunValidation-c324ed4de85d4e3c.json in this chat's outputs folder. No new paid calls or submission performed.
+
+
+Subsequent update: runtime 03e239a was deployed after this audit; see deployment-prejury-2026-10-24.md. This historical run and certificate remain unchanged. A new run is required to test the newer behavior.
