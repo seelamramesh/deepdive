@@ -37,7 +37,7 @@ Input: H:/Downloads/DeepDive - Self-Verifying Research (1).json. 14 nodes; conne
 Two issues:
 
 1. Validation called trim() without checking the question's type. Numeric/object/array inputs could throw in n8n rather than take the invalid-input branch. Candidate expressions guard body/question type first. Node-based tests execute these expressions against missing, non-string, short and valid inputs.
-2. Supplied Wait parameters are empty. Current upstream n8n source defaults amount to 1 and unit to hours; actual installed-version defaults were not inspected. Corrected export explicitly uses amount=5, unit=seconds, matching repository intent. This avoids relying on defaults and does not claim a measured one-hour delay on the deployed instance.
+2. Supplied Wait parameters are empty. Correction after installed-version inspection: the earlier review read legacy v1 defaults (one hour) but missed v1.1 overrides (five seconds). The supplied Wait is v1.1, so empty parameters are not a one-hour delay defect. Corrected export explicitly records amount=5 and unit=seconds for clarity. See user-run-validation-c324ed4de85d4e3c.md for installed source and 63 measured five-second waits.
 
 Primary reference: https://github.com/n8n-io/n8n/blob/master/packages/nodes-base/nodes/Wait/Wait.node.ts
 
