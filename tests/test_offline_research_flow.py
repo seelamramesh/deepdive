@@ -11,6 +11,7 @@ import pytest
 from fastapi import FastAPI
 
 from app.agents import prompts
+from app.services.report_grounding import REPORT_REVIEW_PROMPT
 from app.api import routes
 from app.core.mesh_gateway import mesh
 from app.models.schemas import Source, _hash
@@ -97,6 +98,8 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
                 coverage_count += 1
                 result = {'coverage':[{'subquestion_id':payload['subquestions'][0]['id'],
                                       'subquestion_text':'Fixture revenue','status':'red' if scenario=='gap_then_recover' and coverage_count==1 else 'green'}]}
+            elif system == REPORT_REVIEW_PROMPT:
+                result = {'decisions':[{'unit_id':u['unit_id'],'supported':True,'reason':'Fixture review'} for u in payload['units']]}
             elif system == prompts.SYNTHESIZER_PROMPT:
                 if scenario == 'malformed_synthesis':
                     return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content='```json {'),finish_reason='length')],

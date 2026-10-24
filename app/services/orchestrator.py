@@ -32,6 +32,7 @@ from app.models.schemas import (
     _hash,
 )
 from app.services.retrieval import fetch_sources, search_web, select_extraction_window
+from app.services.report_grounding import review_report
 from app.storage.database import save_run as _persist_run
 
 logger = logging.getLogger(__name__)
@@ -394,7 +395,9 @@ async def run_research(
 
         # ── VERIFY_FINAL_REPORT ────────────────────────────────
         run.transition(RunState.VERIFY_FINAL_REPORT, "Verifying final report")
-        # Validate all citations in report reference real evidence
+        # Review prose before structural citation checks; missing decisions withhold units.
+        if supported:
+            await review_report(run)
         _verify_report_citations(run)
         await save_run(run)
 
@@ -425,6 +428,7 @@ async def run_research(
                 run.final_report = await run_synthesizer(
                     run, supported, run.evidence, run.contradictions, run.subquestions
                 )
+                await review_report(run)
                 _verify_report_citations(run)
                 run.agent_calls.extend(mesh.drain_calls())
                 run.certificate = _build_certificate(run)

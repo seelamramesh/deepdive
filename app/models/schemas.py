@@ -249,6 +249,7 @@ class ResearchRun(BaseModel):
     state_transitions: list[StateTransition] = Field(default_factory=list)
     agent_calls: list[AgentCall] = Field(default_factory=list)
 
+    report_grounding_audit: list[dict] = Field(default_factory=list)
     final_report: str = ""
     certificate: Optional[VerificationCertificate] = None
     error: Optional[str] = None
