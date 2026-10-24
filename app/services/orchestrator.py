@@ -468,10 +468,11 @@ def _verify_report_citations(run: ResearchRun) -> None:
         has_orphan = has_orphan or any(f"[claim:{oid}]" in line for oid in orphan_claims)
         line_claims = re.findall(r"\[claim:(\w+)\]", line)
         line_evidence = re.findall(r"\[evidence:(\w+)\]", line)
-        has_unapproved_link = bool(line_claims and line_evidence) and not any(
-            (claim_id, evidence_id) in allowed_links
-            for claim_id in line_claims
-            for evidence_id in line_evidence
+        has_unapproved_link = bool(line_claims and line_evidence) and (
+            any(not any((claim_id, evidence_id) in allowed_links
+                        for evidence_id in line_evidence) for claim_id in line_claims)
+            or any(not any((claim_id, evidence_id) in allowed_links
+                           for claim_id in line_claims) for evidence_id in line_evidence)
         )
         stripped = line.strip()
         is_heading = not stripped or stripped.startswith("#")

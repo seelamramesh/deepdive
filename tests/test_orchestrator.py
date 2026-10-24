@@ -273,3 +273,22 @@ async def test_late_failure_returns_checkpoint_report_with_warning(monkeypatch):
 
 async def async_value(value):
     return value
+
+
+def test_report_verifier_rejects_partly_unlinked_multi_citation_line():
+    run = ResearchRun(question="Two independent findings")
+    run.evidence = [Evidence(id="e1", source_id="s1", passage="First fact"),
+                    Evidence(id="e2", source_id="s2", passage="Second fact")]
+    run.claims = [AtomicClaim(id="c1", text="First fact", evidence_ids=["e1"]),
+                  AtomicClaim(id="c2", text="Second fact", evidence_ids=["e2"])]
+    run.judgements = [ClaimJudgement(claim_id=c.id, verdict=ClaimVerdict.SUPPORTED,
+        confidence=0.9, supporting_evidence_ids=c.evidence_ids) for c in run.claims]
+    run.final_report = ("# Report\nFirst fact [claim:c1] [evidence:e1]\n"
+        "Partly unlinked sentence [claim:c1] [claim:c2] [evidence:e1]\n"
+        "Extra unrelated citation [claim:c1] [evidence:e1] [evidence:e2]\n"
+        "Both linked [claim:c1] [claim:c2] [evidence:e1] [evidence:e2]")
+    _verify_report_citations(run)
+    assert "Partly unlinked sentence" not in run.final_report
+    assert "Extra unrelated citation" not in run.final_report
+    assert "Both linked" in run.final_report
+    assert "First fact [claim:c1] [evidence:e1]" in run.final_report
