@@ -101,8 +101,13 @@ class Source(BaseModel):
     retrieved_at: str = Field(default_factory=_now)
     content_hash: str = ""
     content_snippet: str = ""
+    # Exact sanitized/truncated retrieval snapshot; absent on historical records.
+    content_snapshot: Optional[str] = None
+    work_identifiers: list[str] = Field(default_factory=list)
+    publication_date: Optional[str] = None
     trust_score: float = 0.0
     trust_factors: dict = Field(default_factory=dict)
+    trust_limitations: str = ""
 
 
 class Evidence(BaseModel):
@@ -111,6 +116,7 @@ class Evidence(BaseModel):
     subquestion_id: str = ""
     passage: str
     passage_hash: str = ""
+    source_snapshot_hash: str = ""
     relevance: float = 0.0
 
     def compute_hash(self) -> None:
@@ -166,6 +172,7 @@ class CoverageEntry(BaseModel):
     evidence_count: int = 0
     source_count: int = 0
     primary_source_count: int = 0
+    distinct_material_count: int = 0
     verified_claim_count: int = 0
     contradiction_count: int = 0
     coverage_score: float = 0.0
@@ -192,6 +199,9 @@ class AgentCall(BaseModel):
     finish_reason: str = ""
     error: str = ""
     response_preview: str = ""
+    prompt_tokens: Optional[int] = None
+    completion_tokens: Optional[int] = None
+    total_tokens: Optional[int] = None
 
 
 class VerificationCertificate(BaseModel):
@@ -223,18 +233,29 @@ class ResearchRun(BaseModel):
     created_at: str = Field(default_factory=_now)
     current_state: RunState = RunState.START
     research_round: int = 0
+    confidence_threshold: float = 0.7
+    max_rounds: int = 3
 
     subquestions: list[SubQuestion] = Field(default_factory=list)
     search_queries: list[SearchQuery] = Field(default_factory=list)
+    search_audit: list[dict] = Field(default_factory=list)
+    retrieval_audit: list[dict] = Field(default_factory=list)
     sources: list[Source] = Field(default_factory=list)
     evidence: list[Evidence] = Field(default_factory=list)
     claims: list[AtomicClaim] = Field(default_factory=list)
+    claim_selection_audit: list[dict] = Field(default_factory=list)
     judgements: list[ClaimJudgement] = Field(default_factory=list)
+    prosecution: list[ProsecutorArgument] = Field(default_factory=list)
+    defense: list[DefenseArgument] = Field(default_factory=list)
     contradictions: list[Contradiction] = Field(default_factory=list)
+    contradiction_audit: list[dict] = Field(default_factory=list)
     coverage: list[CoverageEntry] = Field(default_factory=list)
     state_transitions: list[StateTransition] = Field(default_factory=list)
     agent_calls: list[AgentCall] = Field(default_factory=list)
 
+    report_grounding_audit: list[dict] = Field(default_factory=list)
+    report_grounding_status: str = "not_available"
+    report_fallback_reason: str = ""
     final_report: str = ""
     certificate: Optional[VerificationCertificate] = None
     error: Optional[str] = None
@@ -281,8 +302,8 @@ class ResearchRequest(BaseModel):
     confidence_threshold: Optional[float] = Field(default=None, ge=0.5, le=1.0)
 
 
-class FollowUpRequest(BaseModel):
-    question: str = Field(min_length=10, max_length=2000)
+class FollowUpRequest(ResearchRequest):
+    pass
 
 
 class HealthResponse(BaseModel):
@@ -290,6 +311,7 @@ class HealthResponse(BaseModel):
     mesh_configured: bool = False
     database: str = ""
     version: str = "1.0.0"
+    db_ok: bool = False
 
 
 class RunSummary(BaseModel):

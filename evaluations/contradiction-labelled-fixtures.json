@@ -1,0 +1,30 @@
+{
+  "synthetic": true,
+  "scope": "Component evaluation, not real-world research accuracy",
+  "cases": [
+    {
+      "id": "same_period_conflict",
+      "passages": [
+        "Fictional Acme reported revenue of 10 million USD for fiscal year 2025.",
+        "Fictional Acme reported revenue of 20 million USD for fiscal year 2025."
+      ],
+      "expected_contradiction": true
+    },
+    {
+      "id": "different_period_control",
+      "passages": [
+        "Fictional Acme reported revenue of 10 million USD for fiscal year 2024.",
+        "Fictional Acme reported revenue of 20 million USD for fiscal year 2025."
+      ],
+      "expected_contradiction": false
+    },
+    {
+      "id": "agreement_control",
+      "passages": [
+        "Fictional Acme reported revenue of 10 million USD for fiscal year 2025.",
+        "Fictional Acme reported revenue of 10 million USD for fiscal year 2025."
+      ],
+      "expected_contradiction": false
+    }
+  ]
+}

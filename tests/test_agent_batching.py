@@ -169,7 +169,7 @@ async def test_researcher_uses_one_source_per_call_and_caps_evidence(monkeypatch
 
 
 @pytest.mark.asyncio
-async def test_contradiction_analyst_batches_by_subquestion_and_scopes_evidence(monkeypatch):
+async def test_contradiction_analyst_covers_cross_topic_pairs_with_bounded_payloads(monkeypatch):
     claims = make_claims(8)
     for index, claim in enumerate(claims):
         claim.subquestion_id = "sq1" if index < 7 else "sq2"
@@ -192,6 +192,8 @@ async def test_contradiction_analyst_batches_by_subquestion_and_scopes_evidence(
     monkeypatch.setattr("app.agents.runner.mesh.complete", fake_complete)
     result = await run_contradiction_analyst(ResearchRun(question="question"), claims, evidence)
 
-    assert [len(call["claims"]) for call in calls] == [6, 1, 1]
     assert all(len(call["claims"]) <= 6 for call in calls)
-    assert len(result) == 1
+    checked = [{claim['id'] for claim in call['claims']} for call in calls]
+    assert all(any({f'c{i}',f'c{j}'} <= batch for batch in checked) for i in range(8) for j in range(i+1,8))
+    assert len(calls) <= 3
+    assert result

@@ -47,6 +47,16 @@ def test_research_request_validation_rejects_short_question():
     assert response.status_code == 422
 
 
+def test_health_reports_configured_storage_path(monkeypatch):
+    monkeypatch.setattr(routes.settings, "database_path", "/app/data/actual.db")
+    monkeypatch.setattr(routes.settings, "database_url", "sqlite:///unused.db")
+
+    response = client().get("/health")
+
+    assert response.status_code == 200
+    assert response.json()["database"] == "/app/data/actual.db"
+
+
 def test_missing_run_endpoints_return_404(monkeypatch):
     async def missing(_run_id):
         return None

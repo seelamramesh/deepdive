@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-24",
+  "environment": "local Windows Python; working tree dirty",
+  "tests": 116,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "junit_suite_seconds": "3.001",
+  "offline_integration_fixtures": [
+    "test_offline_api_research_to_persisted_report[supported_and_withheld]",
+    "test_offline_api_research_to_persisted_report[gap_then_recover]",
+    "test_offline_api_research_to_persisted_report[malformed_synthesis]",
+    "test_offline_api_research_to_persisted_report[no_sources]",
+    "test_offline_api_research_to_persisted_report[tampered_snapshot]",
+    "test_offline_api_research_to_persisted_report[long_snapshot]"
+  ],
+  "paid_provider_calls": 0,
+  "new_live_research_runs": 0,
+  "deployed": true,
+  "limitations": [
+    "Provider, search and fetch I/O are mocked in the integration fixtures.",
+    "This result does not establish real model accuracy or billing totals."
+  ],
+  "frontend_tests": 22,
+  "frontend_build": "passed; existing chunk-size warning",
+  "deployed_image": "deepdive:mobile-20261024t153739z",
+  "deployment_backend_tests": 104,
+  "deployment_preserved_runs": 15,
+  "latest_local_changes_deployed": false
+}

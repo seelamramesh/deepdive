@@ -143,6 +143,18 @@ erDiagram
 
 ## Installation
 
+### React research workspace
+
+The frontend in `frontend/` adapts the supplied shadcn design to real FastAPI data. It uses React 19, TanStack Query, generated file-based TanStack Router routes, Tailwind v4, IBM Plex fonts and Recharts. This deployment uses a static SPA served from FastAPI on the same HTTPS origin; no separate Lovable/SSR runtime is required.
+
+Views: Report, Coverage, Courtroom, Audit, Contradictions, Sources and engineering Control Flow. The engineering view explains each stage's input/output, selected queries, source→passage→claim mappings, recorded loopbacks and browser API traces. New runs persist strategist payloads, selected query IDs, returned Brave URLs and extraction-input hashes; missing historical telemetry is explicitly labeled.
+
+New research and follow-ups support bounded rounds and confidence thresholds. Report print/PDF uses the browser print dialog and includes a source-evidence appendix. Original runs retain their original certificate and any missing token/argument metadata. New Mesh calls record provider-returned token counts when supplied, and new runs persist courtroom arguments. Delete is disabled pending user authentication; this public workspace does not expose an unauthenticated destructive endpoint.
+
+Local frontend development: `cd frontend`, `npm ci`, `npm run dev` (Vite proxies API requests to FastAPI on port 8000). Verification: `npm run build` and `npm test`. Docker's multi-stage build compiles the UI, checks TypeScript and runs frontend tests. FastAPI retains legacy Jinja views when a frontend build is absent.
+
+Additive APIs: `GET /runs` lists stored runs; `GET /runs/{id}/workspace` returns frontend run details without raw agent response previews. Existing n8n status/report/certificate endpoints retain their response shapes. `/health` includes a real SQLite readiness check; Mesh configuration status is key presence, not an inference connectivity probe.
+
 ```bash
 # Clone
 git clone https://github.com/YOUR_USERNAME/deepdive.git
@@ -202,7 +214,13 @@ python -m pytest tests/test_mesh_compliance.py -v  # Architecture compliance
 - **Coverage completeness**: % of sub-questions adequately covered
 - **Mutation rejection rate**: % of evaluated citation mutations rejected
 
+Latest deployed runtime and CI evidence: [`docs/deployment-prejury-2026-10-24.md`](docs/deployment-prejury-2026-10-24.md). Runtime revision 03e239a: Linux candidate had 150 backend tests pass and 1 Node-dependent test skip; 25 frontend tests, build and TypeScript passed. These are not live model accuracy measurements.
+
 Measured production results and limitations: [`docs/evaluation-results.md`](docs/evaluation-results.md).
+
+Measured examples (2026-10-18): EV run `2ed2c8150b91476e` retrieved 6 sources and 34 evidence passages, accepting 6 of 12 claims with 7/7 valid citation links. AGI run `0d67c451657b4525` retrieved 4 sources and 19 passages, accepting 5 of 12 claims with 5/5 valid citation links. Both reports have incomplete coverage; citation integrity measures internal references, not independent truth.
+
+The bounded live mutation evaluation rejected or downgraded 6/6 adversarial cases, with 0/6 false accepts and only 1/2 positive controls fully accepted. This small sample exposes conservative false rejection. The local automated suite recorded 73 passing tests; that count does not claim tests ran inside the production container.
 Hackathon rule mapping: [`docs/hackathon-compliance.md`](docs/hackathon-compliance.md).
 Prompt-reference review: [`docs/prompt-reference-review.md`](docs/prompt-reference-review.md).
 
