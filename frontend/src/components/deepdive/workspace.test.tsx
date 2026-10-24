@@ -72,3 +72,16 @@ it('keeps server errors visible and restores submit control', async () => {
   render(<QueryClientProvider client={new QueryClient({defaultOptions:{mutations:{retry:false}}})}><ResearchForm open onClose={vi.fn()} onCreated={vi.fn()} initialQuestion="A sufficiently detailed research question"/></QueryClientProvider>);
   fireEvent.click(screen.getByRole('button',{name:'Start research'})); expect(await screen.findByRole('alert')).toHaveTextContent('Backend unavailable'); expect(screen.getByRole('button',{name:'Start research'})).toBeEnabled();
 });
+
+it('shows report review decisions and preserves missing historical diagnostics', () => {
+  const first=render(<AuditPanel run={run}/>);
+  expect(screen.getByText(/No report review decisions recorded/)).toBeInTheDocument();
+  first.unmount();
+  render(<AuditPanel run={{...run,report_grounding_audit:[
+    {unit_id:'1',text:'Accepted statement',kept:true,reason:'Matches accepted claim',method:'model_review',prompt_version:'report-grounding-v1'},
+    {unit_id:'2',text:'Unapproved extra detail',kept:false,reason:'Adds an unverified number',method:'model_review',prompt_version:'report-grounding-v1'},
+  ]}}/>);
+  expect(screen.getByText(/1 units kept/)).toHaveTextContent('1 units withheld');
+  expect(screen.getByText('Withheld · report unit 2')).toBeInTheDocument();
+  expect(screen.getByText('Adds an unverified number')).toBeInTheDocument();
+});
