@@ -19,6 +19,8 @@ from app.models.schemas import (
 from app.services.orchestrator import run_research
 from app.storage.database import load_run, list_runs
 from app.evaluation.benchmark import evaluate_run
+from app.services.coverage import derive_coverage
+from app.storage.database import database_ready
 
 router = APIRouter()
 
@@ -33,11 +35,48 @@ def _track_task(run_id: str, task: asyncio.Task) -> None:
 
 @router.get("/health", response_model=HealthResponse)
 async def health():
+    db_ok = await database_ready()
     return HealthResponse(
-        status="ok",
+        status="ok" if db_ok else "degraded",
         mesh_configured=mesh.is_configured,
-        database=settings.database_url,
+        database=settings.database_path,
+        db_ok=db_ok,
     )
+
+
+@router.get("/runs")
+async def get_runs():
+    return await list_runs()
+
+
+@router.get("/runs/{run_id}/workspace")
+async def get_workspace(run_id: str):
+    run = await load_run(run_id)
+    if not run:
+        raise HTTPException(404, "Run not found")
+    data = run.model_dump(mode="json")
+    data["warnings"] = [
+        "Partial recovery: a later research agent returned malformed output. This report uses the last verified checkpoint; findings remain partial."
+        if warning.startswith("Later research stage failed; report uses last verified checkpoint")
+        else warning
+        for warning in run.warnings
+    ]
+    data["accepted_claim_ids"] = [claim.id for claim in run.supported_claims(run.confidence_threshold)]
+    data["recorded_coverage"] = data["coverage"]
+    data["coverage"] = [entry.model_dump(mode="json") for entry in derive_coverage(run, data["recorded_coverage"])]
+    data["coverage_derivation"] = "Counts derived from saved artifacts; assessment labels remain heuristic and evidence-gated."
+
+    # Retain snapshots in storage without inflating the public workspace response.
+    data["sources"] = [
+        {key: value for key, value in source.items() if key != "content_snapshot"}
+        for source in data["sources"]
+    ]
+    data["agent_calls"] = [
+        {key: value for key, value in call.model_dump(mode="json").items()
+         if key not in {"response_preview", "error"}}
+        for call in run.agent_calls
+    ]
+    return data
 
 
 @router.post("/research")
@@ -78,7 +117,7 @@ async def get_run(run_id: str):
         created_at=run.created_at,
         source_count=len(run.sources),
         claim_count=len(run.claims),
-        supported_claim_count=len(run.supported_claims(settings.confidence_threshold)),
+        supported_claim_count=len(run.supported_claims(run.confidence_threshold)),
         contradiction_count=len(run.contradictions),
         research_rounds=run.research_round,
         error=run.error,
@@ -104,7 +143,7 @@ async def get_claims(run_id: str):
     run = await load_run(run_id)
     if not run:
         raise HTTPException(404, "Run not found")
-    supported = run.supported_claims(settings.confidence_threshold)
+    supported = run.supported_claims(run.confidence_threshold)
     supported_ids = {claim.id for claim in supported}
     return {
         "claims": [c.model_dump() for c in run.claims],
@@ -166,6 +205,8 @@ async def follow_up(run_id: str, req: FollowUpRequest, bg: BackgroundTasks):
         await run_research(
             question=req.question,
             source_urls=source_urls,
+            max_rounds=req.max_rounds,
+            confidence_threshold=req.confidence_threshold,
             run_id=child.id,
         )
 

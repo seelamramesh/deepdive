@@ -12,6 +12,7 @@ from app.models.schemas import (
     SearchQuery,
     Source,
     SubQuestion,
+    _hash,
 )
 from app.services.orchestrator import (
     _build_certificate,
@@ -220,7 +221,8 @@ def test_trusted_evidence_excludes_sources_below_threshold(monkeypatch):
 @pytest.mark.asyncio
 async def test_late_failure_returns_checkpoint_report_with_warning(monkeypatch):
     subquestion = SubQuestion(id="sq1", text="Subquestion")
-    source = Source(id="s1", url="https://example.com", title="Source")
+    source = Source(id="s1", url="https://example.com", title="Source",
+                    content_snapshot="Exact fact", content_hash=_hash("Exact fact"))
     evidence = Evidence(id="e1", source_id="s1", subquestion_id="sq1", passage="Exact fact")
     claim = AtomicClaim(id="c1", text="Exact fact", evidence_ids=["e1"], subquestion_id="sq1")
     judgement = ClaimJudgement(
@@ -237,9 +239,6 @@ async def test_late_failure_returns_checkpoint_report_with_warning(monkeypatch):
     monkeypatch.setattr("app.services.orchestrator.run_planner", lambda run: async_value([subquestion]))
     monkeypatch.setattr("app.services.orchestrator.run_search_strategist", lambda run, items: async_value([]))
     monkeypatch.setattr("app.services.orchestrator.fetch_sources", lambda urls: async_value([source]))
-    monkeypatch.setattr("app.services.orchestrator.fetch_url", lambda url: async_value({
-        "url": url, "title": "Source", "content": "Exact fact", "content_hash": "hash"
-    }))
     monkeypatch.setattr("app.services.orchestrator.run_researcher", lambda *args: async_value([evidence]))
     monkeypatch.setattr("app.services.orchestrator.run_source_critic", lambda *args: async_value({
         "s1": {"trust_score": 0.8, "factors": {}}

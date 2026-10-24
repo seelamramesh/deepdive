@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     max_sources_per_round: int = 10
     max_search_queries_per_round: int = 2
     max_claims: int = 12
+    max_contradiction_batches: int = Field(default=3, ge=1, le=6, alias="MAX_CONTRADICTION_BATCHES")
     confidence_threshold: float = 0.7
     min_source_trust: float = Field(default=0.4, ge=0.0, le=1.0, alias="MIN_SOURCE_TRUST")
     request_timeout: int = 30

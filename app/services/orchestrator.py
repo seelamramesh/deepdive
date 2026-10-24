@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import asyncio
 from typing import Optional
 
 from app.agents.runner import (
@@ -21,6 +22,7 @@ from app.agents.runner import (
 from app.core.config import settings
 from app.core.mesh_gateway import mesh
 from app.models.schemas import (
+    AtomicClaim,
     ClaimVerdict,
     CoverageEntry,
     CoverageStatus,
@@ -29,10 +31,16 @@ from app.models.schemas import (
     VerificationCertificate,
     _hash,
 )
-from app.services.retrieval import fetch_sources, fetch_url, search_web
-from app.storage.database import save_run
+from app.services.retrieval import fetch_sources, search_web
+from app.storage.database import save_run as _persist_run
 
 logger = logging.getLogger(__name__)
+
+
+async def save_run(run: ResearchRun) -> None:
+    """Persist observed call usage with each checkpoint, not only the final report."""
+    run.agent_calls.extend(mesh.drain_calls())
+    await _persist_run(run)
 
 
 def _queries_for_round(queries: list, round_number: int, limit: int) -> list:
@@ -57,6 +65,55 @@ def _queries_for_round(queries: list, round_number: int, limit: int) -> list:
     return selected[:limit]
 
 
+def _select_claims_for_round(run: ResearchRun, new_claims: list[AtomicClaim], limit: int) -> list[AtomicClaim]:
+    """Keep accepted claims and balance remaining slots across research areas."""
+    candidates = [claim.model_copy(deep=True) for claim in run.claims]
+    by_text = {" ".join(claim.text.casefold().split()): claim for claim in candidates}
+    merged = {}
+    fresh_ids = set()
+    for claim in new_claims:
+        key = " ".join(claim.text.casefold().split())
+        if key in by_text:
+            original = by_text[key]
+            original.evidence_ids = list(dict.fromkeys(original.evidence_ids + claim.evidence_ids))
+            merged[claim.id] = original.id
+        else:
+            candidate = claim.model_copy(deep=True)
+            candidates.append(candidate)
+            by_text[key] = candidate
+            fresh_ids.add(candidate.id)
+    accepted_ids = {claim.id for claim in run.supported_claims(run.confidence_threshold)}
+    limit = max(0, limit)
+    selected = [claim for claim in candidates if claim.id in accepted_ids][:limit]
+    selected_ids = {claim.id for claim in selected}
+    groups = {}
+    for claim in candidates:
+        if claim.id not in selected_ids:
+            groups.setdefault(claim.subquestion_id, []).append(claim)
+    for queue in groups.values():
+        queue.sort(key=lambda claim: claim.id not in fresh_ids)
+    counts = {group: sum(claim.subquestion_id == group for claim in selected) for group in groups}
+    while len(selected) < limit and any(groups.values()):
+        group = min((key for key, queue in groups.items() if queue), key=lambda key: counts[key])
+        claim = groups[group].pop(0)
+        selected.append(claim)
+        selected_ids.add(claim.id)
+        counts[group] += 1
+    judgements = {item.claim_id: item for item in run.judgements}
+    run.claim_selection_audit.append({
+        "round": run.research_round, "limit": limit,
+        "policy": "retain_accepted_then_balance_subquestions",
+        "selected_claim_ids": [claim.id for claim in selected],
+        "merged_duplicate_ids": merged,
+        "excluded_from_active_budget": [
+            {"claim": claim.model_dump(), "reason": "active_claim_budget",
+             "previous_judgement": judgements[claim.id].model_dump(mode="json") if claim.id in judgements else None}
+            for claim in candidates if claim.id not in selected_ids
+        ],
+    })
+    return selected
+
+
 def _insufficient_evidence_report(run: ResearchRun) -> str:
     """Return an honest terminal report when no claims passed verification."""
     return (
@@ -70,7 +127,7 @@ def _insufficient_evidence_report(run: ResearchRun) -> str:
         f"- Sources successfully retrieved: {len(run.sources)}\n"
         f"- Exact source passages accepted as evidence: {len(run.evidence)}\n"
         f"- Atomic claims drafted: {len(run.claims)}\n"
-        f"- Claims passing verification: {len(run.supported_claims(settings.confidence_threshold))}\n\n"
+        f"- Claims passing verification: {len(run.supported_claims(run.confidence_threshold))}\n\n"
         "## Recommended Next Step\n\n"
         "Run again with additional authoritative source URLs, or broaden retrieval coverage. "
         "No market forecast should be inferred from this incomplete run.\n"
@@ -131,6 +188,8 @@ async def run_research(
         run = ResearchRun(question=question)
     max_rounds = max_rounds or settings.max_research_rounds
     conf_threshold = confidence_threshold or settings.confidence_threshold
+    run.confidence_threshold = conf_threshold
+    run.max_rounds = max_rounds
     source_urls = source_urls or []
 
     # Collected source contents for the researcher agent
@@ -152,18 +211,38 @@ async def run_research(
                 queries, run.research_round, settings.max_search_queries_per_round
             )
             run.search_queries.extend(selected_queries)
+            if run.search_audit:
+                run.search_audit[-1]["selected_query_ids"] = [query.id for query in selected_queries]
             await save_run(run)
 
             # ── RETRIEVE ───────────────────────────────────────
             run.transition(RunState.RETRIEVE, "Fetching sources")
             # Collect URLs: user-provided + search results
             urls_to_fetch = list(source_urls)
+            retrieval_event = {"round": run.research_round, "seed_urls": list(source_urls), "searches": []}
+            run.retrieval_audit.append(retrieval_event)
             for query in selected_queries:
-                urls_to_fetch.extend(await search_web(query.query))
-            urls_to_fetch = list(dict.fromkeys(urls_to_fetch))[: settings.max_sources_per_round]
+                result_urls = await search_web(query.query)
+                retrieval_event["searches"].append({
+                    "query_id": query.id, "query": query.query,
+                    "result_urls": result_urls,
+                    "outcome": "urls_returned" if result_urls else "no_urls_or_search_unavailable",
+                })
+                urls_to_fetch.extend(result_urls)
+            candidate_urls = list(dict.fromkeys(urls_to_fetch))
+            existing_urls = {source.url for source in run.sources}
+            urls_to_fetch = [url for url in candidate_urls if url not in existing_urls][: settings.max_sources_per_round]
+            retrieval_event["candidate_urls"] = candidate_urls
+            retrieval_event["selected_urls"] = list(urls_to_fetch)
+            retrieval_event["reused_source_ids"] = [source.id for source in run.sources]
+            retrieval_event["fetched_sources"] = []
 
             if urls_to_fetch:
                 new_sources = await fetch_sources(urls_to_fetch)
+                retrieval_event["fetched_sources"] = [
+                    {"source_id": source.id, "url": source.url, "content_hash": source.content_hash}
+                    for source in new_sources
+                ]
                 # Deduplicate against existing
                 existing_urls = {s.url for s in run.sources}
                 for s in new_sources:
@@ -171,17 +250,33 @@ async def run_research(
                         run.sources.append(s)
                         existing_urls.add(s.url)
 
-            # Fetch full content for source analysis
+            # Source identity, metadata and extraction share one immutable snapshot.
             source_contents = []
+            retrieval_event["extraction_inputs"] = []
             for source in run.sources:
-                result = await fetch_url(source.url)
-                if result:
+                snapshot = source.content_snapshot
+                if snapshot is not None and _hash(snapshot) == source.content_hash:
+                    extraction_text = snapshot[:7000]
+                    retrieval_event["extraction_inputs"].append({
+                        "source_id": source.id, "url": source.url,
+                        "characters_sent": len(extraction_text),
+                        "analyzed_content_hash": _hash(extraction_text),
+                        "source_record_hash": source.content_hash,
+                        "snapshot_hash": _hash(snapshot),
+                        "snapshot_start": 0, "snapshot_end": len(extraction_text),
+                        "snapshot_characters": len(snapshot),
+                    })
                     source_contents.append({
                         "source_id": source.id,
                         "url": source.url,
                         "title": source.title,
-                        "content": result["content"][:7000],
+                        "content": extraction_text,
+                        "snapshot_hash": source.content_hash,
                     })
+                else:
+                    warning = f"Source {source.id} snapshot missing or hash mismatch; extraction withheld."
+                    if warning not in run.warnings:
+                        run.warnings.append(warning)
             await save_run(run)
 
             # ── EXTRACT_EVIDENCE ───────────────────────────────
@@ -218,25 +313,18 @@ async def run_research(
                 await run_claim_drafter(run, trusted_evidence, run.subquestions)
                 if trusted_evidence else []
             )
-            # Deduplicate claims
-            existing_texts = {c.text.lower().strip() for c in run.claims}
-            for c in new_claims:
-                if c.text.lower().strip() not in existing_texts:
-                    run.claims.append(c)
-                    existing_texts.add(c.text.lower().strip())
+            run.claims = _select_claims_for_round(run, new_claims, settings.max_claims)
             await save_run(run)
-
-            # Cap claims
-            if len(run.claims) > settings.max_claims:
-                run.claims = run.claims[: settings.max_claims]
 
             # ── CLAIM_COURTROOM ────────────────────────────────
             run.transition(RunState.CLAIM_COURTROOM, "Running Claim Courtroom")
             if run.claims:
                 prosecution = await run_prosecutor(run, run.claims, trusted_evidence)
                 defense = await run_defense(run, run.claims, trusted_evidence)
+                run.prosecution = prosecution
+                run.defense = defense
                 run.judgements = await run_judge(
-                    run, run.claims, prosecution, defense, conf_threshold
+                    run, run.claims, prosecution, defense, conf_threshold, trusted_evidence
                 )
             else:
                 run.judgements = []
@@ -309,6 +397,11 @@ async def run_research(
         run.transition(RunState.END, "Research complete")
         await save_run(run)
 
+    except asyncio.CancelledError:
+        run.error = "Research execution cancelled; final usage may be incomplete."
+        run.transition(RunState.FAILED, "Research task cancelled")
+        await save_run(run)
+        raise
     except Exception as e:
         logger.exception("Research run failed")
         supported = run.supported_claims(conf_threshold)
@@ -343,7 +436,7 @@ def _verify_report_citations(run: ResearchRun) -> None:
     """Validate that all citation references in the report map to real evidence."""
     import re
     evidence_ids = {e.id for e in run.evidence}
-    supported_claims = run.supported_claims(settings.confidence_threshold)
+    supported_claims = run.supported_claims(run.confidence_threshold)
     claim_ids = {c.id for c in supported_claims}
     supported_claim_by_id = {claim.id: claim for claim in supported_claims}
     allowed_links = {
@@ -351,7 +444,7 @@ def _verify_report_citations(run: ResearchRun) -> None:
         for judgement in run.judgements
         if judgement.claim_id in supported_claim_by_id
         and judgement.verdict == ClaimVerdict.SUPPORTED
-        and judgement.confidence >= settings.confidence_threshold
+        and judgement.confidence >= run.confidence_threshold
         for evidence_id in judgement.supporting_evidence_ids
         if evidence_id in supported_claim_by_id[judgement.claim_id].evidence_ids
         and evidence_id in evidence_ids
@@ -407,7 +500,7 @@ def _verify_report_citations(run: ResearchRun) -> None:
 
 def _build_certificate(run: ResearchRun) -> VerificationCertificate:
     """Build verification certificate from run data."""
-    supported = run.supported_claims(settings.confidence_threshold)
+    supported = run.supported_claims(run.confidence_threshold)
     supported_ids = {claim.id for claim in supported}
     supported_count = len(supported)
     rejected_count = len(run.claims) - supported_count
@@ -441,9 +534,10 @@ def _build_certificate(run: ResearchRun) -> VerificationCertificate:
         citation_coverage_rate=round(citation_coverage, 4),
         research_rounds=run.research_round,
         source_content_hashes=[s.content_hash for s in run.sources if s.content_hash],
-        prompt_versions={"all_agents": "v1"},
+        prompt_versions={call.agent: call.prompt_version for call in run.agent_calls},
         evaluation_limitations=[
             "Search coverage depends on Brave Search results and retrievable public pages",
             "Certificate metrics measure internal claim-to-evidence integrity, not external truth",
+            "Claim counts and verification rates refer to active claims; budget exclusions and prior decisions are recorded separately in claim_selection_audit",
         ],
     )

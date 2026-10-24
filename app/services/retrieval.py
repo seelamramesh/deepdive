@@ -138,6 +138,7 @@ async def fetch_sources(urls: list[str]) -> list[Source]:
             title=result["title"],
             content_hash=result["content_hash"],
             content_snippet=result["content"][:500],
+            content_snapshot=result["content"],
         )
         sources.append(source)
 

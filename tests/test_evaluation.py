@@ -94,6 +94,15 @@ def test_evaluate_run_measures_persisted_artifacts(sample_claims, sample_evidenc
     assert metrics["report_nonempty"] is True
 
 
+def test_evaluation_respects_saved_run_confidence_threshold(sample_claims, sample_evidence):
+    run = ResearchRun(question='Strict threshold fixture', confidence_threshold=0.95,
+                      claims=sample_claims, evidence=sample_evidence,
+                      judgements=[ClaimJudgement(claim_id=sample_claims[0].id,
+                          verdict=ClaimVerdict.SUPPORTED, confidence=0.9,
+                          supporting_evidence_ids=[sample_evidence[0].id])])
+    assert evaluate_run(run)['supported_claim_count'] == 0
+
+
 def test_evaluate_run_counts_only_judge_approved_citation_links(sample_claims, sample_evidence):
     claim = sample_claims[0]
     claim.evidence_ids = [sample_evidence[0].id, sample_evidence[1].id]

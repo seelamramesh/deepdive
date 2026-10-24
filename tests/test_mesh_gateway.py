@@ -21,6 +21,24 @@ def test_gateway_parser_rejects_array():
 
 
 @pytest.mark.asyncio
+async def test_token_counts_come_from_response_metadata():
+    class Completions:
+        async def create(self, **kwargs):
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content='{"total_tokens": 99999}'), finish_reason="stop")],
+                usage=SimpleNamespace(prompt_tokens=12, completion_tokens=4, total_tokens=16),
+            )
+
+    gateway = MeshGateway()
+    gateway._client = SimpleNamespace(chat=SimpleNamespace(completions=Completions()))
+    await gateway.complete("judge", "system", "user")
+    call = gateway.drain_calls()[0]
+    assert call.total_tokens == 16
+    assert call.prompt_tokens == 12
+    assert call.completion_tokens == 4
+
+
+@pytest.mark.asyncio
 async def test_gateway_retries_invalid_json_and_records_attempts(monkeypatch):
     responses = [
         SimpleNamespace(choices=[SimpleNamespace(
@@ -92,3 +110,70 @@ async def test_gateway_audit_calls_are_isolated_per_async_task(monkeypatch):
 
     assert first == ["first"]
     assert second == ["second"]
+
+
+@pytest.mark.asyncio
+async def test_transport_failure_is_recorded_without_invented_usage():
+    class Completions:
+        async def create(self, **kwargs):
+            raise TimeoutError('possibly sensitive request details')
+
+    gateway = MeshGateway()
+    gateway._client = SimpleNamespace(chat=SimpleNamespace(completions=Completions()))
+    with pytest.raises(TimeoutError):
+        await gateway.complete('judge', 'system', 'user')
+    calls = gateway.drain_calls()
+    assert len(calls) == 1
+    assert calls[0].success is False
+    assert calls[0].total_tokens is None
+    assert calls[0].error == 'TimeoutError'
+
+
+@pytest.mark.asyncio
+async def test_invalid_response_keeps_provider_usage(monkeypatch):
+    class Completions:
+        async def create(self, **kwargs):
+            return SimpleNamespace(choices=[], usage=SimpleNamespace(prompt_tokens=9, completion_tokens=0, total_tokens=9))
+
+    gateway = MeshGateway()
+    gateway._client = SimpleNamespace(chat=SimpleNamespace(completions=Completions()))
+    monkeypatch.setattr('app.core.mesh_gateway.settings.mesh_json_attempts', 1)
+    with pytest.raises(ValueError):
+        await gateway.complete('judge', 'system', 'user')
+    calls = gateway.drain_calls()
+    assert len(calls) == 1
+    assert calls[0].total_tokens == 9
+    assert calls[0].completion_tokens == 0
+
+
+def test_sdk_retries_disabled_and_mesh_endpoint_preserved(monkeypatch):
+    options = {}
+    monkeypatch.setattr('app.core.mesh_gateway.settings.mesh_api_key', 'test-placeholder')
+    monkeypatch.setattr('app.core.mesh_gateway.AsyncOpenAI', lambda **kwargs: options.update(kwargs) or SimpleNamespace())
+    MeshGateway().client
+    assert options['base_url'] == 'https://api.meshapi.ai/v1'
+    assert options['max_retries'] == 0
+
+
+@pytest.mark.parametrize('url', [
+    'https://api.openai.com/v1', 'https://api.meshapi.ai.evil.example/v1',
+    'http://api.meshapi.ai/v1', 'https://api.meshapi.ai/v1?key=secret',
+])
+def test_gateway_refuses_non_mesh_or_insecure_endpoint(monkeypatch, url):
+    monkeypatch.setattr('app.core.mesh_gateway.settings.mesh_api_key', 'test-placeholder')
+    monkeypatch.setattr('app.core.mesh_gateway.settings.mesh_base_url', url)
+    with pytest.raises(RuntimeError, match='official HTTPS Mesh'):
+        MeshGateway().client
+
+
+@pytest.mark.asyncio
+async def test_cancelled_request_keeps_unknown_usage_record():
+    class Completions:
+        async def create(self, **kwargs):
+            raise asyncio.CancelledError()
+
+    gateway = MeshGateway()
+    gateway._client = SimpleNamespace(chat=SimpleNamespace(completions=Completions()))
+    with pytest.raises(asyncio.CancelledError):
+        await gateway.complete('judge', 'system', 'user')
+    assert gateway.drain_calls()[0].error == 'CancelledError'

@@ -16,4 +16,5 @@ htmlcov/
 venv/
 .venv/
 node_modules/
+frontend/.tanstack/
 archive.b64.*

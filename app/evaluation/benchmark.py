@@ -198,9 +198,11 @@ def compute_mutation_metrics(results: list[dict]) -> dict:
 
 def evaluate_run(run) -> dict:
     """Compute deterministic, auditable quality metrics for a completed run."""
+    from app.services.coverage import derive_coverage
+    coverage = derive_coverage(run, [entry.model_dump(mode="json") for entry in run.coverage])
     evidence_ids = {item.id for item in run.evidence}
     source_ids = {item.id for item in run.sources}
-    supported = run.supported_claims()
+    supported = run.supported_claims(run.confidence_threshold)
     supported_ids = {item.id for item in supported}
 
     judgement_by_claim = {judgement.claim_id: judgement for judgement in run.judgements}
@@ -239,9 +241,9 @@ def evaluate_run(run) -> dict:
         "citation_integrity_rate": valid_citation_links / max(len(citation_links), 1),
         "evidence_source_integrity_rate": evidence_with_sources / max(len(run.evidence), 1),
         "coverage": {
-            status.value: sum(1 for entry in run.coverage if entry.status == status)
-            for status in type(run.coverage[0].status)
-        } if run.coverage else {},
+            status.value: sum(1 for entry in coverage if entry.status == status)
+            for status in type(coverage[0].status)
+        } if coverage else {},
         "report_nonempty": bool(run.final_report.strip()),
         "error": run.error,
         "warnings": list(run.warnings),

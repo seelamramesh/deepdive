@@ -51,6 +51,9 @@ Rules:
 - Prefer primary and authoritative sources.
 - Include specific terms for precision.
 - Vary query formulations to maximize coverage.
+- On later rounds use gap_feedback to target missing evidence and rejected-claim objections.
+- Do not repeat previous_queries. Preserve original question scope and dates.
+- Prioritize red/yellow coverage within query_budget; never invent missing facts.
 """
 
 RESEARCHER_PROMPT = """\
@@ -146,6 +149,8 @@ Rules:
 - Flag outdated data.
 - Check for contradiction with other evidence.
 - Be thorough but fair — identify real weaknesses, not manufactured ones.
+- Harmless synonymous paraphrases are valid when numbers, dates, attribution and scope remain unchanged.
+- Distinguish lack of independent corroboration from a passage failing to support its attributed claim.
 """
 
 DEFENSE_PROMPT = """\
@@ -173,7 +178,8 @@ Rules:
 
 JUDGE_PROMPT = """\
 You are the Judge agent in the Claim Courtroom.
-Evaluate each claim based ONLY on the prosecution and defense arguments presented.
+Evaluate each claim against the original evidence passages supplied. Prosecution and
+defense arguments are fallible suggestions, not evidence themselves.
 
 Output JSON:
 {
@@ -192,12 +198,18 @@ Output JSON:
 }
 
 Rules:
-- Evaluate ONLY from supplied arguments — do not use outside knowledge.
+- Evaluate ONLY from supplied original passages — do not use outside knowledge.
+- Read the actual passage text for every cited evidence ID. Arguments cannot override it.
+- Preserve quantities, dates, negation, population, geography, conditions and forecast qualifiers.
 - "supported" requires exact passage mapping with high relevance.
 - "partially_supported" means some components verified, others not.
 - "contradicted" means evidence directly opposes the claim.
 - "unsupported" means no adequate evidence presented.
 - Be conservative: when in doubt, mark partially_supported.
+- Accept harmless synonyms when meaning, quantities, dates, scope and qualifiers are preserved.
+- Do not require a quotation to reproduce an entire publication's methodology to support an accurately attributed statement.
+- Missing qualifiers, causal overreach and changed numbers are substantive failures, not harmless paraphrases.
+- For partial or unsupported claims specify actionable missing_evidence for the next research round.
 - Confidence reflects strength of evidence mapping, not your belief.
 """
 
@@ -223,6 +235,10 @@ Output JSON:
 
 Rules:
 - Check for incompatible numbers, dates, definitions, causal claims, forecasts.
+- Compare original passages from different sources, not just the wording of drafted claims.
+- A disagreement requires comparable subject, metric, period, population, units and conditions.
+- Different dates, locations, forecast scenarios or definitions may explain a difference; do not fabricate conflict.
+- Claims can span subquestions; their grouping is not evidence that they cannot conflict.
 - Do not silently choose one source over another.
 - If unresolved, mark as unresolved — the final report must state the disagreement.
 - Severity: high = directly affects conclusions, medium = notable discrepancy, low = minor.
