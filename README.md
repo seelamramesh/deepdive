@@ -214,6 +214,8 @@ python -m pytest tests/test_mesh_compliance.py -v  # Architecture compliance
 - **Coverage completeness**: % of sub-questions adequately covered
 - **Mutation rejection rate**: % of evaluated citation mutations rejected
 
+Latest deployed runtime and CI evidence: [`docs/release-evidence-2026-10-24.md`](docs/release-evidence-2026-10-24.md). Latest release validation: 116 backend tests and 22 frontend tests passed; these are not live model accuracy measurements.
+
 Measured production results and limitations: [`docs/evaluation-results.md`](docs/evaluation-results.md).
 
 Measured examples (2026-10-18): EV run `2ed2c8150b91476e` retrieved 6 sources and 34 evidence passages, accepting 6 of 12 claims with 7/7 valid citation links. AGI run `0d67c451657b4525` retrieved 4 sources and 19 passages, accepting 5 of 12 claims with 5/5 valid citation links. Both reports have incomplete coverage; citation integrity measures internal references, not independent truth.
