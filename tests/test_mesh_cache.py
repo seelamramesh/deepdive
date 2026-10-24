@@ -108,3 +108,18 @@ async def test_local_cache_expires_after_five_minutes(monkeypatch):
     await g.complete('judge','system','A')
     assert len(sent)==2
     g.end_cache_scope(token)
+
+
+@pytest.mark.asyncio
+async def test_wrong_result_type_is_not_cached():
+    g,_=gateway();count=0;token=g.begin_cache_scope()
+    class Completions:
+        async def create(self,**kwargs):
+            nonlocal count
+            count+=1
+            return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content='{"verdicts":"invalid list"}'),finish_reason='stop')])
+    g._client=SimpleNamespace(chat=SimpleNamespace(completions=Completions()))
+    await g.complete('judge','system','A')
+    await g.complete('judge','system','A')
+    assert count==2
+    g.end_cache_scope(token)

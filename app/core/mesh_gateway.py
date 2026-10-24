@@ -210,8 +210,10 @@ class MeshGateway:
                 "defense":"defenses", "judge":"verdicts", "contradiction_analyst":"contradictions",
                 "coverage_analyst":"coverage", "synthesizer":"report", "report_verifier":"decisions"}
             required = parsed.get(contracts.get(agent_name,""))
-            cacheable = (isinstance(required,str) and bool(required.strip())) or (
-                isinstance(required,list) and bool(required) and all(isinstance(item,dict) for item in required))
+            cacheable = agent_name in contracts and (
+                (agent_name == "synthesizer" and isinstance(required,str) and bool(required.strip())) or
+                (agent_name != "synthesizer" and isinstance(required,list) and bool(required)
+                 and all(isinstance(item,dict) for item in required)))
             if cache is not None and len(cache) < 128 and cacheable:
                 cache[cache_key] = {"parsed": copy.deepcopy(parsed), "call_id": call.id,
                                     "output_hash": call.output_hash, "created_at": time.monotonic()}

@@ -31,3 +31,6 @@ Report model review, kept/withheld audit and final-inclusion distinction; explic
 No new Mesh/Brave requests started during deployment. Persistent evaluation reservations remain at the last verified $2.138282, with $0.361718 before the conservative $2.50 stop under the user's $3 ceiling. A fresh full n8n research run with primary sources is pending an explicit increase in the cumulative cap or an adequately bounded affordable evaluation. Budget-increase question is pending; silence is not approval. Never reset existing reservations or call costs confirmed invoices.
 
 Still pending: fresh n8n research on this deployed revision, broader source/claim review, sufficiently complete coverage, remaining adversarial/temporal/real-contradiction evaluations and final jury documentation after the goal completion gate. Hackathon submission remains on hold.
+
+
+Subsequent budget update: user authorized $4 cumulative testing. Ledger preserved; reservation stop is now $3.50, existing reservations $2.138282, remaining reservation capacity $1.361718. This supersedes the earlier budget gate above. Cache optimization remains candidate-only; ordinary production research still lacks the evaluation guard.

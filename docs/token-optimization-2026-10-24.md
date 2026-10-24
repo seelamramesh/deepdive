@@ -21,7 +21,7 @@ Mesh also describes an account-private temporary exact-response cache, entries e
 
 ## Validation
 
-167 backend tests passed, one existing deprecation warning, 4.47 seconds. Includes seven pipeline scenarios with cache disabled and enabled (14 mocked-I/O integrations), exact repeated request/copy protection, version/evidence/model/format/output-limit changes, concurrent run isolation, malformed response misses, five-minute expiry, provider metadata uncertainty, budget-cap history and no token double counting. One repeated-request unit test proves two identical logical calls produce one provider invocation; this is not a measured whole-application savings percentage.
+168 backend tests passed, one existing deprecation warning, 4.42 seconds. Includes seven pipeline scenarios with cache disabled and enabled (14 mocked-I/O integrations), exact repeated request/copy protection, version/evidence/model/format/output-limit changes, concurrent run isolation, malformed response misses, five-minute expiry, provider metadata uncertainty, budget-cap history and no token double counting. One repeated-request unit test proves two identical logical calls produce one provider invocation; this is not a measured whole-application savings percentage.
 
 26 frontend tests passed; Vite build and TypeScript passed. Existing large-bundle warning remains. No new Linux candidate/browser release gate or live cache quality/cost measurement yet. Production remains runtime 03e239a until a separately validated rollout; these optimizations are candidate code only.
 
