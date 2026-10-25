@@ -1,0 +1,195 @@
+{
+  "run_id": "ee166f04883a48c0",
+  "runtime_revision": "30312f9",
+  "guard_code_revision": "a88f80b",
+  "path": "n8n webhook \u2192 production backend with temporary guard \u2192 Mesh",
+  "status": "END",
+  "rounds": 2,
+  "cache": {
+    "logical_agent_calls": 20,
+    "local_hits": 0,
+    "hit_rate": 0,
+    "mesh_dispatch_attempts": 20,
+    "mesh_responses": 20,
+    "provider_cached_prompt_tokens": 0,
+    "provider_cache_metadata_calls": 20,
+    "expired_entries": null,
+    "different_key_misses": null,
+    "positive_savings_demonstrated": false,
+    "counterfactual_savings_tokens": null,
+    "counterfactual_savings_latency_ms": null,
+    "cached_vs_uncached_quality_comparison": "Not applicable: zero cache hits; no second paid run"
+  },
+  "tokens": {
+    "prompt_tokens": 36896,
+    "completion_tokens": 24341,
+    "total_tokens": 61237
+  },
+  "calls_with_missing_token_fields": 0,
+  "latency": {
+    "webhook_wall_ms": 136110,
+    "n8n_execution_ms": 136044,
+    "pipeline_to_last_checkpoint_seconds": 131.564844,
+    "sum_call_duration_ms": 128906,
+    "mean_uncached_call_duration_ms": 6445.3,
+    "mean_cached_call_duration_ms": null
+  },
+  "quality": {
+    "sources": 1,
+    "primary_sources_model_classified": 1,
+    "retained_official_domains": [
+      "www.fda.gov"
+    ],
+    "evidence": 9,
+    "active_claims": 2,
+    "accepted": 1,
+    "partially_supported": 1,
+    "unsupported": 0,
+    "contradictions": 0,
+    "coverage": [
+      {
+        "subquestion_id": "f88038cff07e",
+        "subquestion_text": "What are the respective statutory authorities and jurisdictional boundaries of FDA and USDA's Food Safety and Inspection Service (FSIS) over cell-cultivated poultry products intended for human food, and which agency oversees which stages of production (cell collection and cell banks, cultivation, harvesting, and final product formulation, labeling, and inspection)?",
+        "evidence_count": 3,
+        "source_count": 1,
+        "primary_source_count": 1,
+        "distinct_material_count": 1,
+        "verified_claim_count": 0,
+        "contradiction_count": 0,
+        "coverage_score": 0.2,
+        "status": "red"
+      },
+      {
+        "subquestion_id": "28f8b3f3000e",
+        "subquestion_text": "What does the FDA pre-market consultation process for cell-cultivated food ingredients or products involve procedurally (submission contents, pre-market meetings, evaluation criteria, and the 'no questions' letter issuance), and what is the stated legal effect of the resulting FDA response?",
+        "evidence_count": 4,
+        "source_count": 1,
+        "primary_source_count": 1,
+        "distinct_material_count": 1,
+        "verified_claim_count": 1,
+        "contradiction_count": 0,
+        "coverage_score": 0.35,
+        "status": "yellow"
+      },
+      {
+        "subquestion_id": "656ec04be4c8",
+        "subquestion_text": "What specific determinations, such as food safety, regulatory status of the cell source or ingredients, and the substance's classification under the FD&C Act, does FDA pre-market consultation establish for a cell-cultivated chicken product?",
+        "evidence_count": 1,
+        "source_count": 1,
+        "primary_source_count": 1,
+        "distinct_material_count": 1,
+        "verified_claim_count": 0,
+        "contradiction_count": 0,
+        "coverage_score": 0.1,
+        "status": "red"
+      },
+      {
+        "subquestion_id": "d11b2930d970",
+        "subquestion_text": "What matters does FDA pre-market consultation not establish for a cell-cultivated chicken product, including the need for subsequent USDA FSIS grant of inspection, labeling approval, facility requirements, and any remaining state or other federal obligations?",
+        "evidence_count": 1,
+        "source_count": 1,
+        "primary_source_count": 1,
+        "distinct_material_count": 1,
+        "verified_claim_count": 0,
+        "contradiction_count": 0,
+        "coverage_score": 0.1,
+        "status": "red"
+      },
+      {
+        "subquestion_id": "23e754eeea2e",
+        "subquestion_text": "How has the FDA-USDA division of oversight been applied in practice to completed cell-cultivated chicken products (for example, the consultations and subsequent USDA label approval or grant of inspection for specific companies), and what do these cases reveal about the handoff between the two agencies?",
+        "evidence_count": 0,
+        "source_count": 0,
+        "primary_source_count": 0,
+        "distinct_material_count": 0,
+        "verified_claim_count": 0,
+        "contradiction_count": 0,
+        "coverage_score": 0.0,
+        "status": "red"
+      }
+    ],
+    "zero_evidence_subquestions": [
+      "23e754eeea2e"
+    ],
+    "model_review_kept": 19,
+    "model_review_withheld": 0,
+    "final_report_units_included": 5,
+    "post_review_units_excluded": 14,
+    "warnings": [],
+    "error": null,
+    "completeness": "Insufficient: 4 red, 1 yellow; one accepted fact"
+  },
+  "search": {
+    "reserved_dispatch_attempts": 2,
+    "url_returning_searches": 1,
+    "provider_billed_searches": null,
+    "failure_status_codes_available": false
+  },
+  "cost": {
+    "initial_reserved_usd": "2.138282",
+    "new_reservations_usd": "0.702245",
+    "cumulative_reserved_usd": "2.840527",
+    "authorized_total_usd": "4",
+    "reservation_stop_usd": "3.50",
+    "remaining_reservation_capacity_usd": "0.659473",
+    "confirmed_billed_usd": null,
+    "prior_ledger_preserved": true,
+    "dispatches_preceded_by_reservation": true
+  },
+  "n8n": {
+    "execution_id": 414891,
+    "status": "success",
+    "started_at": "2026-10-25 02:20:06.163",
+    "stopped_at": "2026-10-25 02:22:22.207",
+    "duration_ms": 136044,
+    "workflow_version": "9e0edda7-3082-4f5a-97d5-e7265edde36e",
+    "started_run_ids": [
+      "ee166f04883a48c0"
+    ],
+    "executed_nodes": [
+      "Webhook",
+      "Validate Request",
+      "Start Research Run",
+      "Poll Status",
+      "Is Complete?",
+      "Is Failed?",
+      "Is Timed Out?",
+      "Wait",
+      "Get Report",
+      "Get Certificate",
+      "Respond Success"
+    ],
+    "wait_visits": 27,
+    "wait_duration_ms": [
+      5001,
+      5001,
+      5001,
+      5000,
+      5000,
+      5000,
+      5001,
+      5000,
+      5000,
+      5000,
+      5001,
+      5000,
+      5000,
+      5000,
+      5001,
+      4999,
+      5000,
+      5000,
+      5001,
+      5001,
+      5001,
+      5000,
+      5001,
+      5001,
+      5001,
+      5000,
+      5001
+    ],
+    "respond_success_executed": true,
+    "respond_failed_executed": false
+  }
+}

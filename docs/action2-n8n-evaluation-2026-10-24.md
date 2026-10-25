@@ -1,8 +1,10 @@
-# Action 2: guarded n8n evaluation preparation
+# Action 2: guarded n8n evaluation preparation (historical checkpoint)
 
 ## Status
 
-Prepared; **not launched**. Automatic approval review rejected the launch because it requires explicit confirmation after the Action 1 gate for paid execution and a temporary production entry-point change. No workaround or alternate launch was attempted. Confirmation is pending.
+Historical preparation checkpoint — now superseded by [completed measured results](action2-n8n-results-2026-10-24.md). Explicit confirmation subsequently received; one guarded run completed and normal service restored.
+
+At the preparation checkpoint: prepared; **not launched**. Automatic approval review rejected the launch because it requires explicit confirmation after the Action 1 gate for paid execution and a temporary production entry-point change. No workaround or alternate launch was attempted. Confirmation is pending.
 
 Read-only verification after rejection: production remains `deepdive:cache-30312f9`, normal uvicorn entry point; controller marker/log absent; admission marker absent; budget unchanged at 66 reservations totaling $2.138282. No new research or cache measurements exist.
 
@@ -10,7 +12,7 @@ Read-only verification after rejection: production remains `deepdive:cache-30312
 
 Question: How do FDA and USDA divide federal oversight of cell-cultivated chicken for human food in the United States, and what does FDA pre-market consultation establish versus not establish?
 
-Path: existing production n8n webhook `/webhook/deepdive-research` → production backend → official Mesh. Active workflow `vXuzyMGtoaIr2Gcu`, version `9e0edda7-3082-4f5a-97d5-e7265edde36e`, 14 nodes. n8n backend URL independently verified as the production DeepDive URL. No workflow mutation is needed.
+Path: existing production n8n webhook `/webhook/deepdive-research` â†’ production backend â†’ official Mesh. Active workflow `vXuzyMGtoaIr2Gcu`, version `9e0edda7-3082-4f5a-97d5-e7265edde36e`, 14 nodes. n8n backend URL independently verified as the production DeepDive URL. No workflow mutation is needed.
 
 Primary starting URLs:
 - https://www.fda.gov/food/food-ingredients-packaging/human-food-made-cultured-animal-cells

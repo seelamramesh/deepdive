@@ -40,7 +40,7 @@ flowchart LR
 
 The key includes full messages, agent, prompt version, model, generation settings and endpoint. Entries are scoped to one run, expire after five minutes and are limited to 128. Changed evidence is not treated as an identical request. There is no semantic or cross-run answer cache.
 
-Audit distinguishes local reuse from actual API requests. A local cache event's zero token increment means this app sent no new inference request; it is not a provider billing statement. Provider cached-input fields are retained only when returned. Missing historical measurements remain unavailable. Live cache savings have not yet been established.
+Audit distinguishes local reuse from actual API requests. A local cache event's zero token increment means this app sent no new inference request; it is not a provider billing statement. Provider cached-input fields are retained only when returned. Missing historical measurements remain unavailable. First guarded live evaluation measured zero cache hits across 20 Mesh calls; no positive savings established. See [measured results](action2-n8n-results-2026-10-24.md).
 
 ## Where n8n fits
 
