@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+: "${DEEPDIVE_PUBLIC_HOST:?Set deployment hostname}"
 cd /docker/deepdive
 
 if docker container inspect deepdive-rollback >/dev/null 2>&1; then
@@ -28,7 +29,7 @@ docker run -d \
   --volume /docker/deepdive/data:/app/data \
   --network n8n_n8n_network \
   --label 'traefik.enable=true' \
-  --label 'traefik.http.routers.deepdive.rule=Host(`deepdive.srv1493167.hstgr.cloud`)' \
+  --label "traefik.http.routers.deepdive.rule=Host(\`$DEEPDIVE_PUBLIC_HOST\`)" \
   --label 'traefik.http.routers.deepdive.entrypoints=web,websecure' \
   --label 'traefik.http.routers.deepdive.tls=true' \
   --label 'traefik.http.routers.deepdive.tls.certresolver=mytlschallenge' \

@@ -163,7 +163,7 @@ graph LR
     Fetch --> Respond[Return Results]
 ```
 
-Import `n8n/deepdive-research.json` into your n8n instance. Set `DEEPDIVE_BACKEND_URL` environment variable to point at your running DeepDive API.
+Import `n8n/deepdive-research.json` into your n8n instance. Set `DEEPDIVE_BACKEND_URL` environment variable to point at your running DeepDive API. Callers must send `X-DeepDive-API-Key`; the workflow forwards it to the protected research endpoint.
 
 ## Data Model
 
@@ -186,6 +186,10 @@ erDiagram
     Evidence }o--|| Source : from
     AtomicClaim }o--o{ Evidence : supported_by
 ```
+
+## Research access
+
+New research and follow-ups require a separate owner key in `X-DeepDive-API-Key`; the UI asks for it. Configure `DEEPDIVE_API_KEY` privately (32+ random bytes). Empty/short server keys lock research; public reports remain readable. n8n forwards the caller key and cannot grant anonymous callers paid access. See [access and endpoint policy](docs/api-access.md). Hiding the domain is not authentication.
 
 ## Installation
 

@@ -1,6 +1,6 @@
 # User n8n run validation — 2026-10-24
 
-Run: https://deepdive.srv1493167.hstgr.cloud/run/c324ed4de85d4e3c
+Run: https://deepdive.example.invalid/run/c324ed4de85d4e3c
 Question: What are the main risks of investing in EV batteries in 2026?
 
 Decision: do not submit yet. This review started no new research and changed neither production nor the workflow.

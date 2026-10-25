@@ -51,7 +51,7 @@ export function useRun(id?: string) { return useQuery({queryKey: ['run', id], qu
 export function useHealth() { return useQuery({queryKey: ['health'], queryFn: () => request<{status: string; mesh_configured: boolean; db_ok: boolean; version: string}>('/health'), refetchInterval: 30000}); }
 export function useResearch(parentId?: string) {
   const client = useQueryClient();
-  return useMutation({mutationFn: (input: ResearchInput) => request<{run_id: string; status: string}>(parentId ? `/runs/${encodeURIComponent(parentId)}/follow-up` : '/research', {method: 'POST', body: JSON.stringify(input)}), onSuccess: (result, input) => {
+  return useMutation({mutationFn: ({accessKey, ...input}: ResearchInput & {accessKey: string}) => request<{run_id: string; status: string}>(parentId ? `/runs/${encodeURIComponent(parentId)}/follow-up` : '/research', {method: 'POST', headers: {'X-DeepDive-API-Key': accessKey}, body: JSON.stringify(input)}), onSuccess: (result, input) => {
     client.setQueryData<RunSummary[]>(['runs'], old => [{id: result.run_id, question: input.question, state: 'START', created_at: new Date().toISOString()}, ...(old || [])]);
     void client.invalidateQueries({queryKey: ['runs']});
   }});

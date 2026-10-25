@@ -22,6 +22,7 @@ from app.storage import database
 @pytest.mark.parametrize('cache_enabled', [False, True])
 @pytest.mark.parametrize('scenario', ['supported_and_withheld', 'gap_then_recover', 'malformed_synthesis', 'no_sources', 'tampered_snapshot', 'long_snapshot', 'late_relevant_snapshot'])
 async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, scenario, cache_enabled):
+    monkeypatch.setattr(routes.settings, 'deepdive_api_key', 'offline-test-key-' + 'x'*32)
     monkeypatch.setattr('app.core.mesh_gateway.settings.mesh_run_cache', cache_enabled)
     monkeypatch.setattr(database, 'DB_PATH', str(tmp_path/'runs.db'))
     await database.init_db()
@@ -127,7 +128,7 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
     app = FastAPI()
     app.include_router(routes.router)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),base_url='http://test') as client:
-        response = await client.post('/research',json={'question':('What was fixture revenue in 2025?' if scenario == 'late_relevant_snapshot' else f'Offline fixture scenario {scenario}'), 'max_rounds':2 if scenario=='gap_then_recover' else 1})
+        response = await client.post('/research',headers={'X-DeepDive-API-Key':'offline-test-key-'+'x'*32},json={'question':('What was fixture revenue in 2025?' if scenario == 'late_relevant_snapshot' else f'Offline fixture scenario {scenario}'), 'max_rounds':2 if scenario=='gap_then_recover' else 1})
         assert response.status_code == 200
         run_id = response.json()['run_id']
         task = routes._running.get(run_id)

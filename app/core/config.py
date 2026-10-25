@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     mesh_run_cache: bool = Field(default=True, alias="MESH_RUN_CACHE")
     brave_search_api_key: str = Field(default="", alias="BRAVE_SEARCH_API_KEY")
 
+    deepdive_api_key: str = Field(default="", alias="DEEPDIVE_API_KEY")
+
     app_host: str = "0.0.0.0"
     app_port: int = 8000
     log_level: str = "info"

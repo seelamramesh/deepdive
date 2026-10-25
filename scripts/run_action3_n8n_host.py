@@ -17,7 +17,7 @@ import urllib.error
 import urllib.request
 
 HERE = Path(__file__).resolve().parent
-BASE = "https://deepdive.srv1493167.hstgr.cloud"
+BASE = os.environ.get("DEEPDIVE_BASE_URL", "http://localhost:8000").rstrip("/")
 
 
 def docker(*args):

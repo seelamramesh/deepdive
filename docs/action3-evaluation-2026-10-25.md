@@ -4,7 +4,7 @@
 
 One guarded paid n8n run and two offline test groups completed. **Execution and measurement passed; research completeness remains insufficient. No hackathon submission made.**
 
-[Live run b23afbee4eda46e0](https://deepdive.srv1493167.hstgr.cloud/run/b23afbee4eda46e0) · [Machine-readable measurements](evaluations/action3-n8n-2026-10-25.json)
+[Live run b23afbee4eda46e0](https://deepdive.example.invalid/run/b23afbee4eda46e0) · [Machine-readable measurements](evaluations/action3-n8n-2026-10-25.json)
 
 Topic: compare productivity findings from the Chinese CTrip call-center and Indian data-entry randomized studies, preserving population/work-arrangement qualifiers and distinguishing genuine contradictions from contextual differences. Primary source pages: [NBER w18871](https://www.nber.org/papers/w18871) and [NBER w31515](https://www.nber.org/papers/w31515). Different populations/tasks mean opposite effect directions do not automatically establish a like-for-like contradiction.
 

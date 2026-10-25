@@ -63,14 +63,16 @@ it('does not invent unmeasured audit scores', () => {render(<AuditPanel run={run
 it('submits validated research settings and selects created run', async () => {
   const fetchMock = vi.fn().mockResolvedValue({ok:true,json:async () => ({run_id:'created',status:'started'})}); vi.stubGlobal('fetch',fetchMock); const created=vi.fn();
   render(<QueryClientProvider client={new QueryClient({defaultOptions:{mutations:{retry:false}}})}><ResearchForm open onClose={vi.fn()} onCreated={created}/></QueryClientProvider>);
-  fireEvent.change(screen.getByLabelText('Question'),{target:{value:'A sufficiently detailed research question'}}); fireEvent.click(screen.getByRole('button',{name:'Start research'}));
+  fireEvent.change(screen.getByLabelText('Research access key'),{target:{value:'offline-test-access-key'}}); fireEvent.change(screen.getByLabelText('Question'),{target:{value:'A sufficiently detailed research question'}}); fireEvent.click(screen.getByRole('button',{name:'Start research'}));
   await vi.waitFor(() => expect(created).toHaveBeenCalledWith('created'));
   expect(JSON.parse(fetchMock.mock.calls[0]![1].body)).toMatchObject({max_rounds:2,confidence_threshold:0.7});
+  expect(fetchMock.mock.calls[0]![1].headers['X-DeepDive-API-Key']).toBe('offline-test-access-key');
+  expect(fetchMock.mock.calls[0]![1].body).not.toContain('offline-test-access-key');
 });
 it('keeps server errors visible and restores submit control', async () => {
   vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:false,status:503,json:async () => ({detail:'Backend unavailable'})}));
   render(<QueryClientProvider client={new QueryClient({defaultOptions:{mutations:{retry:false}}})}><ResearchForm open onClose={vi.fn()} onCreated={vi.fn()} initialQuestion="A sufficiently detailed research question"/></QueryClientProvider>);
-  fireEvent.click(screen.getByRole('button',{name:'Start research'})); expect(await screen.findByRole('alert')).toHaveTextContent('Backend unavailable'); expect(screen.getByRole('button',{name:'Start research'})).toBeEnabled();
+  fireEvent.change(screen.getByLabelText('Research access key'),{target:{value:'offline-test-key'}}); fireEvent.click(screen.getByRole('button',{name:'Start research'})); expect(await screen.findByRole('alert')).toHaveTextContent('Backend unavailable'); expect(screen.getByRole('button',{name:'Start research'})).toBeEnabled();
 });
 
 it('shows report review decisions and preserves missing historical diagnostics', () => {
@@ -131,4 +133,17 @@ it('shows submitted compacted query and numeric guard independently of model rev
   expect(screen.getByText(/Submitted query.*short query/)).toBeInTheDocument();
   expect(screen.getByRole('heading',{name:'Sentence-level numeric citation checks'})).toBeInTheDocument();
   expect(screen.getByText('number_absent_from_local_cited_passages')).toBeInTheDocument();
+});
+
+it('requires owner access key without storing it in browser storage', () => {
+  const fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+  render(<QueryClientProvider client={new QueryClient()}><ResearchForm open onClose={vi.fn()} onCreated={vi.fn()} initialQuestion="A sufficiently detailed research question"/></QueryClientProvider>);
+  expect(screen.getByRole('button',{name:'Start research'})).toBeDisabled();
+  const field=screen.getByLabelText('Research access key');
+  expect(field).toHaveAttribute('type','password');
+  fireEvent.change(field,{target:{value:'offline-only-key'}});
+  expect(screen.getByRole('button',{name:'Start research'})).toBeEnabled();
+  expect(JSON.stringify(localStorage)).not.toContain('offline-only-key');
+  expect(JSON.stringify(sessionStorage)).not.toContain('offline-only-key');
+  expect(fetchMock).not.toHaveBeenCalled();
 });

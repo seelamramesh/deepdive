@@ -1,6 +1,6 @@
 # Live SQLite evaluation — 2026-10-24
 
-Run: [eval20261024sql01](https://deepdive.srv1493167.hstgr.cloud/run/eval20261024sql01).
+Run: [eval20261024sql01](https://deepdive.example.invalid/run/eval20261024sql01).
 Runtime revision: 1c0fbb7ebf04701c699cd2c8ce817e7f9f9e1f0b. Real deployed agent functions, Mesh inference, Brave retrieval and production SQLite persistence; invoked by guarded evaluation process, not browser or n8n. One round deliberately bounds this baseline; it does not test gap recovery.
 
 ## Measured execution

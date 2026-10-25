@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 from collections import defaultdict
 from datetime import datetime, timezone
 import json
@@ -67,7 +68,7 @@ def summarize(run: dict) -> dict:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--base-url', default='https://deepdive.srv1493167.hstgr.cloud')
+    parser.add_argument('--base-url', default=os.environ.get('DEEPDIVE_BASE_URL', 'http://localhost:8000'))
     choice = parser.add_mutually_exclusive_group(required=True)
     choice.add_argument('--run-id')
     choice.add_argument('--all', action='store_true')

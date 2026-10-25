@@ -60,6 +60,8 @@
       "parameters": {
         "method": "POST",
         "url": "={{ $env.DEEPDIVE_BACKEND_URL }}/research",
+        "sendHeaders": true,
+        "headerParameters": {"parameters": [{"name": "X-DeepDive-API-Key", "value": "={{ $('Webhook').first().json.headers['x-deepdive-api-key'] || '' }}"}]},
         "sendBody": true,
         "bodyParameters": {
           "parameters": [

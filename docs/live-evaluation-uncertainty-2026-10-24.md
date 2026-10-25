@@ -1,6 +1,6 @@
 # Live uncertainty and contradiction evaluation — 2026-10-24
 
-Run [eval20261024exo01](https://deepdive.srv1493167.hstgr.cloud/run/eval20261024exo01), runtime f6b375f. Real Mesh/Brave, deployed agent code and SQLite persistence, one round, invoked through guarded process rather than browser/n8n.
+Run [eval20261024exo01](https://deepdive.example.invalid/run/eval20261024exo01), runtime f6b375f. Real Mesh/Brave, deployed agent code and SQLite persistence, one round, invoked through guarded process rather than browser/n8n.
 
 ## Uncertainty case
 

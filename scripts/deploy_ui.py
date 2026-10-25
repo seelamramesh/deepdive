@@ -20,7 +20,11 @@ def main():
     parser.add_argument("image")
     parser.add_argument("release_dir")
     parser.add_argument("--promote", action="store_true")
+    parser.add_argument("--base-url", default=os.getenv("DEEPDIVE_BASE_URL"))
+    parser.add_argument("--api-key-file", type=Path)
     args = parser.parse_args()
+    if args.promote and not args.base_url:
+        parser.error("--base-url or DEEPDIVE_BASE_URL required for promotion")
     release = Path(args.release_dir).resolve()
     original = json.loads(docker("inspect", "deepdive"))[0]
     mounts = original["Mounts"]
@@ -45,7 +49,14 @@ def main():
     try:
         os.fchmod(descriptor, 0o600)
         with os.fdopen(descriptor, "w") as env_file:
-            env_file.write("\n".join(original["Config"]["Env"]))
+            env_values = list(original["Config"]["Env"])
+            if args.api_key_file:
+                access_key = args.api_key_file.read_text().strip()
+                if len(access_key) < 32 or "\n" in access_key or "\r" in access_key:
+                    raise RuntimeError("Access key file must contain one strong key")
+                env_values = [entry for entry in env_values if not entry.startswith("DEEPDIVE_API_KEY=")]
+                env_values.append("DEEPDIVE_API_KEY=" + access_key)
+            env_file.write("\n".join(env_values))
         candidate = "deepdive-ui-candidate-" + time.strftime("%Y%m%d%H%M%S")
         if subprocess.run(["docker", "container", "inspect", candidate], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0:
             raise RuntimeError("Candidate already exists; inspect it before restarting deployment")
@@ -60,7 +71,20 @@ def main():
                 time.sleep(2)
             else:
                 raise RuntimeError("Candidate readiness failed")
-            print("Candidate backend tests, persisted runs, DB readiness, SPA shell passed", flush=True)
+            # Invalid bodies ensure even a broken auth check cannot dispatch AI.
+            auth_probe = """import os,json,urllib.request,urllib.error
+key=os.environ.get('DEEPDIVE_API_KEY','')
+for supplied,expected in [(None,401 if len(key.encode())>=32 else 503),('invalid-access-key',401 if len(key.encode())>=32 else 503)]+([(key,422)] if len(key.encode())>=32 else []):
+ headers={'Content-Type':'application/json'}
+ if supplied is not None: headers['X-DeepDive-API-Key']=supplied
+ request=urllib.request.Request('http://localhost:8000/research',data=b'{"question":"short"}',headers=headers)
+ try:
+  urllib.request.urlopen(request);raise RuntimeError('Auth probe unexpectedly accepted')
+ except urllib.error.HTTPError as error:
+  assert error.code==expected,(error.code,expected)
+"""
+            subprocess.run(["docker", "exec", candidate, "python", "-c", auth_probe], check=True)
+            print("Candidate backend tests, persisted runs, DB readiness, SPA shell and research auth passed", flush=True)
         finally:
             docker("stop", candidate)
         if not args.promote:
@@ -83,9 +107,9 @@ def main():
             docker("run", "-d", "--name", "deepdive", "--restart", "unless-stopped", *common, "-v", f"{data_dir}:/app/data", *labels, args.image)
             for attempt in range(40):
                 try:
-                    with urllib.request.urlopen("https://deepdive.srv1493167.hstgr.cloud/health", timeout=5) as response:
+                    with urllib.request.urlopen(args.base_url.rstrip("/") + "/health", timeout=5) as response:
                         health = json.load(response)
-                    with urllib.request.urlopen("https://deepdive.srv1493167.hstgr.cloud/", timeout=5) as response:
+                    with urllib.request.urlopen(args.base_url.rstrip("/") + "/", timeout=5) as response:
                         html = response.read().decode()
                     if health.get("db_ok") and "/assets/" in html:
                         break

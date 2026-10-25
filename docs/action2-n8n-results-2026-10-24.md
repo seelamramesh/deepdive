@@ -4,7 +4,7 @@
 
 One authorized n8n evaluation completed. **Technical execution passed; answer completeness is insufficient. No positive cache savings demonstrated.** No Action 3 run or hackathon submission was launched.
 
-[Saved run](https://deepdive.srv1493167.hstgr.cloud/run/ee166f04883a48c0) · [Machine-readable measurements](evaluations/action2-n8n-2026-10-24.json)
+[Saved run](https://deepdive.example.invalid/run/ee166f04883a48c0) · [Machine-readable measurements](evaluations/action2-n8n-2026-10-24.json)
 
 Topic: FDA/USDA federal oversight of cell-cultivated chicken and the limits of FDA pre-market consultation.
 

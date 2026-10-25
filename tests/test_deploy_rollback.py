@@ -30,7 +30,7 @@ def test_failed_public_readiness_restores_previous_container(monkeypatch,tmp_pat
     monkeypatch.setattr(deploy_ui.time,'sleep',lambda _:None)
     def unavailable(*args,**kwargs): raise OSError('Fixture public health unavailable')
     monkeypatch.setattr(deploy_ui.urllib.request,'urlopen',unavailable)
-    monkeypatch.setattr(sys,'argv',['deploy_ui.py','candidate-image',str(release),'--promote'])
+    monkeypatch.setattr(sys,'argv',['deploy_ui.py','candidate-image',str(release),'--promote','--base-url','https://deployment.example.invalid'])
     with pytest.raises(RuntimeError,match='Public readiness failed'):
         deploy_ui.main()
     assert ('docker','rm','-f','deepdive') in commands

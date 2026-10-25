@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import secrets
 from typing import Optional
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException
 
 from app.core.config import settings
 from app.core.mesh_gateway import mesh
@@ -23,6 +24,16 @@ from app.services.coverage import derive_coverage
 from app.storage.database import database_ready
 
 router = APIRouter()
+
+async def require_research_key(x_deepdive_api_key: str | None = Header(default=None)) -> None:
+    """Fail closed before saving a run or scheduling any paid work."""
+    expected = settings.deepdive_api_key
+    if len(expected.encode("utf-8")) < 32:
+        raise HTTPException(503, "Research is locked. Owner must configure an access key.")
+    supplied = (x_deepdive_api_key or "").encode("utf-8")
+    if not secrets.compare_digest(supplied, expected.encode("utf-8")):
+        raise HTTPException(401, "Research access key required or invalid.")
+
 
 # In-memory tracking of background tasks
 _running: dict[str, asyncio.Task] = {}
@@ -82,7 +93,7 @@ async def get_workspace(run_id: str):
     return data
 
 
-@router.post("/research")
+@router.post("/research", dependencies=[Depends(require_research_key)])
 async def start_research(req: ResearchRequest, bg: BackgroundTasks):
     """Start a new research run (runs in background)."""
     from app.models.schemas import ResearchRun, RunState
@@ -189,7 +200,7 @@ async def get_report(run_id: str):
     }
 
 
-@router.post("/runs/{run_id}/follow-up")
+@router.post("/runs/{run_id}/follow-up", dependencies=[Depends(require_research_key)])
 async def follow_up(run_id: str, req: FollowUpRequest, bg: BackgroundTasks):
     parent = await load_run(run_id)
     if not parent:
