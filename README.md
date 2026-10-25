@@ -6,7 +6,7 @@ New here? Start with [the simple flow guide](docs/FLOW-README.md). Reports may r
 
 ## Current measured readiness
 
-See [final readiness review](docs/final-readiness-2026-10-25.md) for rules, feature inventory, limitations and ledger reconciliation. Latest fixes add bounded Brave query compaction, sentence-level numeric passage checks and readable mobile run questions. Old runs are preserved unchanged; regression proof uses copied fixtures, not another paid run.
+See [final readiness review](docs/final-readiness-2026-10-25.md) for rules, feature inventory, limitations and ledger reconciliation, and [release verification](docs/final-release-2026-10-25.md) for deployed revision and exact CI. Latest fixes add bounded Brave query compaction, sentence-level numeric passage checks and readable mobile run questions. Old runs are preserved unchanged; regression proof uses copied fixtures, not another paid run.
 
 | Self-evaluation | Observed result |
 |---|---|

@@ -83,7 +83,7 @@ Official authenticated [Agent Arena dashboard](https://career.krishnaik.in/dashb
 | Optional video and deployment | Live deployment exists; no completed demo video claimed |
 | Solo/team eligibility | Account shows registered; personal eligibility/team declarations remain user responsibility |
 
-Exact historical `2c0f5ad6228b431fbfee46d4138b5a7eb2f58629`: backend and frontend CI succeeded ([app CI](https://github.com/seelamramesh/deepdive/actions/runs/40165642301)). Organizer [job](https://github.com/seelamramesh/deepdive/actions/runs/40165639923) passed 4/4 critical checks plus advisories, then failed reporting with HTTP 403 because no submission entry exists. The job is failed and the result is not recorded; this is not fully green CI. It is not resolved by changing the official workflow or prematurely submitting. Latest-revision CI/release proof is recorded separately after push.
+Exact historical `2c0f5ad6228b431fbfee46d4138b5a7eb2f58629`: backend and frontend CI succeeded ([app CI](https://github.com/seelamramesh/deepdive/actions/runs/40165642301)). Organizer [job](https://github.com/seelamramesh/deepdive/actions/runs/40165639923) passed 4/4 critical checks plus advisories, then failed reporting with HTTP 403 because no submission entry exists. The job is failed and the result is not recorded; this is not fully green CI. It is not resolved by changing the official workflow or prematurely submitting. Latest-revision CI/release proof: [final release verification](final-release-2026-10-25.md).
 
 ## Feature inventory and negative results
 
