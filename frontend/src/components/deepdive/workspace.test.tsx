@@ -103,3 +103,8 @@ it('labels local exact cache reuse without claiming a new provider request', () 
   expect(screen.getByText(/1 local exact-cache reuses/)).toBeInTheDocument();
   expect(screen.getAllByText('cached').length).toBeGreaterThan(0);
 });
+
+it('does not invent zero cache reuse for historical runs', () => {
+  render(<AuditPanel run={{...run,agent_calls:[{id:'old',agent:'judge',model:'Mesh/model',duration_ms:5,success:true,cache_hit:null,total_tokens:null}]}}/>);
+  expect(screen.getByText('Cache data not available for this run')).toBeInTheDocument();
+});

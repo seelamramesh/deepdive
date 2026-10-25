@@ -2,33 +2,29 @@
 
 A multi-agent research platform that investigates questions, verifies claims against sources, and produces auditable cited reports. Built for **Agent Arena 2026 — Track 01**.
 
+New here? Start with [the simple flow guide](docs/FLOW-README.md). Reports may remain partial; an END state means processing finished, not that every research area is complete.
+
 ## Architecture
 
 ```mermaid
-graph TD
-    User[User / n8n Webhook] -->|question + URLs| API[FastAPI Backend]
-    API --> Coord[Coordinator Agent]
-    Coord --> Planner[Planner Agent]
-    Planner --> SearchStrat[Search Strategist]
-    SearchStrat --> Researcher[Researcher Agent]
-    Researcher --> SourceCritic[Source Critic]
-    SourceCritic --> ClaimDrafter[Claim Drafter]
-    ClaimDrafter --> Courtroom[Claim Courtroom]
-    Courtroom --> Prosecutor[Prosecutor Agent]
-    Courtroom --> Defense[Defense Agent]
-    Courtroom --> Judge[Judge Agent]
-    Judge --> ContraAnalyst[Contradiction Analyst]
-    ContraAnalyst --> CoverageAnalyst[Coverage Analyst]
-    CoverageAnalyst -->|thin coverage| SearchStrat
-    CoverageAnalyst -->|sufficient| Synthesizer[Synthesizer Agent]
-    Synthesizer --> Report[Cited Report + Certificate]
-
-    subgraph "Verification Layer"
-        Prosecutor
-        Defense
-        Judge
-    end
+flowchart TD
+    U[Browser or 14-node n8n webhook] --> API[FastAPI API]
+    API --> O[Python state-machine orchestrator]
+    O --> R[12 AI roles]
+    R --> C{Identical request cached in this run?}
+    C -->|Yes| REUSE[Reuse structured response and record source call]
+    C -->|No| M[Official Mesh API]
+    M --> R
+    O --> S[Brave URL search and protected page fetch]
+    S --> SNAP[Immutable sanitized snapshots and bounded windows]
+    SNAP --> R
+    O --> DB[(Bind-mounted SQLite)]
+    R --> V[Report review and citation checks]
+    V --> OUT[Cited report, audit and internal certificate]
+    OUT --> U
 ```
+
+The orchestrator is ordinary Python, not an additional AI agent. Cache reuse makes no new AI call; all actual inference uses Mesh. Cache entries expire after five minutes or run completion. Different evidence, prompts, versions, models or generation settings require a new request. Distinct source URLs/material groups do not establish independent studies.
 
 ## State Machine
 
@@ -44,35 +40,38 @@ stateDiagram-v2
     DRAFT_ATOMIC_CLAIMS --> CLAIM_COURTROOM
     CLAIM_COURTROOM --> DETECT_CONTRADICTIONS
     DETECT_CONTRADICTIONS --> MEASURE_COVERAGE
-    MEASURE_COVERAGE --> SEARCH : gaps found (max 3 rounds)
-    MEASURE_COVERAGE --> SYNTHESIZE
+    MEASURE_COVERAGE --> RESEARCH_GAPS: thin coverage and rounds remain
+    RESEARCH_GAPS --> SEARCH
+    MEASURE_COVERAGE --> SYNTHESIZE: complete or round limit reached
     SYNTHESIZE --> VERIFY_FINAL_REPORT
     VERIFY_FINAL_REPORT --> EXPORT
     EXPORT --> END
     END --> [*]
 ```
 
+Unrecoverable errors produce FAILED. Some later-stage errors can produce a labelled partial report from accepted claims; abrupt crashes do not resume automatically. Default research limit is three rounds; the request schema permits one to five.
+
 ## Claim Verification Sequence
 
 ```mermaid
 sequenceDiagram
-    participant D as Claim Drafter
+    participant O as Orchestrator
     participant P as Prosecutor
-    participant Df as Defense
+    participant D as Defense
     participant J as Judge
-
-    D->>P: atomic_claim + evidence
-    P->>Df: prosecution_argument
-    Df->>J: defense_argument
-    J->>J: weigh arguments
-    J-->>D: verdict (supported|refuted|insufficient|contested)
+    O->>P: Claims and original linked passages
+    P-->>O: Challenges
+    O->>D: Claims and original linked passages
+    D-->>O: Quote mappings
+    O->>J: Claims, original passages, challenges and checked quotes
+    J-->>O: supported / partially_supported / contradicted / unsupported
+    O->>O: Apply confidence threshold and valid evidence-ID guards
 ```
 
 ## 12 Specialized Agents
 
 | Agent | Role |
 |-------|------|
-| **Coordinator** | Orchestrates the full research pipeline |
 | **Planner** | Decomposes questions into sub-questions |
 | **Search Strategist** | Generates diverse search queries |
 | **Researcher** | Extracts structured evidence from sources |
@@ -83,7 +82,8 @@ sequenceDiagram
 | **Judge** | Issues structured verdicts |
 | **Contradiction Analyst** | Detects inter-claim contradictions |
 | **Coverage Analyst** | Maps coverage per sub-question |
-| **Synthesizer** | Produces the final cited report |
+| **Synthesizer** | Drafts a cited report using accepted claims |
+| **Report Verifier** | Reviews generated prose against accepted claims and supporting passages |
 
 ## Mesh API Compliance
 
@@ -92,8 +92,8 @@ All LLM calls route through the **Mesh API** gateway (`https://api.meshapi.ai/v1
 - **Gateway**: `app/core/mesh_gateway.py` — singleton `AsyncOpenAI` client with `base_url` override
 - **Key**: `MESH_API_KEY` environment variable (prefix `rsk_`)
 - **Model**: Configurable via `MESH_MODEL` (default: `anthropic/claude-haiku-5.5`)
-- **Temperature**: 0 for deterministic outputs
-- **Output**: JSON-only responses with Pydantic validation
+- **Temperature**: 0 by default; model outputs are not guaranteed deterministic
+- **Output**: structured JSON parsing and agent guards; stored records use Pydantic validation
 
 ### Anti-Drift Controls
 

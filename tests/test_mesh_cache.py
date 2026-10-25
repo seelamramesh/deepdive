@@ -123,3 +123,9 @@ async def test_wrong_result_type_is_not_cached():
     await g.complete('judge','system','A')
     assert count==2
     g.end_cache_scope(token)
+
+
+def test_historical_calls_keep_cache_state_unknown():
+    from app.models.schemas import AgentCall
+    call=AgentCall(agent='judge')
+    assert call.cache_hit is None and call.request_sent is None

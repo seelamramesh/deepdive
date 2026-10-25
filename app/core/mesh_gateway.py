@@ -134,7 +134,7 @@ class MeshGateway:
                     prompt_version=prompt_version,
                     input_hash=_hash(system_prompt + attempt_user_prompt),
                     duration_ms=int((time.monotonic() - start) * 1000),
-                    success=False, request_sent=True, usage_source="unknown",
+                    success=False, cache_hit=False, request_sent=True, usage_source="unknown",
                     error=type(exc).__name__,
                 ))
                 # No response metadata means usage and charge remain unknown.
@@ -178,7 +178,7 @@ class MeshGateway:
                     input_hash=_hash(system_prompt + attempt_user_prompt),
                     output_hash=_hash(content),
                     duration_ms=duration_ms,
-                    success=False, request_sent=True, usage_source="provider_response",
+                    success=False, cache_hit=False, request_sent=True, usage_source="provider_response",
                     finish_reason=finish_reason,
                     error=str(exc),
                     response_preview=content[:300],
@@ -201,7 +201,7 @@ class MeshGateway:
                 output_hash=_hash(content),
                 duration_ms=duration_ms,
                 finish_reason=finish_reason,
-                response_preview=content[:300], request_sent=True, usage_source="provider_response",
+                response_preview=content[:300], cache_hit=False, request_sent=True, usage_source="provider_response",
                 **token_usage,
             )
             self._record_call(call)
