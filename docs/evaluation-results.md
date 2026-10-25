@@ -1,6 +1,6 @@
 # Measured Evaluation Results
 
-Date: 2026-10-18. Environment: production deployment at `deepdive.srv1493167.hstgr.cloud`. Each run used two research rounds. Results below come from persisted run artifacts and `/runs/{id}/evaluation`; no score is invented.
+Date: 2026-10-18. Environment: production deployment at `[production endpoint redacted]`. Each run used two research rounds. Results below come from persisted run artifacts and `/runs/{id}/evaluation`; no score is invented.
 
 ## Questions
 
