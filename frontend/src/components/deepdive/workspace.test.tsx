@@ -124,3 +124,11 @@ it('distinguishes cache lookup reasons and deterministic report artifacts from m
   expect(screen.getByRole('heading',{name:'Deterministic report limitations'})).toBeInTheDocument();
   expect(screen.getByText(/separate from model review/)).toBeInTheDocument();
 });
+
+
+it('shows submitted compacted query and numeric guard independently of model review', () => {
+  render(<AuditPanel run={{...run,retrieval_audit:[{searches:[{query:'original long query',submitted_query:'short query',query_compacted:true,status:'success',http_status:200}]}],report_citation_audit:[{text:'Output fell 99%.',kept:false,method:'numeric_sentence_guard',issues:[{reason:'number_absent_from_local_cited_passages',sentence:'Output fell 99%.'}]}]}}/>);
+  expect(screen.getByText(/Submitted query.*short query/)).toBeInTheDocument();
+  expect(screen.getByRole('heading',{name:'Sentence-level numeric citation checks'})).toBeInTheDocument();
+  expect(screen.getByText('number_absent_from_local_cited_passages')).toBeInTheDocument();
+});

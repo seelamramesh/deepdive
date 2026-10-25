@@ -4,6 +4,21 @@ A multi-agent research platform that investigates questions, verifies claims aga
 
 New here? Start with [the simple flow guide](docs/FLOW-README.md). Reports may remain partial; an END state means processing finished, not that every research area is complete.
 
+## Current measured readiness
+
+See [final readiness review](docs/final-readiness-2026-10-25.md) for rules, feature inventory, limitations and ledger reconciliation. Latest fixes add bounded Brave query compaction, sentence-level numeric passage checks and readable mobile run questions. Old runs are preserved unchanged; regression proof uses copied fixtures, not another paid run.
+
+| Self-evaluation | Observed result |
+|---|---|
+| Claim/source verification | Partial: one of two active claims accepted in each guarded run; numeric citation gap found and offline regression fixed |
+| Research loop | Two rounds observed; Action 3 still five red/one yellow coverage areas |
+| Contradictions | Zero in guarded Action 2/3; four legacy records unvalidated; positive accuracy unproven |
+| Cache | Action 3: 3/25 local reuses (12%), 22 Mesh calls, 72,029 tokens; Action 2: 0/20 reuses, 61,237 tokens |
+| Cost | $3.383747 reserved, not billed; $0.116253 remains below $3.50 stop; actual billing unknown |
+| Failure handling | Four pipeline stages tested with mocked failures; no live failure-injection claim |
+
+These are internal artifact measurements, not an external truth score. No vector DB, production-wide cost guard, durable crash resume or physical Android validation is claimed. Submission remains on hold.
+
 ## Architecture
 
 ```mermaid
@@ -13,7 +28,8 @@ flowchart TD
     O --> R[12 AI roles]
     R --> C{Identical request cached in this run?}
     C -->|Yes| REUSE[Reuse structured response and record source call]
-    C -->|No| M[Official Mesh API]
+    C -->|No| G[Normal dispatch or evaluation-only reservation guard]
+    G --> M[Official Mesh API]
     M --> R
     O --> S[Brave URL search]
     S --> Q[Bounded pending URL queue]
@@ -31,6 +47,25 @@ flowchart TD
 ```
 
 The orchestrator is ordinary Python, not an additional AI agent. Cache reuse makes no new AI call; all actual inference uses Mesh. Cache entries expire after five minutes or run completion. Different evidence, prompts, versions, models or generation settings require a new request. Distinct source URLs/material groups do not establish independent studies.
+
+## Agent responsibilities
+
+The Python coordinator dispatches twelve AI roles, each with a separate prompt:
+
+| Role | Responsibility |
+|---|---|
+| planner | Subquestions and completion criteria |
+| search_strategist | Search queries, including research gaps |
+| researcher | Extract passages from retrieved source windows |
+| source_critic | Source-quality factors and scores |
+| claim_drafter | Atomic claims with evidence links and attributed judge feedback |
+| prosecutor | Challenge support, scope and missing qualifiers |
+| defense | Present supporting source passages |
+| judge | Decide supported, partial or unsupported claims |
+| contradiction_analyst | Compare scoped claims across material groups |
+| coverage_analyst | Identify thin areas for another bounded round |
+| synthesizer | Draft structured prose from accepted claims |
+| report_verifier | Review generated report units against linked passages |
 
 ## State Machine
 

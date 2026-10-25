@@ -1,5 +1,7 @@
 # Agent Arena 2026 Compliance Map
 
+Current audit: [final readiness review](final-readiness-2026-10-25.md).
+
 Historical audit. For current local-versus-deployed status and remaining gaps, see [2026-10-24 readiness audit](readiness-audit-2026-10-24.md). Historical passes below are not fresh validation of the latest working tree.
 
 Based on attached DeepDive challenge statement and downloaded official workflow.

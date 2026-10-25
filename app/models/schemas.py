@@ -265,6 +265,7 @@ class ResearchRun(BaseModel):
 
     report_grounding_audit: list[dict] = Field(default_factory=list)
     report_artifact_audit: list[dict] = Field(default_factory=list)
+    report_citation_audit: list[dict] = Field(default_factory=list)
     report_grounding_status: str = "not_available"
     report_fallback_reason: str = ""
     final_report: str = ""

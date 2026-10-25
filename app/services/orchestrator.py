@@ -33,6 +33,7 @@ from app.models.schemas import (
 )
 from app.services.retrieval import fetch_sources, search_web, select_extraction_window, drain_fetch_events, drain_search_events
 from app.services.report_grounding import review_report
+from app.services.citation_checks import numeric_citation_issues
 from app.services.provenance import material_groups
 from app.storage.database import save_run as _persist_run
 
@@ -161,11 +162,14 @@ def _verified_claim_report(run: ResearchRun, supported_claims: list, reason: str
             if evidence_id in claim.evidence_ids and evidence_id in evidence_ids
         ]
         if valid_ids:
-            verified_lines.append(
-                f"- {claim.text} [claim:{claim.id}] [evidence:{valid_ids[0]}]"
-            )
+            line = f"- {claim.text} [claim:{claim.id}] " + " ".join(f"[evidence:{eid}]" for eid in valid_ids)
+            links = {(claim.id, eid) for eid in valid_ids}
+            if not numeric_citation_issues(line, {e.id:e for e in run.evidence}, links):
+                verified_lines.append(line)
     if not verified_lines:
-        return _insufficient_evidence_report(run)
+        return _insufficient_evidence_report(run).replace(
+            "DeepDive found no claims that passed source-grounding and verification checks.",
+            "No claim could be rendered with the required verified links and numeric passage support.")
     return (
         f"# {run.question}: Verified Research Report\n\n"
         "## Verified Findings\n\n"
@@ -532,6 +536,8 @@ def _verify_report_citations(run: ResearchRun) -> None:
     orphan_claims = claim_refs - claim_ids
 
     lines = run.final_report.split("\n")
+    run.report_citation_audit = []
+    evidence_by_id = {e.id:e for e in run.evidence}
     clean_lines = []
     for line in lines:
         has_orphan = any(f"[evidence:{oid}]" in line for oid in orphan_ev)
@@ -550,7 +556,12 @@ def _verify_report_citations(run: ResearchRun) -> None:
             re.search(r"\[claim:\w+\]", line)
             and re.search(r"\[evidence:\w+\]", line)
         )
-        if not has_orphan and not has_unapproved_link and (is_heading or has_required_citations):
+        numeric_heading = bool(re.search(r"\d[\d,.]*\s*(?:%|percent)|[$€£]\s*\d", line, re.I))
+        numeric_issues = numeric_citation_issues(line, evidence_by_id, allowed_links) if not is_heading or numeric_heading else []
+        if numeric_issues:
+            run.report_citation_audit.append({"text": line, "kept": False,
+                "method": "numeric_sentence_guard", "issues": numeric_issues})
+        if not has_orphan and not has_unapproved_link and not numeric_issues and (is_heading or has_required_citations):
             clean_lines.append(line)
     compact_lines = []
     for index, line in enumerate(clean_lines):

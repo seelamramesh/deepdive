@@ -36,6 +36,7 @@ th,td {padding:.65rem .5rem}
   .workspace-header-actions {grid-column:1 / -1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
   .workspace-main p,.workspace-main li,.workspace-main blockquote {font-size:1rem}
   .workspace-main p.text-xs,.mobile-sheet .text-sm {font-size:1rem}
+  .mobile-sheet .line-clamp-2 {display:block;-webkit-line-clamp:unset;overflow:visible;white-space:normal;overflow-wrap:anywhere}
   .mobile-sheet [class*="text-["] {font-size:.75rem}
   .workspace-header details>div {left:0;right:auto;top:100%;max-width:calc(100vw - 2rem)}
   .workspace-main {padding-bottom:calc(9rem + env(safe-area-inset-bottom))}

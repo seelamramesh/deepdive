@@ -202,6 +202,28 @@ async def _fetch_url_impl(url: str, timeout: int | None = None) -> Optional[dict
         return None
 
 
+def compact_search_query(query: str) -> str:
+    """Whole-token local compaction; never invent terms or cut inside a word."""
+    if not isinstance(query, str):
+        raise ValueError("Search query must be text")
+    normalized = " ".join(query.split())
+    if len(normalized) <= 600 and len(normalized.split()) <= 75:
+        return normalized
+    tokens = re.findall(r'"[^"\n]*"|\S+', normalized)
+    kept, seen = [], set()
+    for token in tokens:
+        key = token.casefold()
+        if key in seen and token not in {"AND", "OR", "NOT"}:
+            continue
+        seen.add(key)
+        candidate = " ".join([*kept, token])
+        if len(candidate) <= 600 and len(candidate.split()) <= 75:
+            kept.append(token)
+    while kept and kept[-1] in {"AND", "OR", "NOT"}:
+        kept.pop()
+    return " ".join(kept)
+
+
 async def search_web(query: str) -> list[str]:
     """Search Brave, retaining a safe outcome even when no URLs are returned."""
     start = time.monotonic()
@@ -209,13 +231,20 @@ async def search_web(query: str) -> list[str]:
              "result_count": 0, "http_status": None, "error_class": None,
              "request_sent": False, "timestamp": datetime.now(timezone.utc).isoformat()}
     try:
+        submitted_query = compact_search_query(query)
+        event.update(original_query=query, submitted_query=submitted_query,
+                     query_compacted=submitted_query != query,
+                     submitted_characters=len(submitted_query), submitted_words=len(submitted_query.split()))
+        if not submitted_query:
+            event.update(status="invalid_query", error_class="EmptyOrUncompactableQuery")
+            return []
         if not settings.brave_search_api_key:
             return []
         async with httpx.AsyncClient(timeout=settings.request_timeout) as client:
             event["request_sent"] = True
             response = await client.get(
                 "https://api.search.brave.com/res/v1/web/search",
-                params={"q": query, "count": settings.max_sources_per_round},
+                params={"q": submitted_query, "count": settings.max_sources_per_round},
                 headers={"Accept": "application/json", "X-Subscription-Token": settings.brave_search_api_key},
             )
             event["http_status"] = response.status_code

@@ -1,6 +1,6 @@
 # DeepDive: the simple flow
 
-Runtime `26907d9` is deployed. See [offline fixes and release evidence](pre-action3-fixes-2026-10-25.md) for measured checks and limitations.
+See [final readiness review](final-readiness-2026-10-25.md) for current fixes, measured evidence and limitations; release verification records the deployed revision.
 
 Ask a question. DeepDive finds source material, checks claims against it and shows what survived. A report can be partial. It is not a truth guarantee or independent human certification.
 
@@ -25,7 +25,7 @@ flowchart LR
 3. **Extract:** researcher returns passages that must match supplied source text. Each passage links to its source and subquestion.
 4. **Check claims:** drafter proposes atomic claims. Prosecutor challenges them, Defense maps exact quotes and Judge sees the original linked passages. Unsupported or low-confidence claims are withheld. Next-round drafter receives bounded, attributed critiques; these are feedback, not evidence.
 5. **Find gaps:** coverage reports missing areas. Later rounds target weak questions and can select a different bounded source window. A round limit can end research with unresolved gaps.
-6. **Review report:** synthesizer uses accepted claims. Report Verifier reviews every non-empty generated line, including factual headings. Citation checks run afterward. Deterministic limitations from saved coverage/counts are appended separately from model prose. Missing/malformed decisions withhold affected text; a labelled accepted-claim fallback may be needed.
+6. **Review report:** synthesizer uses accepted claims. Report Verifier reviews every non-empty generated line, including factual headings. Citation checks run afterward. Numeric sentences additionally require local approved claim/passage links and matching numeric literals/explicit units. This lexical guard cannot prove semantic entailment. Deterministic limitations from saved coverage/counts are appended separately from model prose. Missing/malformed decisions withhold affected text; a labelled accepted-claim fallback may be needed.
 7. **Inspect:** UI shows report, coverage, courtroom, audit, contradictions, sources and control flow. The internal certificate describes recorded checks and limitations.
 
 ## How caching saves work

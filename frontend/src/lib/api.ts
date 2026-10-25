@@ -22,6 +22,7 @@ export interface Workspace {
   report_grounding_status?: string;
   report_fallback_reason?: string;
   report_grounding_audit?: {unit_id: string; text: string; kept: boolean; included_in_final_report?: boolean; reason: string; method: string; prompt_version: string}[];
+  report_citation_audit?: {text: string; kept: boolean; method: string; issues: {reason: string; sentence: string}[]}[];
   report_artifact_audit?: {unit_id: string; text: string; method: string; based_on: string; included_in_final_report: boolean}[];
   coverage_derivation?: string;
   recorded_coverage?: Coverage[];
