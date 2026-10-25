@@ -26,7 +26,8 @@ flowchart TD
     U[Browser or 14-node n8n webhook] --> API[FastAPI API]
     API --> O[Python state-machine orchestrator]
     O --> R[12 AI roles]
-    R --> C{Identical request cached in this run?}
+    R --> ROUTE[Selected preset and role model]
+    ROUTE --> C{Identical request cached in this run?}
     C -->|Yes| REUSE[Reuse structured response and record source call]
     C -->|No| G[Normal dispatch or evaluation-only reservation guard]
     G --> M[Official Mesh API]
@@ -47,6 +48,12 @@ flowchart TD
 ```
 
 The orchestrator is ordinary Python, not an additional AI agent. Cache reuse makes no new AI call; all actual inference uses Mesh. Cache entries expire after five minutes or run completion. Different evidence, prompts, versions, models or generation settings require a new request. Distinct source URLs/material groups do not establish independent studies.
+
+## Model selection and verification disclosure
+
+New requests default to `balanced`; `fast`, `quality` and `configured` are also available. Four heavy roles use GPT-4o under balanced; other roles use GPT-4o-mini, all through Mesh. `configured` preserves `MESH_MODEL`. Report verifier is heavy; coordinator remains Python. Historical presets remain unknown.
+
+UI shows catalog input/output token rates and explicitly uncalibrated run cost/time. No latency, accuracy or billing savings are claimed. Reports/API/certificates disclose automated review limitations. See [implementation, routing diagram and test evidence](docs/model-tiering.md). This draft implementation is not yet deployed.
 
 ## Agent responsibilities
 
@@ -286,6 +293,7 @@ Prompt-reference review: [`docs/prompt-reference-review.md`](docs/prompt-referen
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/health` | Health check + Mesh connectivity |
+| GET | `/model-presets` | Presets and snapshot token rates; no inference |
 | POST | `/research` | Start a research run |
 | GET | `/runs/{id}` | Run status and state |
 | GET | `/runs/{id}/audit` | Full audit trail |

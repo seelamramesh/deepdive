@@ -11,9 +11,15 @@ export interface Contradiction { id: string; topic: string; claim_a: string; cla
 export interface AgentCall { cache_miss_reason?: string | null; cache_store_status?: string | null; cache_hit?: boolean | null; request_sent?: boolean | null; cache_source_call_id?: string; cached_prompt_tokens?: number | null; id: string; agent: string; model: string; duration_ms: number; success: boolean; prompt_tokens?: number | null; completion_tokens?: number | null; total_tokens?: number | null }
 export interface Transition { from_state: string; to_state: string; timestamp: string; reason: string }
 export interface Workspace { id: string; question: string; created_at: string; current_state: string; research_round: number; sources: Source[]; evidence: Evidence[]; claims: Claim[]; judgements: Judgement[]; coverage: Coverage[]; contradictions: Contradiction[]; state_transitions: Transition[]; agent_calls: AgentCall[]; final_report: string; error: string | null; warnings: string[]; accepted_claim_ids: string[]; confidence_threshold: number; certificate: Record<string, unknown> | null; subquestions: {id: string; text: string; completion_criteria: string}[] }
-export interface ResearchInput { question: string; source_urls: string[]; max_rounds: number; confidence_threshold: number }
+export type ModelPreset = 'fast' | 'balanced' | 'quality' | 'configured';
+export interface ModelRate {prompt_usd_per_1m: string; completion_usd_per_1m: string}
+export interface PresetCatalog {default: ModelPreset; catalog_checked_at: string; pricing_note: string; presets: Record<ModelPreset, {label: string; description: string; models: Record<string,string>; rates: Record<string,ModelRate | null>; est_cost_per_run: null; est_time: null}>}
+export interface ResearchInput { model_preset?: ModelPreset; question: string; source_urls: string[]; max_rounds: number; confidence_threshold: number }
 export const active = (state: string) => !['END', 'FAILED'].includes(state);
 export interface Workspace {
+  model_preset?: ModelPreset | null;
+  resolved_models?: Record<string,string>;
+  verification_disclaimer?: string;
   search_queries?: {id: string; subquestion_id: string; query: string; source_preference: string}[];
   search_audit?: Record<string, unknown>[];
   retrieval_audit?: Record<string, unknown>[];
@@ -57,3 +63,12 @@ export function useResearch(parentId?: string) {
   }});
 }
 export function safeUrl(url: string): string | undefined { try { const parsed = new URL(url); return ['https:', 'http:'].includes(parsed.protocol) ? parsed.href : undefined; } catch { return undefined; } }
+
+export const verificationDisclaimer = 'Automated AI review may use the same model or provider as drafting. It is not a hallucination-free guarantee or independent human verification. See the recorded review status and limitations.';
+export function useModelPresets() {
+  return useQuery({queryKey:['model-presets'], queryFn:async () => {
+    const data=await request<PresetCatalog>('/model-presets');
+    if (!data?.presets || !data.presets[data.default] || !Object.values(data.presets).every(p => p && typeof p.label==='string' && p.models && p.rates)) throw new Error('Model options unavailable');
+    return data;
+  }, retry:false, staleTime:300000});
+}

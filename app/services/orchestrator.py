@@ -20,6 +20,7 @@ from app.agents.runner import (
     run_synthesizer,
 )
 from app.core.config import settings
+from app.core.model_presets import AGENT_TIER_MAP, resolve_model
 from app.core.mesh_gateway import mesh
 from app.models.schemas import (
     AtomicClaim,
@@ -252,12 +253,16 @@ async def run_research(
     max_rounds: int | None = None,
     confidence_threshold: float | None = None,
     run_id: str | None = None,
+    model_preset: str = "balanced",
 ) -> ResearchRun:
     """Execute a full research run through the state machine."""
     if run_id:
         run = ResearchRun(question=question, id=run_id)
     else:
         run = ResearchRun(question=question)
+    resolved_models = {agent: resolve_model(model_preset, agent) for agent in AGENT_TIER_MAP}
+    run.model_preset = model_preset
+    run.resolved_models = resolved_models
     max_rounds = max_rounds or settings.max_research_rounds
     conf_threshold = confidence_threshold or settings.confidence_threshold
     run.confidence_threshold = conf_threshold
@@ -267,6 +272,7 @@ async def run_research(
     # Collected source contents for the researcher agent
     source_contents: list[dict[str, str]] = []
 
+    model_token = mesh.begin_model_scope(model_preset)
     cache_token = mesh.begin_cache_scope()
     try:
         # ── PLAN ───────────────────────────────────────────────
@@ -499,6 +505,7 @@ async def run_research(
         await save_run(run)
     finally:
         mesh.end_cache_scope(cache_token)
+        mesh.end_model_scope(model_token)
 
     return run
 
@@ -609,6 +616,7 @@ def _verify_report_citations(run: ResearchRun) -> None:
         "method": "deterministic_artifact", "based_on": "saved_run_counts_and_derived_coverage",
         "included_in_final_report": True} for i, line in enumerate(lines)]
     run.final_report = run.final_report.rstrip() + "\n\n" + "\n\n".join(lines)
+    run.final_report += "\n\n## Automated verification note\n\n" + run.verification_disclaimer + " Review status: " + run.report_grounding_status + "."
 
 
 def _build_certificate(run: ResearchRun) -> VerificationCertificate:
@@ -635,6 +643,8 @@ def _build_certificate(run: ResearchRun) -> VerificationCertificate:
 
     return VerificationCertificate(
         run_id=run.id,
+        model_preset=run.model_preset,
+        verification_disclaimer=run.verification_disclaimer,
         original_question=run.question,
         mesh_models_used=models_used,
         source_count=len(run.sources),

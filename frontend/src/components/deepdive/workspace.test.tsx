@@ -8,6 +8,8 @@ import { ControlFlowPanel } from './ControlFlowPanel';
 import { startTrace, finishTrace } from '@/lib/trace';
 
 const run: Workspace = {id:'test-run',question:'What does the source support?',created_at:'2026-10-24T00:00:00Z',current_state:'END',research_round:1,confidence_threshold:0.7,accepted_claim_ids:['c1'],sources:[{id:'s1',url:'https://example.org',title:'Real source',trust_score:0.8,content_hash:'abc',retrieved_at:'2026-10-24',trust_factors:{}}],evidence:[{id:'e1',source_id:'s1',subquestion_id:'sq1',passage:'Exact source passage.',passage_hash:'def'}],claims:[{id:'c1',text:'Accepted claim',evidence_ids:['e1'],subquestion_id:'sq1'},{id:'c2',text:'Partial claim',evidence_ids:['e1'],subquestion_id:'sq1'}],judgements:[{claim_id:'c1',verdict:'supported',confidence:0.9,explanation:'Source supports it',missing_evidence:'',supporting_evidence_ids:['e1'],contradicting_evidence_ids:[]},{claim_id:'c2',verdict:'partially_supported',confidence:0.6,explanation:'Needs caveat',missing_evidence:'Scope',supporting_evidence_ids:['e1'],contradicting_evidence_ids:[]}],coverage:[],contradictions:[],state_transitions:[],agent_calls:[],final_report:'# Verified findings\nAccepted claim [claim:c1] [evidence:e1]',certificate:null,error:null,warnings:[],subquestions:[]};
+const presetFixture = {default:'balanced',catalog_checked_at:'2026-10-25T15:20:32Z',pricing_note:'Catalog snapshot, not billing',presets:Object.fromEntries(['fast','balanced','quality','configured'].map(id => [id,{label:id,description:'Configured fixture routing',models:{heavy:'fixture/model'},rates:{'fixture/model':{prompt_usd_per_1m:'0.15',completion_usd_per_1m:'0.60'}},est_cost_per_run:null,est_time:null}]))};
+const mockResearchFetch = (ok=true) => vi.fn().mockImplementation(async (path:string) => path.endsWith('/model-presets') ? {ok:true,json:async()=>presetFixture} : {ok,status:ok?200:503,json:async()=>ok?{run_id:'created',status:'started'}:{detail:'Backend unavailable'}});
 afterEach(() => vi.unstubAllGlobals());
 it('labels shared command documentation separately from recorded per-run queries', () => {
   render(<ControlFlowPanel run={run}/>);
@@ -61,18 +63,21 @@ it('filters courtroom and withholds partially supported claims', () => {render(<
 it('filters sources by trust without changing stored scores', () => {render(<SourcesPanel run={run}/>); fireEvent.change(screen.getByLabelText('Minimum trust'),{target:{value:'90'}}); expect(screen.getByText('No sources match this trust range.')).toBeInTheDocument();});
 it('does not invent unmeasured audit scores', () => {render(<AuditPanel run={run}/>); expect(screen.getByText('Not measured')).toBeInTheDocument(); expect(screen.queryByText('94%')).not.toBeInTheDocument();});
 it('submits validated research settings and selects created run', async () => {
-  const fetchMock = vi.fn().mockResolvedValue({ok:true,json:async () => ({run_id:'created',status:'started'})}); vi.stubGlobal('fetch',fetchMock); const created=vi.fn();
+  const fetchMock = mockResearchFetch(); vi.stubGlobal('fetch',fetchMock); const created=vi.fn();
   render(<QueryClientProvider client={new QueryClient({defaultOptions:{mutations:{retry:false}}})}><ResearchForm open onClose={vi.fn()} onCreated={created}/></QueryClientProvider>);
+  await vi.waitFor(()=>expect(screen.getByRole('option',{name:'quality'})).toBeInTheDocument());
+  fireEvent.change(screen.getByLabelText('Model preset'),{target:{value:'quality'}});
   fireEvent.change(screen.getByLabelText('Research access key'),{target:{value:'offline-test-access-key'}}); fireEvent.change(screen.getByLabelText('Question'),{target:{value:'A sufficiently detailed research question'}}); fireEvent.click(screen.getByRole('button',{name:'Start research'}));
   await vi.waitFor(() => expect(created).toHaveBeenCalledWith('created'));
-  expect(JSON.parse(fetchMock.mock.calls[0]![1].body)).toMatchObject({max_rounds:2,confidence_threshold:0.7});
-  expect(fetchMock.mock.calls[0]![1].headers['X-DeepDive-API-Key']).toBe('offline-test-access-key');
-  expect(fetchMock.mock.calls[0]![1].body).not.toContain('offline-test-access-key');
+  const post=fetchMock.mock.calls.find(call=>call[1]?.method==='POST')!;
+  expect(JSON.parse(post[1].body)).toMatchObject({max_rounds:2,confidence_threshold:0.7,model_preset:'quality'});
+  expect(post[1].headers['X-DeepDive-API-Key']).toBe('offline-test-access-key');
+  expect(post[1].body).not.toContain('offline-test-access-key');
 });
 it('keeps server errors visible and restores submit control', async () => {
-  vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:false,status:503,json:async () => ({detail:'Backend unavailable'})}));
+  vi.stubGlobal('fetch',mockResearchFetch(false));
   render(<QueryClientProvider client={new QueryClient({defaultOptions:{mutations:{retry:false}}})}><ResearchForm open onClose={vi.fn()} onCreated={vi.fn()} initialQuestion="A sufficiently detailed research question"/></QueryClientProvider>);
-  fireEvent.change(screen.getByLabelText('Research access key'),{target:{value:'offline-test-key'}}); fireEvent.click(screen.getByRole('button',{name:'Start research'})); expect(await screen.findByRole('alert')).toHaveTextContent('Backend unavailable'); expect(screen.getByRole('button',{name:'Start research'})).toBeEnabled();
+  await vi.waitFor(()=>expect(screen.getByRole('option',{name:'balanced'})).toBeInTheDocument()); fireEvent.change(screen.getByLabelText('Research access key'),{target:{value:'offline-test-key'}}); fireEvent.click(screen.getByRole('button',{name:'Start research'})); expect(await screen.findByRole('alert')).toHaveTextContent('Backend unavailable'); expect(screen.getByRole('button',{name:'Start research'})).toBeEnabled();
 });
 
 it('shows report review decisions and preserves missing historical diagnostics', () => {
@@ -135,15 +140,38 @@ it('shows submitted compacted query and numeric guard independently of model rev
   expect(screen.getByText('number_absent_from_local_cited_passages')).toBeInTheDocument();
 });
 
-it('requires owner access key without storing it in browser storage', () => {
-  const fetchMock=vi.fn();vi.stubGlobal('fetch',fetchMock);
+it('requires owner access key without storing it in browser storage', async () => {
+  const fetchMock=mockResearchFetch();vi.stubGlobal('fetch',fetchMock);
   render(<QueryClientProvider client={new QueryClient()}><ResearchForm open onClose={vi.fn()} onCreated={vi.fn()} initialQuestion="A sufficiently detailed research question"/></QueryClientProvider>);
   expect(screen.getByRole('button',{name:'Start research'})).toBeDisabled();
   const field=screen.getByLabelText('Research access key');
   expect(field).toHaveAttribute('type','password');
+  await vi.waitFor(()=>expect(screen.getByRole('option',{name:'balanced'})).toBeInTheDocument());
   fireEvent.change(field,{target:{value:'offline-only-key'}});
   expect(screen.getByRole('button',{name:'Start research'})).toBeEnabled();
   expect(JSON.stringify(localStorage)).not.toContain('offline-only-key');
   expect(JSON.stringify(sessionStorage)).not.toContain('offline-only-key');
-  expect(fetchMock).not.toHaveBeenCalled();
+  expect(fetchMock.mock.calls.some(call=>call[1]?.method==='POST')).toBe(false);
+});
+
+it('keeps unknown historical presets explicit and disclaimer always visible', () => {
+  const first=render(<ReportPanel run={run}/>);
+  expect(screen.getByLabelText('Verification disclaimer')).toHaveTextContent('not a hallucination-free guarantee');
+  first.unmount();
+  render(<AuditPanel run={run}/>);
+  expect(screen.getByText('Preset: Not recorded (historical)')).toBeInTheDocument();
+});
+it('shows token-rate snapshot without invented run-price promises', async () => {
+  vi.stubGlobal('fetch',mockResearchFetch());
+  render(<QueryClientProvider client={new QueryClient()}><ResearchForm open onClose={vi.fn()} onCreated={vi.fn()}/></QueryClientProvider>);
+  expect(await screen.findByText(/Estimated run cost\/time: not calibrated/)).toBeInTheDocument();
+  expect(screen.getByText(/fixture\/model:.*input.*output/)).toBeInTheDocument();
+  expect(screen.queryByText(/45s|90s|0.30-0.50/)).not.toBeInTheDocument();
+});
+it('fails closed in the form when model metadata cannot load', async () => {
+  vi.stubGlobal('fetch',vi.fn().mockRejectedValue(new Error('offline metadata failure')));
+  render(<QueryClientProvider client={new QueryClient()}><ResearchForm open onClose={vi.fn()} onCreated={vi.fn()} initialQuestion="A sufficiently detailed research question"/></QueryClientProvider>);
+  expect(await screen.findByRole('alert')).toHaveTextContent('Model options unavailable');
+  fireEvent.change(screen.getByLabelText('Research access key'),{target:{value:'offline-only-key'}});
+  expect(screen.getByRole('button',{name:'Start research'})).toBeDisabled();
 });

@@ -9,6 +9,7 @@ from typing import Optional
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException
 
 from app.core.config import settings
+from app.core.model_presets import AGENT_TIER_MAP, preset_catalog, resolve_model
 from app.core.mesh_gateway import mesh
 from app.models.schemas import (
     ClaimVerdict,
@@ -55,6 +56,11 @@ async def health():
     )
 
 
+@router.get("/model-presets")
+async def get_model_presets():
+    return preset_catalog()
+
+
 @router.get("/runs")
 async def get_runs():
     return await list_runs()
@@ -99,7 +105,7 @@ async def start_research(req: ResearchRequest, bg: BackgroundTasks):
     from app.models.schemas import ResearchRun, RunState
 
     # Create placeholder run
-    run = ResearchRun(question=req.question)
+    run = ResearchRun(question=req.question, model_preset=req.model_preset, resolved_models={a:resolve_model(req.model_preset,a) for a in AGENT_TIER_MAP})
     # Return immediately with run ID
     from app.storage.database import save_run
     await save_run(run)
@@ -110,6 +116,7 @@ async def start_research(req: ResearchRequest, bg: BackgroundTasks):
             source_urls=req.source_urls,
             max_rounds=req.max_rounds,
             confidence_threshold=req.confidence_threshold,
+            model_preset=req.model_preset,
             run_id=run.id,
         )
 
@@ -126,6 +133,7 @@ async def get_run(run_id: str):
         raise HTTPException(404, "Run not found")
     return RunSummary(
         id=run.id,
+        model_preset=run.model_preset,
         question=run.question,
         state=run.current_state,
         created_at=run.created_at,
@@ -195,6 +203,9 @@ async def get_report(run_id: str):
         raise HTTPException(404, "Run not found")
     return {
         "report": run.final_report,
+        "verification_disclaimer": run.verification_disclaimer,
+        "report_review_status": run.report_grounding_status,
+        "model_preset": run.model_preset,
         "coverage": [c.model_dump() for c in run.coverage],
         "sources": [s.model_dump() for s in run.sources],
     }
@@ -212,7 +223,7 @@ async def follow_up(run_id: str, req: FollowUpRequest, bg: BackgroundTasks):
     from app.models.schemas import ResearchRun
     from app.storage.database import save_run
 
-    child = ResearchRun(question=req.question)
+    child = ResearchRun(question=req.question, model_preset=req.model_preset, resolved_models={a:resolve_model(req.model_preset,a) for a in AGENT_TIER_MAP})
     await save_run(child)
 
     async def _run():
@@ -221,6 +232,7 @@ async def follow_up(run_id: str, req: FollowUpRequest, bg: BackgroundTasks):
             source_urls=source_urls,
             max_rounds=req.max_rounds,
             confidence_threshold=req.confidence_threshold,
+            model_preset=req.model_preset,
             run_id=child.id,
         )
 

@@ -15,6 +15,7 @@ from urllib.parse import urlparse
 from openai import AsyncOpenAI
 
 from app.core.config import settings
+from app.core.model_presets import MODEL_PRESETS, resolve_model
 from app.models.schemas import AgentCall, _hash
 
 
@@ -42,9 +43,18 @@ class MeshGateway:
 
     def __init__(self) -> None:
         self._client: AsyncOpenAI | None = None
+        self._preset = ContextVar("mesh_model_preset", default=None)
         self._calls: ContextVar[tuple[AgentCall, ...]] = ContextVar("mesh_calls", default=())
         self._cache = ContextVar("mesh_run_cache", default=None)
         self._cache_history = ContextVar("mesh_cache_history", default=None)
+
+    def begin_model_scope(self, preset):
+        if preset not in MODEL_PRESETS:
+            raise ValueError("Unknown model preset")
+        return self._preset.set(preset)
+
+    def end_model_scope(self, token):
+        self._preset.reset(token)
 
     def begin_cache_scope(self):
         return (self._cache.set({} if settings.mesh_run_cache else None),
@@ -85,16 +95,17 @@ class MeshGateway:
 
     async def complete(
         self,
-        agent_name: str,
-        system_prompt: str,
-        user_prompt: str,
+        agent_name: str | None = None,
+        system_prompt: str = "",
+        user_prompt: str = "",
         model: str | None = None,
         temperature: float = 0,
         response_format: dict[str, str] | None = None,
         prompt_version: str = "v1",
     ) -> dict[str, Any]:
         """Send a chat completion through Mesh API and return parsed JSON."""
-        model = model or settings.mesh_model
+        model = resolve_model(self._preset.get(), agent_name, model)
+        agent_name = agent_name or "unspecified"
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},

@@ -135,6 +135,10 @@ async def test_offline_api_research_to_persisted_report(monkeypatch, tmp_path, s
         if task:
             await asyncio.wait_for(task, timeout=10)
         workspace = (await client.get(f'/runs/{run_id}/workspace')).json()
+        assert workspace['model_preset']=='balanced'
+        from app.core.model_presets import resolve_model
+        assert all(call['model']==resolve_model('balanced',call['agent']) for call in workspace['agent_calls'])
+        assert 'Automated verification note' in workspace['final_report']
         assert workspace['current_state'] == 'END', workspace.get('error')
         assert workspace['final_report'].strip()
         assert workspace['agent_calls']

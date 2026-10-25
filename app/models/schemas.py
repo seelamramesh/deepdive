@@ -9,6 +9,7 @@ from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, Field
+from app.core.model_presets import ModelPreset
 
 
 # ── Enums ──────────────────────────────────────────────────────────────
@@ -212,7 +213,16 @@ class AgentCall(BaseModel):
     total_tokens: Optional[int] = None
 
 
+VERIFICATION_DISCLAIMER = (
+    "Automated AI review may use the same model or provider as drafting. "
+    "It is not a hallucination-free guarantee or independent human verification. "
+    "See the recorded review status and limitations."
+)
+
+
 class VerificationCertificate(BaseModel):
+    verification_disclaimer: str = VERIFICATION_DISCLAIMER
+    model_preset: Optional[str] = None
     run_id: str
     original_question: str
     execution_timestamp: str = Field(default_factory=_now)
@@ -236,6 +246,9 @@ class VerificationCertificate(BaseModel):
 # ── Run State Container ───────────────────────────────────────────────
 
 class ResearchRun(BaseModel):
+    model_preset: Optional[str] = None
+    resolved_models: dict[str, str] = Field(default_factory=dict)
+    verification_disclaimer: str = VERIFICATION_DISCLAIMER
     id: str = Field(default_factory=lambda: uuid.uuid4().hex[:16])
     question: str
     created_at: str = Field(default_factory=_now)
@@ -308,6 +321,7 @@ class ResearchRun(BaseModel):
 # ── API Request/Response ──────────────────────────────────────────────
 
 class ResearchRequest(BaseModel):
+    model_preset: ModelPreset = "balanced"
     question: str = Field(min_length=10, max_length=2000)
     source_urls: list[str] = Field(default_factory=list, max_length=20)
     max_rounds: Optional[int] = Field(default=None, ge=1, le=5)
@@ -327,6 +341,7 @@ class HealthResponse(BaseModel):
 
 
 class RunSummary(BaseModel):
+    model_preset: Optional[str] = None
     id: str
     question: str
     state: RunState
