@@ -31,7 +31,7 @@ from app.models.schemas import (
     VerificationCertificate,
     _hash,
 )
-from app.services.retrieval import fetch_sources, search_web, select_extraction_window, drain_fetch_events
+from app.services.retrieval import fetch_sources, search_web, select_extraction_window, drain_fetch_events, drain_search_events
 from app.services.report_grounding import review_report
 from app.services.provenance import material_groups
 from app.storage.database import save_run as _persist_run
@@ -176,6 +176,72 @@ def _verified_claim_report(run: ResearchRun, supported_claims: list, reason: str
     )
 
 
+async def _retrieve_with_backfill(run, seed_urls, queries):
+    """Fill successful-source slots with a separately bounded fetch queue."""
+    queue = []
+    by_url = {}
+    def enqueue(url, provenance):
+        if url not in by_url:
+            item = {"url": url, "provenance": []}
+            by_url[url] = item
+            queue.append(item)
+        if provenance not in by_url[url]["provenance"]:
+            by_url[url]["provenance"].append(provenance)
+    for url in seed_urls:
+        enqueue(url, {"origin": "seed", "subquestion_id": None})
+    for item in run.retrieval_pending:
+        for provenance in item.get("provenance", []):
+            enqueue(item["url"], provenance)
+    event = {"round": run.research_round, "seed_urls": list(seed_urls), "searches": [],
+             "selection_policy": "seeds_then_pending_then_search_success_bounded",
+             "source_budget": settings.max_sources_per_round,
+             "fetch_attempt_budget": min(settings.max_fetch_attempts_per_round, settings.max_sources_per_round*2),
+             "reused_source_ids": [source.id for source in run.sources], "fetched_sources": []}
+    run.retrieval_audit.append(event)
+    for query in queries:
+        drain_search_events()
+        result_urls = await search_web(query.query)
+        attempts = drain_search_events()
+        if run.search_audit:
+            run.search_audit[-1].setdefault("attempts", []).extend(attempts)
+        event["searches"].append({**(attempts[-1] if attempts else {"status": "not_recorded"}),
+            "query_id": query.id, "query": query.query, "result_urls": result_urls,
+            "outcome": "urls_returned" if result_urls else "no_urls_or_search_unavailable"})
+        for url in result_urls:
+            enqueue(url, {"origin": "search", "query_id": query.id,
+                          "subquestion_id": query.subquestion_id, "round": run.research_round})
+    existing_urls = {source.url for source in run.sources}
+    attempted = set(run.retrieval_attempted_urls)
+    pending = [item for item in queue if item["url"] not in existing_urls | attempted]
+    event["candidate_urls"] = [item["url"] for item in queue]
+    event["candidate_provenance"] = queue
+    event["selected_urls"] = []
+    drain_fetch_events()
+    while pending and len(event["fetched_sources"]) < event["source_budget"] and len(event["selected_urls"]) < event["fetch_attempt_budget"]:
+        item = pending.pop(0)
+        url = item["url"]
+        event["selected_urls"].append(url)
+        run.retrieval_attempted_urls.append(url)
+        previous_successes = len(event["fetched_sources"])
+        new_sources = await fetch_sources([url])
+        for source in new_sources:
+            if source.url in existing_urls or any(source.content_hash and source.content_hash == old.content_hash for old in run.sources):
+                continue
+            run.sources.append(source)
+            existing_urls.add(source.url)
+            event["fetched_sources"].append({"source_id": source.id, "url": source.url, "content_hash": source.content_hash})
+            break
+        if len(event["fetched_sources"]) == previous_successes:
+            owners = {p.get("subquestion_id") for p in item["provenance"] if p.get("subquestion_id")}
+            if owners:
+                # Stable priority: untried seeds, then known same-area alternatives.
+                pending.sort(key=lambda candidate: 0 if any(p.get("origin") == "seed" for p in candidate["provenance"])
+                             else 1 if any(p.get("subquestion_id") in owners for p in candidate["provenance"]) else 2)
+    run.retrieval_pending = pending
+    event["unfetched_urls"] = [item["url"] for item in pending]
+    event["fetch_outcomes"] = drain_fetch_events()
+
+
 async def run_research(
     question: str,
     source_urls: list[str] | None = None,
@@ -220,41 +286,8 @@ async def run_research(
 
             # ── RETRIEVE ───────────────────────────────────────
             run.transition(RunState.RETRIEVE, "Fetching sources")
-            # Collect URLs: user-provided + search results
-            urls_to_fetch = list(source_urls)
-            retrieval_event = {"round": run.research_round, "seed_urls": list(source_urls), "searches": []}
-            run.retrieval_audit.append(retrieval_event)
-            for query in selected_queries:
-                result_urls = await search_web(query.query)
-                retrieval_event["searches"].append({
-                    "query_id": query.id, "query": query.query,
-                    "result_urls": result_urls,
-                    "outcome": "urls_returned" if result_urls else "no_urls_or_search_unavailable",
-                })
-                urls_to_fetch.extend(result_urls)
-            candidate_urls = list(dict.fromkeys(urls_to_fetch))
-            existing_urls = {source.url for source in run.sources}
-            urls_to_fetch = [url for url in candidate_urls if url not in existing_urls][: settings.max_sources_per_round]
-            retrieval_event["candidate_urls"] = candidate_urls
-            retrieval_event["selected_urls"] = list(urls_to_fetch)
-            retrieval_event["reused_source_ids"] = [source.id for source in run.sources]
-            retrieval_event["fetched_sources"] = []
-
-            drain_fetch_events()
-            if urls_to_fetch:
-                new_sources = await fetch_sources(urls_to_fetch)
-                retrieval_event["fetched_sources"] = [
-                    {"source_id": source.id, "url": source.url, "content_hash": source.content_hash}
-                    for source in new_sources
-                ]
-                # Deduplicate against existing
-                existing_urls = {s.url for s in run.sources}
-                for s in new_sources:
-                    if s.url not in existing_urls:
-                        run.sources.append(s)
-                        existing_urls.add(s.url)
-
-            retrieval_event["fetch_outcomes"] = drain_fetch_events()
+            await _retrieve_with_backfill(run, source_urls, selected_queries)
+            retrieval_event = run.retrieval_audit[-1]
             # Source identity, metadata and extraction share one immutable snapshot.
             source_contents = []
             retrieval_event["extraction_inputs"] = []
@@ -484,6 +517,12 @@ def _verify_report_citations(run: ResearchRun) -> None:
         and evidence_id in evidence_ids
     }
 
+    # Remove only the exact previously generated suffix before revalidating.
+    prior_artifact_block = "\n\n".join(item["text"] for item in run.report_artifact_audit)
+    if prior_artifact_block and run.final_report.endswith(prior_artifact_block):
+        run.final_report = run.final_report[:-len(prior_artifact_block)].rstrip()
+    run.report_artifact_audit = []
+
     # Find all evidence references
     ev_refs = set(re.findall(r"\[evidence:(\w+)\]", run.final_report))
     claim_refs = set(re.findall(r"\[claim:(\w+)\]", run.final_report))
@@ -540,6 +579,25 @@ def _verify_report_citations(run: ResearchRun) -> None:
     final_lines = set(run.final_report.splitlines())
     for decision in run.report_grounding_audit:
         decision["included_in_final_report"] = bool(decision.get("kept") is True and decision.get("text") in final_lines)
+
+    # These lines describe recorded artifacts, never external factual findings.
+    # Keep them separate from model review decisions and append after strict filtering.
+    from app.services.coverage import derive_coverage
+    entries = derive_coverage(run, [entry.model_dump(mode="json") for entry in run.coverage])
+    lines = ["## Run limitations (recorded artifacts)"]
+    for entry in entries:
+        lines.append(f"- Coverage area {entry.subquestion_id}: {entry.status.value}; "
+                     f"{entry.evidence_count} passages; {entry.verified_claim_count} accepted claims; "
+                     f"{entry.source_count} sources.")
+    lines.append(f"- Recorded research rounds: {run.research_round}; retained sources: {len(run.sources)}; "
+                 f"retained contradictions: {len(run.contradictions)}.")
+    if not run.contradictions:
+        lines.append("- No contradictions retained. This does not establish agreement across all sources.")
+    lines.append("- Coverage labels are heuristic. Internal checks are not independent human verification.")
+    run.report_artifact_audit = [{"unit_id": f"artifact-{i}", "text": line,
+        "method": "deterministic_artifact", "based_on": "saved_run_counts_and_derived_coverage",
+        "included_in_final_report": True} for i, line in enumerate(lines)]
+    run.final_report = run.final_report.rstrip() + "\n\n" + "\n\n".join(lines)
 
 
 def _build_certificate(run: ResearchRun) -> VerificationCertificate:

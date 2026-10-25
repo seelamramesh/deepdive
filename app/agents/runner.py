@@ -216,6 +216,47 @@ async def run_source_critic(
     return scores
 
 
+def _revision_feedback(run, subquestions):
+    """Bounded attributed critiques; these are requirements to check, not evidence."""
+    allowed = {item.id for item in subquestions}
+    claims = {claim.id: claim for claim in run.claims}
+    records = []
+    for event in run.claim_selection_audit:
+        for excluded in event.get("excluded_from_active_budget", []):
+            claim = excluded.get("claim", {})
+            judgement = excluded.get("previous_judgement")
+            if judgement:
+                records.append((claim.get("subquestion_id"), judgement))
+    for event in run.search_audit:
+        for gap in event.get("input", {}).get("gap_feedback", []):
+            for judgement in gap.get("failed_claims", []):
+                records.append((gap.get("subquestion_id"), judgement))
+    records.extend((claims[j.claim_id].subquestion_id, j.model_dump(mode="json"))
+                   for j in run.judgements if j.claim_id in claims and j.verdict != ClaimVerdict.SUPPORTED)
+    result = []
+    seen = set()
+    for subquestion_id, judgement in reversed(records):
+        if subquestion_id not in allowed:
+            continue
+        key = (subquestion_id, judgement.get("claim_id"), judgement.get("missing_evidence", ""))
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append({"source": "judge", "subquestion_id": subquestion_id,
+            "claim_id": judgement.get("claim_id"), "verdict": judgement.get("verdict"),
+            "reason": str(judgement.get("explanation", judgement.get("reason", "")))[:600],
+            "missing_evidence": str(judgement.get("missing_evidence", ""))[:800]})
+        if len(result) == 8:
+            break
+    for argument in run.prosecution:
+        claim = claims.get(argument.claim_id)
+        if claim and claim.subquestion_id in allowed and len(result) < 12:
+            result.append({"source": "prosecutor", "claim_id": claim.id, "subquestion_id": claim.subquestion_id,
+                "weaknesses": [text[:300] for text in argument.weaknesses[:3]],
+                "unsupported_components": [text[:300] for text in argument.unsupported_components[:3]]})
+    return result
+
+
 async def run_claim_drafter(
     run: ResearchRun,
     evidence: list[Evidence],
@@ -231,7 +272,11 @@ async def run_claim_drafter(
     result = await mesh.complete(
         agent_name="claim_drafter",
         system_prompt=prompts.CLAIM_DRAFTER_PROMPT,
+        prompt_version="claim-drafter-feedback-v2",
         user_prompt=json.dumps({
+            "question": run.question,
+            "revision_feedback": _revision_feedback(run, subquestions),
+            "feedback_is_evidence": False,
             "evidence": ev_data,
             "subquestions": sq_data,
             "max_claims": min(settings.max_claims, 12),

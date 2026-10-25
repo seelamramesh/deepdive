@@ -26,6 +26,7 @@ class Settings(BaseSettings):
 
     max_research_rounds: int = 3
     max_sources_per_round: int = 10
+    max_fetch_attempts_per_round: int = Field(default=20, ge=1, le=100, alias="MAX_FETCH_ATTEMPTS_PER_ROUND")
     max_search_queries_per_round: int = 2
     max_claims: int = 12
     max_contradiction_batches: int = Field(default=3, ge=1, le=6, alias="MAX_CONTRADICTION_BATCHES")

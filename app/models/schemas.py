@@ -200,6 +200,8 @@ class AgentCall(BaseModel):
     error: str = ""
     response_preview: str = ""
     cache_hit: Optional[bool] = None
+    cache_miss_reason: Optional[str] = None
+    cache_store_status: Optional[str] = None
     request_sent: Optional[bool] = None
     cache_source_call_id: str = ""
     cached_prompt_tokens: Optional[int] = None
@@ -246,6 +248,8 @@ class ResearchRun(BaseModel):
     search_queries: list[SearchQuery] = Field(default_factory=list)
     search_audit: list[dict] = Field(default_factory=list)
     retrieval_audit: list[dict] = Field(default_factory=list)
+    retrieval_pending: list[dict] = Field(default_factory=list)
+    retrieval_attempted_urls: list[str] = Field(default_factory=list)
     sources: list[Source] = Field(default_factory=list)
     evidence: list[Evidence] = Field(default_factory=list)
     claims: list[AtomicClaim] = Field(default_factory=list)
@@ -260,6 +264,7 @@ class ResearchRun(BaseModel):
     agent_calls: list[AgentCall] = Field(default_factory=list)
 
     report_grounding_audit: list[dict] = Field(default_factory=list)
+    report_artifact_audit: list[dict] = Field(default_factory=list)
     report_grounding_status: str = "not_available"
     report_fallback_reason: str = ""
     final_report: str = ""

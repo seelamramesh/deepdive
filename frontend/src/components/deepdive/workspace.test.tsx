@@ -108,3 +108,19 @@ it('does not invent zero cache reuse for historical runs', () => {
   render(<AuditPanel run={{...run,agent_calls:[{id:'old',agent:'judge',model:'Mesh/model',duration_ms:5,success:true,cache_hit:null,total_tokens:null}]}}/>);
   expect(screen.getByText('Cache data not available for this run')).toBeInTheDocument();
 });
+
+
+it('shows safe search status and preserves unknown historical transport data', () => {
+  render(<AuditPanel run={{...run,retrieval_audit:[{searches:[{query:'official source',status:'error',http_status:429,error_class:'HTTPStatusError',attempt_id:'attempt-search',duration_ms:12,timestamp:'2026-10-24'}],fetch_outcomes:[{url:'https://example.org',outcome:'failed',reason:'HTTPStatusError'}]}]}}/>);
+  expect(screen.getByRole('heading',{name:'Search and retrieval outcomes'})).toBeInTheDocument();
+  expect(screen.getByText(/HTTP: 429/)).toBeInTheDocument();
+  expect(screen.getByText(/Attempt: attempt-search/)).toBeInTheDocument();
+  expect(screen.getByText(/HTTP: Not recorded/)).toBeInTheDocument();
+});
+
+it('distinguishes cache lookup reasons and deterministic report artifacts from model review', () => {
+  render(<AuditPanel run={{...run,agent_calls:[{id:'cache',agent:'judge',model:'Mesh/model',duration_ms:1,success:true,cache_hit:false,cache_miss_reason:'different_key',cache_store_status:'capacity_not_stored'}],report_artifact_audit:[{unit_id:'artifact-1',text:'Coverage area sq1: red; 0 passages.',method:'deterministic_artifact',based_on:'saved_run_counts_and_derived_coverage',included_in_final_report:true}]}}/>);
+  expect(screen.getAllByText(/different_key.*capacity_not_stored/).length).toBeGreaterThan(0);
+  expect(screen.getByRole('heading',{name:'Deterministic report limitations'})).toBeInTheDocument();
+  expect(screen.getByText(/separate from model review/)).toBeInTheDocument();
+});

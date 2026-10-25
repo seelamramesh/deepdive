@@ -129,3 +129,32 @@ def test_historical_calls_keep_cache_state_unknown():
     from app.models.schemas import AgentCall
     call=AgentCall(agent='judge')
     assert call.cache_hit is None and call.request_sent is None
+
+
+@pytest.mark.asyncio
+async def test_cache_miss_reasons_use_mocked_clock_and_run_local_history(monkeypatch):
+    clock=[1000.0]
+    monkeypatch.setattr("app.core.mesh_gateway.time.monotonic",lambda:clock[0])
+    g,sent=gateway();token=g.begin_cache_scope()
+    await g.complete('judge','system','A')
+    await g.complete('judge','system','B')
+    clock[0]+=301
+    await g.complete('judge','system','A')
+    await g.complete('judge','system','C',temperature=.1)
+    assert [c.cache_miss_reason for c in g.drain_calls()]==['first','different_key','ttl_expired','ineligible']
+    g.end_cache_scope(token)
+    await g.complete('judge','system','A')
+    assert g.drain_calls()[0].cache_miss_reason=='disabled'
+
+
+@pytest.mark.asyncio
+async def test_capacity_is_not_eviction_and_reason_is_observed_on_repeat():
+    g,sent=gateway();token=g.begin_cache_scope()
+    for i in range(129):await g.complete('judge','system',str(i))
+    calls=g.drain_calls()
+    assert calls[-1].cache_store_status=='capacity_not_stored'
+    await g.complete('judge','system','128')
+    assert g.drain_calls()[0].cache_miss_reason=='capacity_not_stored'
+    await g.complete('judge','system','0')
+    assert g.drain_calls()[0].cache_hit is True
+    g.end_cache_scope(token)

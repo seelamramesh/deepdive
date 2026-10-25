@@ -44,12 +44,15 @@ class MeshGateway:
         self._client: AsyncOpenAI | None = None
         self._calls: ContextVar[tuple[AgentCall, ...]] = ContextVar("mesh_calls", default=())
         self._cache = ContextVar("mesh_run_cache", default=None)
+        self._cache_history = ContextVar("mesh_cache_history", default=None)
 
     def begin_cache_scope(self):
-        return self._cache.set({} if settings.mesh_run_cache else None)
+        return (self._cache.set({} if settings.mesh_run_cache else None),
+                self._cache_history.set({} if settings.mesh_run_cache else None))
 
     def end_cache_scope(self, token):
-        self._cache.reset(token)
+        self._cache_history.reset(token[1])
+        self._cache.reset(token[0])
 
     def _record_call(self, call: AgentCall) -> None:
         self._calls.set(self._calls.get() + (call,))
@@ -114,16 +117,27 @@ class MeshGateway:
             cache_key = hashlib.sha256(json.dumps({"endpoint": settings.mesh_base_url,
                 "agent": agent_name, "prompt_version": prompt_version, "request": kwargs},
                 sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
-            if cache is not None and cache_key in cache and start-cache[cache_key]["created_at"] > 300:
+            history = self._cache_history.get()
+            previous = history.get(agent_name) if history is not None else None
+            expired = cache is not None and cache_key in cache and start-cache[cache_key]["created_at"] > 300
+            if expired:
                 del cache[cache_key]
+            miss_reason = ("ineligible" if temperature != 0 else "disabled" if cache is None
+                           else "ttl_expired" if expired else "first" if previous is None
+                           else "capacity_not_stored" if previous["key"] == cache_key and previous["store_status"] == "capacity_not_stored"
+                           else "previous_not_stored" if previous["key"] == cache_key else "different_key")
+            cache_trace = {"cache_miss_reason": miss_reason, "cache_store_status": "response_not_stored"}
             if cache is not None and cache_key in cache:
                 cached = cache[cache_key]
                 self._record_call(AgentCall(agent=agent_name, model=model, prompt_version=prompt_version,
                     input_hash=_hash(system_prompt + attempt_user_prompt), output_hash=cached["output_hash"],
                     cache_hit=True, request_sent=False, cache_source_call_id=cached["call_id"],
+                    cache_store_status="reused",
                     usage_source="local_cache_incremental", prompt_tokens=0, completion_tokens=0, total_tokens=0,
                     finish_reason="local_exact_cache"))
                 return copy.deepcopy(cached["parsed"])
+            if history is not None and (agent_name in history or len(history) < 128):
+                history[agent_name] = {"key": cache_key, "store_status": "response_not_stored"}
             client = self.client  # Configuration errors are not sent requests.
             try:
                 response = await client.chat.completions.create(**kwargs)
@@ -135,7 +149,7 @@ class MeshGateway:
                     input_hash=_hash(system_prompt + attempt_user_prompt),
                     duration_ms=int((time.monotonic() - start) * 1000),
                     success=False, cache_hit=False, request_sent=True, usage_source="unknown",
-                    error=type(exc).__name__,
+                    error=type(exc).__name__, **cache_trace,
                 ))
                 # No response metadata means usage and charge remain unknown.
                 raise
@@ -182,7 +196,7 @@ class MeshGateway:
                     finish_reason=finish_reason,
                     error=str(exc),
                     response_preview=content[:300],
-                    **token_usage,
+                    **cache_trace, **token_usage,
                 ))
                 if finish_reason == "length":
                     kwargs["messages"] = [*messages, {
@@ -202,7 +216,7 @@ class MeshGateway:
                 duration_ms=duration_ms,
                 finish_reason=finish_reason,
                 response_preview=content[:300], cache_hit=False, request_sent=True, usage_source="provider_response",
-                **token_usage,
+                **cache_trace, **token_usage,
             )
             self._record_call(call)
             contracts = {"planner":"subquestions", "search_strategist":"queries", "researcher":"evidence",
@@ -214,6 +228,10 @@ class MeshGateway:
                 (agent_name == "synthesizer" and isinstance(required,str) and bool(required.strip())) or
                 (agent_name != "synthesizer" and isinstance(required,list) and bool(required)
                  and all(isinstance(item,dict) for item in required)))
+            call.cache_store_status = ("ineligible_request" if temperature != 0 else "disabled" if cache is None else "ineligible_result" if not cacheable
+                                       else "capacity_not_stored" if len(cache) >= 128 else "stored")
+            if history is not None and agent_name in history:
+                history[agent_name]["store_status"] = call.cache_store_status
             if cache is not None and len(cache) < 128 and cacheable:
                 cache[cache_key] = {"parsed": copy.deepcopy(parsed), "call_id": call.id,
                                     "output_hash": call.output_hash, "created_at": time.monotonic()}

@@ -42,3 +42,15 @@ def sample_claims():
             evidence_ids=["ev3"], subquestion_id="sq2",
         ),
     ]
+
+
+@pytest.fixture(autouse=True)
+def forbid_real_http(monkeypatch):
+    """All tests must use ASGI/MockTransport; never paid HTTP transports."""
+    import httpx
+    async def forbidden_async(*args, **kwargs):
+        raise AssertionError("Real outbound HTTP forbidden in tests")
+    def forbidden_sync(*args, **kwargs):
+        raise AssertionError("Real outbound HTTP forbidden in tests")
+    monkeypatch.setattr(httpx.AsyncHTTPTransport, "handle_async_request", forbidden_async)
+    monkeypatch.setattr(httpx.HTTPTransport, "handle_request", forbidden_sync)

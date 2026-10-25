@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import hashlib
+import time
+import uuid
+from datetime import datetime, timezone
 import re
 from collections import Counter
 from contextvars import ContextVar
@@ -23,11 +26,27 @@ from app.services.security import (
 )
 
 
+_fetch_context = ContextVar("fetch_context", default=None)
+_search_events = ContextVar("search_events", default=())
+
+
+def drain_search_events():
+    events = list(_search_events.get())
+    _search_events.set(())
+    return events
+
+
 _fetch_events = ContextVar("retrieval_fetch_events", default=())
 
 
 def record_fetch_event(url, outcome, reason):
-    _fetch_events.set(_fetch_events.get() + ({"url":url,"outcome":outcome,"reason":reason},))
+    context = _fetch_context.get() or {}
+    event = {"url": url, "outcome": outcome, "reason": reason,
+             "attempt_id": context.get("attempt_id"), "http_status": context.get("http_status"),
+             "error_class": context.get("error_class"), "timestamp": datetime.now(timezone.utc).isoformat(),
+             "duration_ms": max(0, int((time.monotonic()-context.get("start", time.monotonic()))*1000)),
+             "request_index": context.get("request_index", 0)}
+    _fetch_events.set(_fetch_events.get() + (event,))
 
 
 def drain_fetch_events():
@@ -78,6 +97,14 @@ def publication_date_from_metadata(soup):
 
 
 async def fetch_url(url: str, timeout: int | None = None) -> Optional[dict]:
+    token = _fetch_context.set({"attempt_id": uuid.uuid4().hex, "start": time.monotonic()})
+    try:
+        return await _fetch_url_impl(url, timeout)
+    finally:
+        _fetch_context.reset(token)
+
+
+async def _fetch_url_impl(url: str, timeout: int | None = None) -> Optional[dict]:
     """Fetch and extract text content from a URL.
 
     Returns: {"url": str, "title": str, "content": str, "content_hash": str}
@@ -100,11 +127,15 @@ async def fetch_url(url: str, timeout: int | None = None) -> Optional[dict]:
                 if not is_valid:
                     record_fetch_event(url, "failed", "unsafe_redirect")
                     return None
+                _fetch_context.get()["request_index"] = _fetch_context.get().get("request_index", 0) + 1
+                _fetch_context.get()["http_status"] = None
                 response = await client.get(
                     current_url,
                     headers={"User-Agent": "DeepDive-Research/1.0"},
                 )
+                _fetch_context.get()["http_status"] = response.status_code
                 if response.is_redirect:
+                    record_fetch_event(url, "redirect", "redirect_response")
                     location = response.headers.get("location")
                     if not location:
                         record_fetch_event(url, "failed", "redirect_without_location")
@@ -166,32 +197,56 @@ async def fetch_url(url: str, timeout: int | None = None) -> Optional[dict]:
             }
 
     except Exception as exc:
+        _fetch_context.get()["error_class"] = type(exc).__name__
         record_fetch_event(url, "failed", type(exc).__name__)
         return None
 
 
 async def search_web(query: str) -> list[str]:
-    """Search Brave for public source URLs when configured."""
-    if not settings.brave_search_api_key:
-        return []
+    """Search Brave, retaining a safe outcome even when no URLs are returned."""
+    start = time.monotonic()
+    event = {"attempt_id": uuid.uuid4().hex, "query": query, "status": "missing_key",
+             "result_count": 0, "http_status": None, "error_class": None,
+             "request_sent": False, "timestamp": datetime.now(timezone.utc).isoformat()}
     try:
+        if not settings.brave_search_api_key:
+            return []
         async with httpx.AsyncClient(timeout=settings.request_timeout) as client:
+            event["request_sent"] = True
             response = await client.get(
                 "https://api.search.brave.com/res/v1/web/search",
                 params={"q": query, "count": settings.max_sources_per_round},
                 headers={"Accept": "application/json", "X-Subscription-Token": settings.brave_search_api_key},
             )
+            event["http_status"] = response.status_code
             response.raise_for_status()
-            results = response.json().get("web", {}).get("results", [])
+            payload = response.json()
+            results = payload.get("web", {}).get("results", [])
+            if not isinstance(results, list) or any(not isinstance(item, dict) for item in results):
+                raise ValueError("Invalid search result shape")
             urls = []
             for item in results:
                 candidate = item.get("url", "")
+                if not isinstance(candidate, str):
+                    continue
                 valid, _ = validate_url(candidate)
                 if valid and candidate not in urls:
                     urls.append(candidate)
-            return urls[: settings.max_sources_per_round]
-    except (httpx.HTTPError, ValueError, TypeError):
+            urls = urls[:settings.max_sources_per_round]
+            event.update(status="success" if urls else "empty", result_count=len(urls))
+            return urls
+    except httpx.TimeoutException as exc:
+        event.update(status="timeout", error_class=type(exc).__name__)
         return []
+    except httpx.HTTPError as exc:
+        event.update(status="error", error_class=type(exc).__name__)
+        return []
+    except (ValueError, TypeError, AttributeError) as exc:
+        event.update(status="invalid_response", error_class=type(exc).__name__)
+        return []
+    finally:
+        event["duration_ms"] = max(0, int((time.monotonic()-start)*1000))
+        _search_events.set(_search_events.get() + (event,))
 
 
 async def fetch_sources(urls: list[str]) -> list[Source]:

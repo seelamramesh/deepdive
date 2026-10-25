@@ -8,7 +8,7 @@ export interface Claim { id: string; text: string; evidence_ids: string[]; subqu
 export interface Judgement { claim_id: string; verdict: string; confidence: number; explanation: string; missing_evidence: string; supporting_evidence_ids: string[]; contradicting_evidence_ids: string[] }
 export interface Coverage { subquestion_id: string; subquestion_text: string; status: string; source_count: number; evidence_count: number; verified_claim_count: number }
 export interface Contradiction { id: string; topic: string; claim_a: string; claim_b: string; evidence_a: string[]; evidence_b: string[]; resolution: string; explanation: string }
-export interface AgentCall { cache_hit?: boolean | null; request_sent?: boolean | null; cache_source_call_id?: string; cached_prompt_tokens?: number | null; id: string; agent: string; model: string; duration_ms: number; success: boolean; prompt_tokens?: number | null; completion_tokens?: number | null; total_tokens?: number | null }
+export interface AgentCall { cache_miss_reason?: string | null; cache_store_status?: string | null; cache_hit?: boolean | null; request_sent?: boolean | null; cache_source_call_id?: string; cached_prompt_tokens?: number | null; id: string; agent: string; model: string; duration_ms: number; success: boolean; prompt_tokens?: number | null; completion_tokens?: number | null; total_tokens?: number | null }
 export interface Transition { from_state: string; to_state: string; timestamp: string; reason: string }
 export interface Workspace { id: string; question: string; created_at: string; current_state: string; research_round: number; sources: Source[]; evidence: Evidence[]; claims: Claim[]; judgements: Judgement[]; coverage: Coverage[]; contradictions: Contradiction[]; state_transitions: Transition[]; agent_calls: AgentCall[]; final_report: string; error: string | null; warnings: string[]; accepted_claim_ids: string[]; confidence_threshold: number; certificate: Record<string, unknown> | null; subquestions: {id: string; text: string; completion_criteria: string}[] }
 export interface ResearchInput { question: string; source_urls: string[]; max_rounds: number; confidence_threshold: number }
@@ -22,6 +22,7 @@ export interface Workspace {
   report_grounding_status?: string;
   report_fallback_reason?: string;
   report_grounding_audit?: {unit_id: string; text: string; kept: boolean; included_in_final_report?: boolean; reason: string; method: string; prompt_version: string}[];
+  report_artifact_audit?: {unit_id: string; text: string; method: string; based_on: string; included_in_final_report: boolean}[];
   coverage_derivation?: string;
   recorded_coverage?: Coverage[];
   prosecution?: {claim_id: string; weaknesses: string[]; unsupported_components: string[]}[];

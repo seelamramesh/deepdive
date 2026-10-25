@@ -1,0 +1,1556 @@
+{
+  "id": "ee166f04883a48c0",
+  "question": "How do FDA and USDA divide federal oversight of cell-cultivated chicken for human food in the United States, and what does FDA pre-market consultation establish versus not establish?",
+  "created_at": "2026-10-25T02:20:06.219676+00:00",
+  "current_state": "END",
+  "research_round": 2,
+  "confidence_threshold": 0.7,
+  "max_rounds": 2,
+  "subquestions": [
+    {
+      "id": "f88038cff07e",
+      "text": "What are the respective statutory authorities and jurisdictional boundaries of FDA and USDA's Food Safety and Inspection Service (FSIS) over cell-cultivated poultry products intended for human food, and which agency oversees which stages of production (cell collection and cell banks, cultivation, harvesting, and final product formulation, labeling, and inspection)?",
+      "completion_criteria": "Identification of the governing statutes (e.g., Federal Food, Drug, and Cosmetic Act, Poultry Products Inspection Act, and the 2019 FDA-USDA formal agreement or equivalent memorandum of understanding) with specific provisions or section citations, plus a stage-by-stage mapping of which agency has responsibility, supported by official agency documents or the signed agreement text.",
+      "parent_question": "How do FDA and USDA divide federal oversight of cell-cultivated chicken for human food in the United States, and what does FDA pre-market consultation establish versus not establish?"
+    },
+    {
+      "id": "28f8b3f3000e",
+      "text": "What does the FDA pre-market consultation process for cell-cultivated food ingredients or products involve procedurally (submission contents, pre-market meetings, evaluation criteria, and the 'no questions' letter issuance), and what is the stated legal effect of the resulting FDA response?",
+      "completion_criteria": "A description of the consultation steps and documentation requirements drawn from FDA's published guidance or completed consultation records, plus the exact language FDA uses to characterize the outcome of a consultation (e.g., whether it constitutes approval, authorization, or a regulatory determination of safety).",
+      "parent_question": "How do FDA and USDA divide federal oversight of cell-cultivated chicken for human food in the United States, and what does FDA pre-market consultation establish versus not establish?"
+    },
+    {
+      "id": "656ec04be4c8",
+      "text": "What specific determinations, such as food safety, regulatory status of the cell source or ingredients, and the substance's classification under the FD&C Act, does FDA pre-market consultation establish for a cell-cultivated chicken product?",
+      "completion_criteria": "A list of the matters FDA states it has evaluated and concluded through consultation (for example, whether the cell-cultured food is safe, lawfully marketed as a food, or meets color additive or GRAS-related requirements), with citations to FDA's completed consultation responses or public statements of scope.",
+      "parent_question": "How do FDA and USDA divide federal oversight of cell-cultivated chicken for human food in the United States, and what does FDA pre-market consultation establish versus not establish?"
+    },
+    {
+      "id": "d11b2930d970",
+      "text": "What matters does FDA pre-market consultation not establish for a cell-cultivated chicken product, including the need for subsequent USDA FSIS grant of inspection, labeling approval, facility requirements, and any remaining state or other federal obligations?",
+      "completion_criteria": "A documented list of excluded or residual matters drawn from FDA's consultation letters, FDA-USDA agreement language, and FSIS statements on post-consultation requirements, showing which obligations remain with USDA or other authorities after FDA consultation concludes.",
+      "parent_question": "How do FDA and USDA divide federal oversight of cell-cultivated chicken for human food in the United States, and what does FDA pre-market consultation establish versus not establish?"
+    },
+    {
+      "id": "23e754eeea2e",
+      "text": "How has the FDA-USDA division of oversight been applied in practice to completed cell-cultivated chicken products (for example, the consultations and subsequent USDA label approval or grant of inspection for specific companies), and what do these cases reveal about the handoff between the two agencies?",
+      "completion_criteria": "Identification of specific completed cases with dates and outcomes, documenting the sequence of FDA consultation and subsequent USDA action (or confirmed pending status), drawn from agency announcements, company disclosures, or regulatory records.",
+      "parent_question": "How do FDA and USDA divide federal oversight of cell-cultivated chicken for human food in the United States, and what does FDA pre-market consultation establish versus not establish?"
+    }
+  ],
+  "search_queries": [
+    {
+      "id": "95d7ab7c5df2",
+      "subquestion_id": "f88038cff07e",
+      "query": "FDA USDA formal agreement cell-cultured meat poultry jurisdiction FSIS grant of inspection pre-market consultation \"no questions\" letter",
+      "source_preference": "government"
+    },
+    {
+      "id": "80218a81d11b",
+      "subquestion_id": "28f8b3f3000e",
+      "query": "What does the FDA pre-market consultation process for cell-cultivated food ingredients or products involve procedurally (submission contents, pre-market meetings, evaluation criteria, and the 'no questions' letter issuance), and what is the stated legal effect of the resulting FDA response? A description of the consultation steps and documentation requirements drawn from FDA's published guidance or completed consultation records, plus the exact language FDA uses to characterize the outcome of a consultation (e.g., whether it constitutes approval, authorization, or a regulatory determination of safety). authoritative source",
+      "source_preference": "primary"
+    }
+  ],
+  "search_audit": [
+    {
+      "input": {
+        "question": "How do FDA and USDA divide federal oversight of cell-cultivated chicken for human food in the United States, and what does FDA pre-market consultation establish versus not establish?",
+        "round": 1,
+        "query_budget": 1,
+        "subquestions": [
+          {
+            "id": "f88038cff07e",
+            "text": "What are the respective statutory authorities and jurisdictional boundaries of FDA and USDA's Food Safety and Inspection Service (FSIS) over cell-cultivated poultry products intended for human food, and which agency oversees which stages of production (cell collection and cell banks, cultivation, harvesting, and final product formulation, labeling, and inspection)?",
+            "completion_criteria": "Identification of the governing statutes (e.g., Federal Food, Drug, and Cosmetic Act, Poultry Products Inspection Act, and the 2019 FDA-USDA formal agreement or equivalent memorandum of understanding) with specific provisions or section citations, plus a stage-by-stage mapping of which agency has responsibility, supported by official agency documents or the signed agreement text."
+          },
+          {
+            "id": "28f8b3f3000e",
+            "text": "What does the FDA pre-market consultation process for cell-cultivated food ingredients or products involve procedurally (submission contents, pre-market meetings, evaluation criteria, and the 'no questions' letter issuance), and what is the stated legal effect of the resulting FDA response?",
+            "completion_criteria": "A description of the consultation steps and documentation requirements drawn from FDA's published guidance or completed consultation records, plus the exact language FDA uses to characterize the outcome of a consultation (e.g., whether it constitutes approval, authorization, or a regulatory determination of safety)."
+          },
+          {
+            "id": "656ec04be4c8",
+            "text": "What specific determinations, such as food safety, regulatory status of the cell source or ingredients, and the substance's classification under the FD&C Act, does FDA pre-market consultation establish for a cell-cultivated chicken product?",
+            "completion_criteria": "A list of the matters FDA states it has evaluated and concluded through consultation (for example, whether the cell-cultured food is safe, lawfully marketed as a food, or meets color additive or GRAS-related requirements), with citations to FDA's completed consultation responses or public statements of scope."
+          },
+          {
+            "id": "d11b2930d970",
+            "text": "What matters does FDA pre-market consultation not establish for a cell-cultivated chicken product, including the need for subsequent USDA FSIS grant of inspection, labeling approval, facility requirements, and any remaining state or other federal obligations?",
+            "completion_criteria": "A documented list of excluded or residual matters drawn from FDA's consultation letters, FDA-USDA agreement language, and FSIS statements on post-consultation requirements, showing which obligations remain with USDA or other authorities after FDA consultation concludes."
+          },
+          {
+            "id": "23e754eeea2e",
+            "text": "How has the FDA-USDA division of oversight been applied in practice to completed cell-cultivated chicken products (for example, the consultations and subsequent USDA label approval or grant of inspection for specific companies), and what do these cases reveal about the handoff between the two agencies?",
+            "completion_criteria": "Identification of specific completed cases with dates and outcomes, documenting the sequence of FDA consultation and subsequent USDA action (or confirmed pending status), drawn from agency announcements, company disclosures, or regulatory records."
+          }
+        ],
+        "gap_feedback": [],
+        "previous_queries": []
+      },
+      "planned_queries": [
+        {
+          "id": "95d7ab7c5df2",
+          "subquestion_id": "f88038cff07e",
+          "query": "FDA USDA formal agreement cell-cultured meat poultry jurisdiction FSIS grant of inspection pre-market consultation \"no questions\" letter",
+          "source_preference": "government"
+        },
+        {
+          "id": "88911ce28805",
+          "subquestion_id": "28f8b3f3000e",
+          "query": "What does the FDA pre-market consultation process for cell-cultivated food ingredients or products involve procedurally (submission contents, pre-market meetings, evaluation criteria, and the 'no questions' letter issuance), and what is the stated legal effect of the resulting FDA response? A description of the consultation steps and documentation requirements drawn from FDA's published guidance or completed consultation records, plus the exact language FDA uses to characterize the outcome of a consultation (e.g., whether it constitutes approval, authorization, or a regulatory determination of safety). authoritative source",
+          "source_preference": "primary"
+        },
+        {
+          "id": "51a1733246d6",
+          "subquestion_id": "656ec04be4c8",
+          "query": "What specific determinations, such as food safety, regulatory status of the cell source or ingredients, and the substance's classification under the FD&C Act, does FDA pre-market consultation establish for a cell-cultivated chicken product? A list of the matters FDA states it has evaluated and concluded through consultation (for example, whether the cell-cultured food is safe, lawfully marketed as a food, or meets color additive or GRAS-related requirements), with citations to FDA's completed consultation responses or public statements of scope. authoritative source",
+          "source_preference": "primary"
+        },
+        {
+          "id": "7230758d754e",
+          "subquestion_id": "d11b2930d970",
+          "query": "What matters does FDA pre-market consultation not establish for a cell-cultivated chicken product, including the need for subsequent USDA FSIS grant of inspection, labeling approval, facility requirements, and any remaining state or other federal obligations? A documented list of excluded or residual matters drawn from FDA's consultation letters, FDA-USDA agreement language, and FSIS statements on post-consultation requirements, showing which obligations remain with USDA or other authorities after FDA consultation concludes. authoritative source",
+          "source_preference": "primary"
+        },
+        {
+          "id": "acef910c63c3",
+          "subquestion_id": "23e754eeea2e",
+          "query": "How has the FDA-USDA division of oversight been applied in practice to completed cell-cultivated chicken products (for example, the consultations and subsequent USDA label approval or grant of inspection for specific companies), and what do these cases reveal about the handoff between the two agencies? Identification of specific completed cases with dates and outcomes, documenting the sequence of FDA consultation and subsequent USDA action (or confirmed pending status), drawn from agency announcements, company disclosures, or regulatory records. authoritative source",
+          "source_preference": "primary"
+        }
+      ],
+      "selected_query_ids": [
+        "95d7ab7c5df2"
+      ]
+    },
+    {
+      "input": {
+        "question": "How do FDA and USDA divide federal oversight of cell-cultivated chicken for human food in the United States, and what does FDA pre-market consultation establish versus not establish?",
+        "round": 2,
+        "query_budget": 1,
+        "subquestions": [
+          {
+            "id": "f88038cff07e",
+            "text": "What are the respective statutory authorities and jurisdictional boundaries of FDA and USDA's Food Safety and Inspection Service (FSIS) over cell-cultivated poultry products intended for human food, and which agency oversees which stages of production (cell collection and cell banks, cultivation, harvesting, and final product formulation, labeling, and inspection)?",
+            "completion_criteria": "Identification of the governing statutes (e.g., Federal Food, Drug, and Cosmetic Act, Poultry Products Inspection Act, and the 2019 FDA-USDA formal agreement or equivalent memorandum of understanding) with specific provisions or section citations, plus a stage-by-stage mapping of which agency has responsibility, supported by official agency documents or the signed agreement text."
+          },
+          {
+            "id": "28f8b3f3000e",
+            "text": "What does the FDA pre-market consultation process for cell-cultivated food ingredients or products involve procedurally (submission contents, pre-market meetings, evaluation criteria, and the 'no questions' letter issuance), and what is the stated legal effect of the resulting FDA response?",
+            "completion_criteria": "A description of the consultation steps and documentation requirements drawn from FDA's published guidance or completed consultation records, plus the exact language FDA uses to characterize the outcome of a consultation (e.g., whether it constitutes approval, authorization, or a regulatory determination of safety)."
+          },
+          {
+            "id": "656ec04be4c8",
+            "text": "What specific determinations, such as food safety, regulatory status of the cell source or ingredients, and the substance's classification under the FD&C Act, does FDA pre-market consultation establish for a cell-cultivated chicken product?",
+            "completion_criteria": "A list of the matters FDA states it has evaluated and concluded through consultation (for example, whether the cell-cultured food is safe, lawfully marketed as a food, or meets color additive or GRAS-related requirements), with citations to FDA's completed consultation responses or public statements of scope."
+          },
+          {
+            "id": "d11b2930d970",
+            "text": "What matters does FDA pre-market consultation not establish for a cell-cultivated chicken product, including the need for subsequent USDA FSIS grant of inspection, labeling approval, facility requirements, and any remaining state or other federal obligations?",
+            "completion_criteria": "A documented list of excluded or residual matters drawn from FDA's consultation letters, FDA-USDA agreement language, and FSIS statements on post-consultation requirements, showing which obligations remain with USDA or other authorities after FDA consultation concludes."
+          },
+          {
+            "id": "23e754eeea2e",
+            "text": "How has the FDA-USDA division of oversight been applied in practice to completed cell-cultivated chicken products (for example, the consultations and subsequent USDA label approval or grant of inspection for specific companies), and what do these cases reveal about the handoff between the two agencies?",
+            "completion_criteria": "Identification of specific completed cases with dates and outcomes, documenting the sequence of FDA consultation and subsequent USDA action (or confirmed pending status), drawn from agency announcements, company disclosures, or regulatory records."
+          }
+        ],
+        "gap_feedback": [
+          {
+            "subquestion_id": "f88038cff07e",
+            "completion_criteria": "Identification of the governing statutes (e.g., Federal Food, Drug, and Cosmetic Act, Poultry Products Inspection Act, and the 2019 FDA-USDA formal agreement or equivalent memorandum of understanding) with specific provisions or section citations, plus a stage-by-stage mapping of which agency has responsibility, supported by official agency documents or the signed agreement text.",
+            "coverage_status": "red",
+            "failed_claims": [
+              {
+                "claim_id": "79e238c4b05c",
+                "text": "For cell-cultured food, oversight transitions from FDA to USDA-FSIS during the harvesting stage of the cell culture process.",
+                "verdict": "partially_supported",
+                "reason": "Passage 045780c84e6c states that FDA oversees cell collection, cell banks, and cell growth and differentiation, and that oversight transitions to USDA-FSIS during the harvesting stage of the cell culture process. This directly supports the core transition point. Passage 40f6fa977c54 places the handoff at harvest and conditions it on 'the species covered under FMIA and PPIA.' The claim states the transition without that species scope, which is a substantive omission under the rules, because it implies the handoff applies to all cell-cultured food. Passage 040f6fa977c54 also describes the transition as extending 'through processing and labeling,' which the claim does not mention. The 'Under this agreement' framing in 045780c84e6c is a further qualifier the claim drops. Both passages come from the same source (619ad6db99fe), so corroboration is not independent.",
+                "missing_evidence": "The scope of the transition must be stated as applying to species covered under FMIA and PPIA. Evidence is needed on whether the transition applies to other cell-cultured food categories, and on the date or version of the interagency agreement described in 045780c84e6c, if the claim is to be presented as current. An independent second source would strengthen corroboration."
+              }
+            ]
+          },
+          {
+            "subquestion_id": "28f8b3f3000e",
+            "completion_criteria": "A description of the consultation steps and documentation requirements drawn from FDA's published guidance or completed consultation records, plus the exact language FDA uses to characterize the outcome of a consultation (e.g., whether it constitutes approval, authorization, or a regulatory determination of safety).",
+            "coverage_status": "yellow",
+            "failed_claims": []
+          },
+          {
+            "subquestion_id": "656ec04be4c8",
+            "completion_criteria": "A list of the matters FDA states it has evaluated and concluded through consultation (for example, whether the cell-cultured food is safe, lawfully marketed as a food, or meets color additive or GRAS-related requirements), with citations to FDA's completed consultation responses or public statements of scope.",
+            "coverage_status": "red",
+            "failed_claims": []
+          },
+          {
+            "subquestion_id": "d11b2930d970",
+            "completion_criteria": "A documented list of excluded or residual matters drawn from FDA's consultation letters, FDA-USDA agreement language, and FSIS statements on post-consultation requirements, showing which obligations remain with USDA or other authorities after FDA consultation concludes.",
+            "coverage_status": "red",
+            "failed_claims": []
+          },
+          {
+            "subquestion_id": "23e754eeea2e",
+            "completion_criteria": "Identification of specific completed cases with dates and outcomes, documenting the sequence of FDA consultation and subsequent USDA action (or confirmed pending status), drawn from agency announcements, company disclosures, or regulatory records.",
+            "coverage_status": "red",
+            "failed_claims": []
+          }
+        ],
+        "previous_queries": [
+          "FDA USDA formal agreement cell-cultured meat poultry jurisdiction FSIS grant of inspection pre-market consultation \"no questions\" letter"
+        ]
+      },
+      "planned_queries": [
+        {
+          "id": "a762f91aa4d1",
+          "subquestion_id": "f88038cff07e",
+          "query": "FDA FSIS interagency agreement cell-cultured food harvesting transition \"species covered under\" Federal Meat Inspection Act Poultry Products Inspection Act cell banks cell growth differentiation",
+          "source_preference": "government"
+        },
+        {
+          "id": "80218a81d11b",
+          "subquestion_id": "28f8b3f3000e",
+          "query": "What does the FDA pre-market consultation process for cell-cultivated food ingredients or products involve procedurally (submission contents, pre-market meetings, evaluation criteria, and the 'no questions' letter issuance), and what is the stated legal effect of the resulting FDA response? A description of the consultation steps and documentation requirements drawn from FDA's published guidance or completed consultation records, plus the exact language FDA uses to characterize the outcome of a consultation (e.g., whether it constitutes approval, authorization, or a regulatory determination of safety). authoritative source",
+          "source_preference": "primary"
+        },
+        {
+          "id": "4e6471e64f52",
+          "subquestion_id": "656ec04be4c8",
+          "query": "What specific determinations, such as food safety, regulatory status of the cell source or ingredients, and the substance's classification under the FD&C Act, does FDA pre-market consultation establish for a cell-cultivated chicken product? A list of the matters FDA states it has evaluated and concluded through consultation (for example, whether the cell-cultured food is safe, lawfully marketed as a food, or meets color additive or GRAS-related requirements), with citations to FDA's completed consultation responses or public statements of scope. authoritative source",
+          "source_preference": "primary"
+        },
+        {
+          "id": "13196dec0643",
+          "subquestion_id": "d11b2930d970",
+          "query": "What matters does FDA pre-market consultation not establish for a cell-cultivated chicken product, including the need for subsequent USDA FSIS grant of inspection, labeling approval, facility requirements, and any remaining state or other federal obligations? A documented list of excluded or residual matters drawn from FDA's consultation letters, FDA-USDA agreement language, and FSIS statements on post-consultation requirements, showing which obligations remain with USDA or other authorities after FDA consultation concludes. authoritative source",
+          "source_preference": "primary"
+        },
+        {
+          "id": "cb69c676e57d",
+          "subquestion_id": "23e754eeea2e",
+          "query": "How has the FDA-USDA division of oversight been applied in practice to completed cell-cultivated chicken products (for example, the consultations and subsequent USDA label approval or grant of inspection for specific companies), and what do these cases reveal about the handoff between the two agencies? Identification of specific completed cases with dates and outcomes, documenting the sequence of FDA consultation and subsequent USDA action (or confirmed pending status), drawn from agency announcements, company disclosures, or regulatory records. authoritative source",
+          "source_preference": "primary"
+        }
+      ],
+      "selected_query_ids": [
+        "80218a81d11b"
+      ]
+    }
+  ],
+  "retrieval_audit": [
+    {
+      "round": 1,
+      "seed_urls": [
+        "https://www.fda.gov/food/food-ingredients-packaging/human-food-made-cultured-animal-cells",
+        "https://www.fsis.usda.gov/policy/fsis-directives/7800.1"
+      ],
+      "searches": [
+        {
+          "query_id": "95d7ab7c5df2",
+          "query": "FDA USDA formal agreement cell-cultured meat poultry jurisdiction FSIS grant of inspection pre-market consultation \"no questions\" letter",
+          "result_urls": [
+            "https://www.foodsafetynews.com/2023/07/usda-updates-for-cell-cultured-meat-and-poultry/",
+            "https://aglaw.psu.edu/research-by-topic/issue-tracker/cell-cultured-food-regulations-new-version/"
+          ],
+          "outcome": "urls_returned"
+        }
+      ],
+      "candidate_urls": [
+        "https://www.fda.gov/food/food-ingredients-packaging/human-food-made-cultured-animal-cells",
+        "https://www.fsis.usda.gov/policy/fsis-directives/7800.1",
+        "https://www.foodsafetynews.com/2023/07/usda-updates-for-cell-cultured-meat-and-poultry/",
+        "https://aglaw.psu.edu/research-by-topic/issue-tracker/cell-cultured-food-regulations-new-version/"
+      ],
+      "selected_urls": [
+        "https://www.fda.gov/food/food-ingredients-packaging/human-food-made-cultured-animal-cells",
+        "https://www.fsis.usda.gov/policy/fsis-directives/7800.1"
+      ],
+      "reused_source_ids": [],
+      "fetched_sources": [
+        {
+          "source_id": "619ad6db99fe",
+          "url": "https://www.fda.gov/food/food-ingredients-packaging/human-food-made-cultured-animal-cells",
+          "content_hash": "b442ea95a7b2482d"
+        }
+      ],
+      "fetch_outcomes": [
+        {
+          "url": "https://www.fda.gov/food/food-ingredients-packaging/human-food-made-cultured-animal-cells",
+          "outcome": "retrieved",
+          "reason": "usable_snapshot"
+        },
+        {
+          "url": "https://www.fsis.usda.gov/policy/fsis-directives/7800.1",
+          "outcome": "failed",
+          "reason": "HTTPStatusError"
+        }
+      ],
+      "extraction_inputs": [
+        {
+          "source_id": "619ad6db99fe",
+          "url": "https://www.fda.gov/food/food-ingredients-packaging/human-food-made-cultured-animal-cells",
+          "characters_sent": 7000,
+          "analyzed_content_hash": "1ccbdd6d024c8e64",
+          "source_record_hash": "b442ea95a7b2482d",
+          "snapshot_hash": "b442ea95a7b2482d",
+          "snapshot_start": 0,
+          "snapshot_end": 7000,
+          "selection_policy": "gap_lexical_window_v2",
+          "selection_query": "How do FDA and USDA divide federal oversight of cell-cultivated chicken for human food in the United States, and what does FDA pre-market consultation establish versus not establish?",
+          "previous_windows": [],
+          "snapshot_characters": 17504
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "seed_urls": [
+        "https://www.fda.gov/food/food-ingredients-packaging/human-food-made-cultured-animal-cells",
+        "https://www.fsis.usda.gov/policy/fsis-directives/7800.1"
+      ],
+      "searches": [
+        {
+          "query_id": "80218a81d11b",
+          "query": "What does the FDA pre-market consultation process for cell-cultivated food ingredients or products involve procedurally (submission contents, pre-market meetings, evaluation criteria, and the 'no questions' letter issuance), and what is the stated legal effect of the resulting FDA response? A description of the consultation steps and documentation requirements drawn from FDA's published guidance or completed consultation records, plus the exact language FDA uses to characterize the outcome of a consultation (e.g., whether it constitutes approval, authorization, or a regulatory determination of safety). authoritative source",
+          "result_urls": [],
+          "outcome": "no_urls_or_search_unavailable"
+        }
+      ],
+      "candidate_urls": [
+        "https://www.fda.gov/food/food-ingredients-packaging/human-food-made-cultured-animal-cells",
+        "https://www.fsis.usda.gov/policy/fsis-directives/7800.1"
+      ],
+      "selected_urls": [
+        "https://www.fsis.usda.gov/policy/fsis-directives/7800.1"
+      ],
+      "reused_source_ids": [
+        "619ad6db99fe"
+      ],
+      "fetched_sources": [],
+      "fetch_outcomes": [
+        {
+          "url": "https://www.fsis.usda.gov/policy/fsis-directives/7800.1",
+          "outcome": "failed",
+          "reason": "HTTPStatusError"
+        }
+      ],
+      "extraction_inputs": [
+        {
+          "source_id": "619ad6db99fe",
+          "url": "https://www.fda.gov/food/food-ingredients-packaging/human-food-made-cultured-animal-cells",
+          "characters_sent": 7000,
+          "analyzed_content_hash": "bb4f514f5ae5bbe4",
+          "source_record_hash": "b442ea95a7b2482d",
+          "snapshot_hash": "b442ea95a7b2482d",
+          "snapshot_start": 3500,
+          "snapshot_end": 10500,
+          "selection_policy": "gap_lexical_window_v2",
+          "selection_query": "What are the respective statutory authorities and jurisdictional boundaries of FDA and USDA's Food Safety and Inspection Service (FSIS) over cell-cultivated poultry products intended for human food, and which agency oversees which stages of production (cell collection and cell banks, cultivation, harvesting, and final product formulation, labeling, and inspection)? Identification of the governing statutes (e.g., Federal Food, Drug, and Cosmetic Act, Poultry Products Inspection Act, and the 2019 FDA-USDA formal agreement or equivalent memorandum of understanding) with specific provisions or section citations, plus a stage-by-stage mapping of which agency has responsibility, supported by official agency documents or the signed agreement text. What does the FDA pre-market consultation process for cell-cultivated food ingredients or products involve procedurally (submission contents, pre-market meetings, evaluation criteria, and the 'no questions' letter issuance), and what is the stated legal effect of the resulting FDA response? A description of the consultation steps and documentation requirements drawn from FDA's published guidance or completed consultation records, plus the exact language FDA uses to characterize the outcome of a consultation (e.g., whether it constitutes approval, authorization, or a regulatory determination of safety). What specific determinations, such as food safety, regulatory status of the cell source or ingredients, and the substance's classification under the FD&C Act, does FDA pre-market consultation establish for a cell-cultivated chicken product? A list of the matters FDA states it has evaluated and concluded through consultation (for example, whether the cell-cultured food is safe, lawfully marketed as a food, or meets color additive or GRAS-related requirements), with citations to FDA's completed consultation responses or public statements of scope. What matters does FDA pre-market consultation not establish for a cell-cultivated chicken product, including the need for subsequent USDA FSIS grant of inspection, labeling approval, facility requirements, and any remaining state or other federal obligations? A documented list of excluded or residual matters drawn from FDA's consultation letters, FDA-USDA agreement language, and FSIS statements on post-consultation requirements, showing which obligations remain with USDA or other authorities after FDA consultation concludes. How has the FDA-USDA division of oversight been applied in practice to completed cell-cultivated chicken products (for example, the consultations and subsequent USDA label approval or grant of inspection for specific companies), and what do these cases reveal about the handoff between the two agencies? Identification of specific completed cases with dates and outcomes, documenting the sequence of FDA consultation and subsequent USDA action (or confirmed pending status), drawn from agency announcements, company disclosures, or regulatory records.",
+          "previous_windows": [
+            [
+              0,
+              7000
+            ]
+          ],
+          "snapshot_characters": 17504
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "619ad6db99fe",
+      "url": "https://www.fda.gov/food/food-ingredients-packaging/human-food-made-cultured-animal-cells",
+      "title": "Human Food Made with Cultured Animal Cells | FDA",
+      "retrieved_at": "2026-10-25T02:20:18.919787+00:00",
+      "content_hash": "b442ea95a7b2482d",
+      "content_snippet": "Human Food Made with Cultured Animal Cells | FDA\nSkip to main content\nSkip to FDA Search\nSkip to in this section menu\nSkip to footer links\nHome\nFood\nFood Ingredients & Packaging\nHuman Food Made with Cultured Animal Cells\nFood Ingredients & Packaging\nIn this section\nThe ability to take a small number of cells from living animals and grow them in a controlled environment to create food made from cultured animal cells is an emerging area of food science. Advancements in cell culture technology are ",
+      "work_identifiers": [],
+      "publication_date": null,
+      "trust_score": 0.85,
+      "trust_factors": {
+        "primary_source": true,
+        "government_regulatory": true,
+        "peer_reviewed": false,
+        "publisher_reputation": "high",
+        "publication_recency": "unknown",
+        "direct_relevance": 0.95,
+        "independence": false,
+        "methodology_present": false,
+        "corroborated": false
+      },
+      "trust_limitations": "The score reflects the page's governmental origin and direct relevance, not a verified claim of accuracy or completeness. Only a partial snapshot window (characters 3500-10500 of the page) was supplied, so this review does not cover the full page, its linked formal FDA-USDA agreement, the linked inventory of completed consultations, or the linked USDA-FSIS pages. The publication date is null, so the page's currency cannot be confirmed from the supplied metadata; the text also says FDA and USDA-FSIS are still developing detailed coordination procedures and that FDA intends to issue draft guidance, so parts of the described framework may have changed. Independence is marked false because the page is the regulator describing its own jurisdiction and processes, so it is a primary account of agency policy rather than an independent evaluation. The selected content states the jurisdictional division (FDA up to slaughter or harvest for covered species, USDA-FSIS from harvest and labeling for FMIA/PPIA species) and describes the voluntary, product-by-product pre-market consultation. It does not explicitly state what consultation does not establish (for example, that it is not a premarket approval or an endorsement, or that it does not replace USDA grant of inspection or label approval), so any answer on that point needs inference from the page's wording. The page also describes intended inspections and an FDA-USDA labeling-coordination principle, but without the full document, implementation details cannot be verified. Potential conflicts of interest are not apparent, though the page references an FDA-USDA agreement and the agencies' own jurisdictional interests."
+    }
+  ],
+  "evidence": [
+    {
+      "id": "045780c84e6c",
+      "source_id": "619ad6db99fe",
+      "subquestion_id": "f88038cff07e",
+      "passage": "Under this agreement, the FDA oversees cell collection, cell banks, and cell growth and differentiation. We transition oversight to USDA-FSIS during the harvesting stage of the cell culture process. USDA-FSIS oversees the further production and labeling of these products.",
+      "passage_hash": "737c3b6258cec1b5",
+      "source_snapshot_hash": "b442ea95a7b2482d",
+      "relevance": 0.95
+    },
+    {
+      "id": "40f6fa977c54",
+      "source_id": "619ad6db99fe",
+      "subquestion_id": "f88038cff07e",
+      "passage": "For cell-cultured food, the FDA regulates the cell collection, banking, growth and differentiation of the cells, with a regulatory transition to USDA-FSIS, for the species covered under FMIA and PPIA, at harvest through processing and labeling.",
+      "passage_hash": "7a60e03c69b3a4f5",
+      "source_snapshot_hash": "b442ea95a7b2482d",
+      "relevance": 0.9
+    },
+    {
+      "id": "b78b4372d439",
+      "source_id": "619ad6db99fe",
+      "subquestion_id": "f88038cff07e",
+      "passage": "USDA-FSIS regulates the slaughter and processing of animals intended for human consumption and regulated under the Federal Meat Inspection Act (FMIA) (that is, cattle, sheep, swine, goats, and fish of the order Siluriformes) or the Poultry Products Inspection Act (PPIA) (that is, chicken, turkeys, duck, geese, guineas, ratites, and squab).",
+      "passage_hash": "1aa6ad371bb6a6d6",
+      "source_snapshot_hash": "b442ea95a7b2482d",
+      "relevance": 0.8
+    },
+    {
+      "id": "9dbc34ccda00",
+      "source_id": "619ad6db99fe",
+      "subquestion_id": "28f8b3f3000e",
+      "passage": "The FDA\u2019s voluntary pre-market consultation process evaluates the safety of food made from cultured animal cells before it enters the market.",
+      "passage_hash": "1cd86182f60a71a0",
+      "source_snapshot_hash": "b442ea95a7b2482d",
+      "relevance": 0.85
+    },
+    {
+      "id": "263e6c5cf6e3",
+      "source_id": "619ad6db99fe",
+      "subquestion_id": "28f8b3f3000e",
+      "passage": "As part of the pre-market consultation process, we evaluate the production process and the cultured cell material made by the production process, including the establishment of cell lines and cell banks, manufacturing controls, and all components and inputs.",
+      "passage_hash": "21a78840b9cb09ca",
+      "source_snapshot_hash": "b442ea95a7b2482d",
+      "relevance": 0.7
+    },
+    {
+      "id": "53207909a8dc",
+      "source_id": "619ad6db99fe",
+      "subquestion_id": "28f8b3f3000e",
+      "passage": "The pre-market consultation allows developers to work with the FDA on a product-by-product basis and informs them of issues they must consider to produce safe food that does not violate the Federal Food, Drug and Cosmetic Act\u2019s requirements.",
+      "passage_hash": "d295eef0ba8c2a94",
+      "source_snapshot_hash": "b442ea95a7b2482d",
+      "relevance": 0.6
+    },
+    {
+      "id": "e93202c92bc3",
+      "source_id": "619ad6db99fe",
+      "subquestion_id": "28f8b3f3000e",
+      "passage": "The FDA\u2019s voluntary pre-market consultation process evaluates the safety of food made from cultured animal cells before it enters the market. The pre-market consultation allows developers to work with the FDA on a product-by-product basis",
+      "passage_hash": "43c766f302bf8657",
+      "source_snapshot_hash": "b442ea95a7b2482d",
+      "relevance": 0.85
+    },
+    {
+      "id": "8e9a1a616fe5",
+      "source_id": "619ad6db99fe",
+      "subquestion_id": "656ec04be4c8",
+      "passage": "We evaluated the information the firm submitted to the agency and have no further questions at this time about the firm\u2019s safety conclusion.",
+      "passage_hash": "17b70510f1f0f3f6",
+      "source_snapshot_hash": "b442ea95a7b2482d",
+      "relevance": 0.7
+    },
+    {
+      "id": "b0dcf14c45ce",
+      "source_id": "619ad6db99fe",
+      "subquestion_id": "d11b2930d970",
+      "passage": "These establishments will be required to have a USDA grant of inspection and meet the USDA-FSIS regulatory requirements, including the requirements for ensuring sanitation and developing and implementing Hazard Analysis and Critical Control Points systems. ",
+      "passage_hash": "469e22e3198b5ed0",
+      "source_snapshot_hash": "b442ea95a7b2482d",
+      "relevance": 0.75
+    }
+  ],
+  "claims": [
+    {
+      "id": "4439a301f9d8",
+      "text": "The FDA's pre-market consultation process for food made from cultured animal cells is voluntary.",
+      "evidence_ids": [
+        "9dbc34ccda00"
+      ],
+      "subquestion_id": "28f8b3f3000e"
+    },
+    {
+      "id": "70ce56d2fde3",
+      "text": "Under the FDA-USDA agreement, the FDA oversees cell collection, cell banks, and cell growth and differentiation for cell-cultured food.",
+      "evidence_ids": [
+        "045780c84e6c",
+        "40f6fa977c54"
+      ],
+      "subquestion_id": "f88038cff07e"
+    }
+  ],
+  "claim_selection_audit": [
+    {
+      "round": 1,
+      "limit": 2,
+      "policy": "retain_accepted_then_balance_subquestions",
+      "selected_claim_ids": [
+        "79e238c4b05c",
+        "4439a301f9d8"
+      ],
+      "merged_duplicate_ids": {},
+      "excluded_from_active_budget": []
+    },
+    {
+      "round": 2,
+      "limit": 2,
+      "policy": "retain_accepted_then_balance_subquestions",
+      "selected_claim_ids": [
+        "4439a301f9d8",
+        "70ce56d2fde3"
+      ],
+      "merged_duplicate_ids": {
+        "a850862b893a": "4439a301f9d8"
+      },
+      "excluded_from_active_budget": [
+        {
+          "claim": {
+            "id": "79e238c4b05c",
+            "text": "For cell-cultured food, oversight transitions from FDA to USDA-FSIS during the harvesting stage of the cell culture process.",
+            "evidence_ids": [
+              "045780c84e6c",
+              "40f6fa977c54"
+            ],
+            "subquestion_id": "f88038cff07e"
+          },
+          "reason": "active_claim_budget",
+          "previous_judgement": {
+            "claim_id": "79e238c4b05c",
+            "verdict": "partially_supported",
+            "confidence": 0.6,
+            "supporting_evidence_ids": [
+              "045780c84e6c",
+              "40f6fa977c54"
+            ],
+            "contradicting_evidence_ids": [],
+            "explanation": "Passage 045780c84e6c states that FDA oversees cell collection, cell banks, and cell growth and differentiation, and that oversight transitions to USDA-FSIS during the harvesting stage of the cell culture process. This directly supports the core transition point. Passage 40f6fa977c54 places the handoff at harvest and conditions it on 'the species covered under FMIA and PPIA.' The claim states the transition without that species scope, which is a substantive omission under the rules, because it implies the handoff applies to all cell-cultured food. Passage 040f6fa977c54 also describes the transition as extending 'through processing and labeling,' which the claim does not mention. The 'Under this agreement' framing in 045780c84e6c is a further qualifier the claim drops. Both passages come from the same source (619ad6db99fe), so corroboration is not independent.",
+            "missing_evidence": "The scope of the transition must be stated as applying to species covered under FMIA and PPIA. Evidence is needed on whether the transition applies to other cell-cultured food categories, and on the date or version of the interagency agreement described in 045780c84e6c, if the claim is to be presented as current. An independent second source would strengthen corroboration.",
+            "recommended_action": "revise"
+          }
+        }
+      ]
+    }
+  ],
+  "judgements": [
+    {
+      "claim_id": "4439a301f9d8",
+      "verdict": "supported",
+      "confidence": 0.9,
+      "supporting_evidence_ids": [
+        "9dbc34ccda00"
+      ],
+      "contradicting_evidence_ids": [],
+      "explanation": "Passage 9dbc34ccda00 states that 'The FDA's voluntary pre-market consultation process evaluates the safety of food made from cultured animal cells before it enters the market.' This directly maps to the claim that the process is voluntary, with matching population (food made from cultured animal cells) and agency. The prosecution's concern about undated present-tense status is a reasonable caveat about currency, but the passage itself is stated in the present tense and does not contradict the claim. The claim's omission of the safety-evaluation purpose is not a substantive error, because the claim makes no assertion about scope.",
+      "missing_evidence": "Optional: a publication date or a currency check on the source (619ad6db99fe) to confirm the voluntary status has not changed.",
+      "recommended_action": "accept"
+    },
+    {
+      "claim_id": "70ce56d2fde3",
+      "verdict": "partially_supported",
+      "confidence": 0.6,
+      "supporting_evidence_ids": [
+        "045780c84e6c",
+        "40f6fa977c54"
+      ],
+      "contradicting_evidence_ids": [],
+      "explanation": "Both passages state that the FDA oversees or regulates cell collection, cell banks/banking, and cell growth and differentiation for cell-cultured food, so the core functional components are verified. However, the claim omits two qualifiers present in both passages. First, oversight transitions to USDA-FSIS at harvest (045780c84e6c: 'We transition oversight to USDA-FSIS during the harvesting stage'; 40f6fa977c54: 'with a regulatory transition to USDA-FSIS... at harvest through processing and labeling'). The unqualified word 'oversees' overstates the FDA's scope by implying that the FDA's role is not stage-limited. Second, 40f6fa977c54 limits the arrangement to 'the species covered under FMIA and PPIA,' and the claim presents it as general. Under the rules, missing qualifiers are substantive. In addition, neither passage explicitly names an 'FDA-USDA agreement.' 045780c84e6c refers to 'this agreement' and 40f6fa977c54 does not mention one, so the attribution rests on the contextual reference in a single passage.",
+      "missing_evidence": "(1) Confirmation of the agreement's name and parties (FDA and USDA) from the source document, since neither passage names it explicitly. (2) Language specifying that FDA oversight covers the stages before harvest, and that USDA-FSIS takes over at harvest, so the claim can state the cutoff. (3) The FMIA/PPIA species scope, so the claim can state that it applies to those covered species. (4) Ideally, a second independent source, since both passages come from one document (619ad6db99fe).",
+      "recommended_action": "revise"
+    }
+  ],
+  "prosecution": [
+    {
+      "claim_id": "4439a301f9d8",
+      "weaknesses": [
+        "The cited passage does state that the FDA's pre-market consultation is voluntary, so the core wording is supported. The weaknesses are limited to scope and corroboration.",
+        "The claim omits the passage's framing that the consultation evaluates safety before market entry. Read alone, 'voluntary' says nothing about what the process covers, so the claim is incomplete rather than wrong.",
+        "The claim is stated in the present tense with no date or source-currency qualifier. The only evidence is a single passage from one source (619ad6db99fe), and nothing in the record confirms that this status is current."
+      ],
+      "unsupported_components": [
+        "Present-tense applicability is not dated. The record contains no indication of when the source was published or whether the consultation framework has changed since."
+      ]
+    },
+    {
+      "claim_id": "70ce56d2fde3",
+      "weaknesses": [
+        "The claim says the FDA 'oversees' cell collection, cell banks, and cell growth and differentiation without a stage limit. Both supporting passages say oversight transitions to USDA-FSIS at harvest, so the FDA's role is bounded. The claim omits this boundary, which overstates the FDA's scope.",
+        "The second passage limits the arrangement to 'the species covered under FMIA and PPIA.' The claim drops this species-based scope qualifier and presents the arrangement as general.",
+        "The claim's 'Under the FDA-USDA agreement' attribution is supported by the first passage ('Under this agreement'), but the second passage does not name the agreement. The attribution is therefore resting on one passage.",
+        "Both supporting passages come from the same source (619ad6db99fe). Their agreement shows internal consistency, not independent corroboration of the claim."
+      ],
+      "unsupported_components": [
+        "The implied scope that the FDA oversees these stages in all cases, without a harvest-stage cutoff or the FMIA/PPIA species limit.",
+        "Independent corroboration. Both passages derive from one source, so no second source confirms the division of responsibilities."
+      ]
+    }
+  ],
+  "defense": [
+    {
+      "claim_id": "4439a301f9d8",
+      "supporting_passages": [
+        {
+          "evidence_id": "9dbc34ccda00",
+          "passage_excerpt": "The FDA\u2019s voluntary pre-market consultation process evaluates the safety of food made from cultured animal cells before it enters the market.",
+          "supports_component": "Full claim: identifies the FDA pre-market consultation process for cultured animal cell food as 'voluntary.' This is the only component, and it is directly stated."
+        }
+      ]
+    },
+    {
+      "claim_id": "70ce56d2fde3",
+      "supporting_passages": [
+        {
+          "evidence_id": "045780c84e6c",
+          "passage_excerpt": "Under this agreement, the FDA oversees cell collection, cell banks, and cell growth and differentiation.",
+          "supports_component": "'Under the FDA-USDA agreement' and 'the FDA oversees cell collection, cell banks, and cell growth and differentiation.' This passage explicitly ties the oversight functions to the agreement."
+        },
+        {
+          "evidence_id": "40f6fa977c54",
+          "passage_excerpt": "For cell-cultured food, the FDA regulates the cell collection, banking, growth and differentiation of the cells, with a regulatory transition to USDA-FSIS, for the species covered under FMIA and PPIA, at harvest through processing and labeling.",
+          "supports_component": "'The FDA oversees cell collection, cell banks, and cell growth and differentiation for cell-cultured food.' Corroborates the FDA's oversight of collection, banking, and growth/differentiation. Note: this passage does not use the word 'agreement,' and it limits the scope to species covered under FMIA and PPIA, so the 'under the FDA-USDA agreement' wording is supported only by 045780c84e6c."
+        }
+      ]
+    }
+  ],
+  "contradictions": [],
+  "contradiction_audit": [
+    {
+      "round": 1,
+      "status": "skipped_single_source",
+      "claim_linked_source_count": 1,
+      "eligible_cross_source_pairs": 0,
+      "compared_candidate_pairs": 0,
+      "uncompared_candidate_pairs": 0,
+      "rejected_candidates": 0,
+      "batches": [],
+      "claim_linked_material_count": 1,
+      "independence_note": "Distinct groups do not prove independence; shared identifiers/snapshots and probable matching journal/preprint titles are grouped."
+    },
+    {
+      "round": 2,
+      "status": "skipped_single_source",
+      "claim_linked_source_count": 1,
+      "eligible_cross_source_pairs": 0,
+      "compared_candidate_pairs": 0,
+      "uncompared_candidate_pairs": 0,
+      "rejected_candidates": 0,
+      "batches": [],
+      "claim_linked_material_count": 1,
+      "independence_note": "Distinct groups do not prove independence; shared identifiers/snapshots and probable matching journal/preprint titles are grouped."
+    }
+  ],
+  "coverage": [
+    {
+      "subquestion_id": "f88038cff07e",
+      "subquestion_text": "What are the respective statutory authorities and jurisdictional boundaries of FDA and USDA's Food Safety and Inspection Service (FSIS) over cell-cultivated poultry products intended for human food, and which agency oversees which stages of production (cell collection and cell banks, cultivation, harvesting, and final product formulation, labeling, and inspection)?",
+      "evidence_count": 3,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.2,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "28f8b3f3000e",
+      "subquestion_text": "What does the FDA pre-market consultation process for cell-cultivated food ingredients or products involve procedurally (submission contents, pre-market meetings, evaluation criteria, and the 'no questions' letter issuance), and what is the stated legal effect of the resulting FDA response?",
+      "evidence_count": 4,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 1,
+      "contradiction_count": 0,
+      "coverage_score": 0.35,
+      "status": "yellow"
+    },
+    {
+      "subquestion_id": "656ec04be4c8",
+      "subquestion_text": "What specific determinations, such as food safety, regulatory status of the cell source or ingredients, and the substance's classification under the FD&C Act, does FDA pre-market consultation establish for a cell-cultivated chicken product?",
+      "evidence_count": 1,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.1,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "d11b2930d970",
+      "subquestion_text": "What matters does FDA pre-market consultation not establish for a cell-cultivated chicken product, including the need for subsequent USDA FSIS grant of inspection, labeling approval, facility requirements, and any remaining state or other federal obligations?",
+      "evidence_count": 1,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.1,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "23e754eeea2e",
+      "subquestion_text": "How has the FDA-USDA division of oversight been applied in practice to completed cell-cultivated chicken products (for example, the consultations and subsequent USDA label approval or grant of inspection for specific companies), and what do these cases reveal about the handoff between the two agencies?",
+      "evidence_count": 0,
+      "source_count": 0,
+      "primary_source_count": 0,
+      "distinct_material_count": 0,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.0,
+      "status": "red"
+    }
+  ],
+  "state_transitions": [
+    {
+      "from_state": "START",
+      "to_state": "PLAN",
+      "timestamp": "2026-10-25T02:20:06.219793+00:00",
+      "reason": "Starting research planning"
+    },
+    {
+      "from_state": "PLAN",
+      "to_state": "SEARCH",
+      "timestamp": "2026-10-25T02:20:14.304549+00:00",
+      "reason": "Round 1: generating queries"
+    },
+    {
+      "from_state": "SEARCH",
+      "to_state": "RETRIEVE",
+      "timestamp": "2026-10-25T02:20:17.060573+00:00",
+      "reason": "Fetching sources"
+    },
+    {
+      "from_state": "RETRIEVE",
+      "to_state": "EXTRACT_EVIDENCE",
+      "timestamp": "2026-10-25T02:20:19.227619+00:00",
+      "reason": "Extracting evidence"
+    },
+    {
+      "from_state": "EXTRACT_EVIDENCE",
+      "to_state": "SCORE_SOURCES",
+      "timestamp": "2026-10-25T02:20:28.753337+00:00",
+      "reason": "Scoring source quality"
+    },
+    {
+      "from_state": "SCORE_SOURCES",
+      "to_state": "DRAFT_ATOMIC_CLAIMS",
+      "timestamp": "2026-10-25T02:20:34.228602+00:00",
+      "reason": "Drafting claims"
+    },
+    {
+      "from_state": "DRAFT_ATOMIC_CLAIMS",
+      "to_state": "CLAIM_COURTROOM",
+      "timestamp": "2026-10-25T02:20:38.874520+00:00",
+      "reason": "Running Claim Courtroom"
+    },
+    {
+      "from_state": "CLAIM_COURTROOM",
+      "to_state": "DETECT_CONTRADICTIONS",
+      "timestamp": "2026-10-25T02:20:57.507131+00:00",
+      "reason": "Detecting contradictions"
+    },
+    {
+      "from_state": "DETECT_CONTRADICTIONS",
+      "to_state": "MEASURE_COVERAGE",
+      "timestamp": "2026-10-25T02:20:57.511225+00:00",
+      "reason": "Measuring coverage"
+    },
+    {
+      "from_state": "MEASURE_COVERAGE",
+      "to_state": "RESEARCH_GAPS",
+      "timestamp": "2026-10-25T02:21:08.172617+00:00",
+      "reason": "Thin coverage in 5 areas"
+    },
+    {
+      "from_state": "RESEARCH_GAPS",
+      "to_state": "SEARCH",
+      "timestamp": "2026-10-25T02:21:08.172646+00:00",
+      "reason": "Round 2: generating queries"
+    },
+    {
+      "from_state": "SEARCH",
+      "to_state": "RETRIEVE",
+      "timestamp": "2026-10-25T02:21:11.778425+00:00",
+      "reason": "Fetching sources"
+    },
+    {
+      "from_state": "RETRIEVE",
+      "to_state": "EXTRACT_EVIDENCE",
+      "timestamp": "2026-10-25T02:21:12.074978+00:00",
+      "reason": "Extracting evidence"
+    },
+    {
+      "from_state": "EXTRACT_EVIDENCE",
+      "to_state": "SCORE_SOURCES",
+      "timestamp": "2026-10-25T02:21:18.078348+00:00",
+      "reason": "Scoring source quality"
+    },
+    {
+      "from_state": "SCORE_SOURCES",
+      "to_state": "DRAFT_ATOMIC_CLAIMS",
+      "timestamp": "2026-10-25T02:21:26.088450+00:00",
+      "reason": "Drafting claims"
+    },
+    {
+      "from_state": "DRAFT_ATOMIC_CLAIMS",
+      "to_state": "CLAIM_COURTROOM",
+      "timestamp": "2026-10-25T02:21:30.296889+00:00",
+      "reason": "Running Claim Courtroom"
+    },
+    {
+      "from_state": "CLAIM_COURTROOM",
+      "to_state": "DETECT_CONTRADICTIONS",
+      "timestamp": "2026-10-25T02:21:52.118471+00:00",
+      "reason": "Detecting contradictions"
+    },
+    {
+      "from_state": "DETECT_CONTRADICTIONS",
+      "to_state": "MEASURE_COVERAGE",
+      "timestamp": "2026-10-25T02:21:52.123446+00:00",
+      "reason": "Measuring coverage"
+    },
+    {
+      "from_state": "MEASURE_COVERAGE",
+      "to_state": "SYNTHESIZE",
+      "timestamp": "2026-10-25T02:21:59.982782+00:00",
+      "reason": "Synthesizing final report"
+    },
+    {
+      "from_state": "SYNTHESIZE",
+      "to_state": "VERIFY_FINAL_REPORT",
+      "timestamp": "2026-10-25T02:22:05.966199+00:00",
+      "reason": "Verifying final report"
+    },
+    {
+      "from_state": "VERIFY_FINAL_REPORT",
+      "to_state": "EXPORT",
+      "timestamp": "2026-10-25T02:22:17.780219+00:00",
+      "reason": "Generating certificate"
+    },
+    {
+      "from_state": "EXPORT",
+      "to_state": "END",
+      "timestamp": "2026-10-25T02:22:17.784520+00:00",
+      "reason": "Research complete"
+    }
+  ],
+  "agent_calls": [
+    {
+      "id": "adbed70208da",
+      "agent": "planner",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:20:14.299888+00:00",
+      "input_hash": "f15bd592301d6062",
+      "output_hash": "9a31c8f4a6e59009",
+      "duration_ms": 8079,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDQB7A9B5GYTF2A6G4W70J",
+      "prompt_tokens": 229,
+      "completion_tokens": 1060,
+      "total_tokens": 1289
+    },
+    {
+      "id": "9cc7673420b2",
+      "agent": "search_strategist",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:20:16.993341+00:00",
+      "input_hash": "191776f1d210fb37",
+      "output_hash": "5014f9a680a429bb",
+      "duration_ms": 2688,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDQJ7WG8GW32Z2YT3VXZP2",
+      "prompt_tokens": 1429,
+      "completion_tokens": 385,
+      "total_tokens": 1814
+    },
+    {
+      "id": "6ea6d6465f2b",
+      "agent": "researcher",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:20:28.738985+00:00",
+      "input_hash": "f139f28ab8c26502",
+      "output_hash": "d097cdaaec01704c",
+      "duration_ms": 9510,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDQQ88N9JAM4042NZHNECE",
+      "prompt_tokens": 3204,
+      "completion_tokens": 2213,
+      "total_tokens": 5417
+    },
+    {
+      "id": "5d1b04a8afec",
+      "agent": "source_critic",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "source-critic-provenance-v3",
+      "timestamp": "2026-10-25T02:20:34.222093+00:00",
+      "input_hash": "312f1757330b0c7f",
+      "output_hash": "9be751ff03d316a2",
+      "duration_ms": 5468,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDR0BCX21PKE8N9FVYFVXX",
+      "prompt_tokens": 3227,
+      "completion_tokens": 926,
+      "total_tokens": 4153
+    },
+    {
+      "id": "87f6c4ce08be",
+      "agent": "claim_drafter",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:20:38.865915+00:00",
+      "input_hash": "6db8ce687d079077",
+      "output_hash": "7109656e721affc5",
+      "duration_ms": 4637,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDR5PBB1BFJ3DQCHS9YGJG",
+      "prompt_tokens": 1628,
+      "completion_tokens": 837,
+      "total_tokens": 2465
+    },
+    {
+      "id": "8eb8a2015cf6",
+      "agent": "prosecutor",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:20:46.399692+00:00",
+      "input_hash": "4bbcb0f3cac4da87",
+      "output_hash": "56b1351767b53243",
+      "duration_ms": 7524,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDRA7PP0PGZAXWWE5RXDTG",
+      "prompt_tokens": 810,
+      "completion_tokens": 1420,
+      "total_tokens": 2230
+    },
+    {
+      "id": "d19641ca6469",
+      "agent": "defense",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:20:51.046673+00:00",
+      "input_hash": "16f5d3138c97ae08",
+      "output_hash": "e8252e8dec809220",
+      "duration_ms": 4646,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDRHJSN3QTMV7HEJB39ED4",
+      "prompt_tokens": 733,
+      "completion_tokens": 1078,
+      "total_tokens": 1811
+    },
+    {
+      "id": "ca1e769f2f35",
+      "agent": "judge",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "judge-grounded-v2",
+      "timestamp": "2026-10-25T02:20:57.501529+00:00",
+      "input_hash": "8572f9f6e3212c3d",
+      "output_hash": "607716a1218307e6",
+      "duration_ms": 6454,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDRP3ZFY80NYRDD0J66RW9",
+      "prompt_tokens": 2488,
+      "completion_tokens": 1328,
+      "total_tokens": 3816
+    },
+    {
+      "id": "8a9319d292c0",
+      "agent": "coverage_analyst",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:21:08.166238+00:00",
+      "input_hash": "1a7337dac07473d2",
+      "output_hash": "6b8efd867fe66f20",
+      "duration_ms": 10654,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDRWE0N0NCHHMA2FZ0FWES",
+      "prompt_tokens": 1918,
+      "completion_tokens": 1800,
+      "total_tokens": 3718
+    },
+    {
+      "id": "f80c7d62a5d4",
+      "agent": "search_strategist",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:21:11.772694+00:00",
+      "input_hash": "b458fa63edb493e9",
+      "output_hash": "cf5f0d730e9ec282",
+      "duration_ms": 3599,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDS6V475QGCCQ4SD4FJAYA",
+      "prompt_tokens": 2689,
+      "completion_tokens": 444,
+      "total_tokens": 3133
+    },
+    {
+      "id": "1447364a7935",
+      "agent": "researcher",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:21:18.070259+00:00",
+      "input_hash": "462d21eb95e75952",
+      "output_hash": "21781121830dc422",
+      "duration_ms": 5994,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDSAN5PXS42YM9SFAA6KD1",
+      "prompt_tokens": 3266,
+      "completion_tokens": 1550,
+      "total_tokens": 4816
+    },
+    {
+      "id": "d310883a9b6f",
+      "agent": "source_critic",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "source-critic-provenance-v3",
+      "timestamp": "2026-10-25T02:21:26.083703+00:00",
+      "input_hash": "091eba7b2210a144",
+      "output_hash": "6a9eddd53db1e43c",
+      "duration_ms": 8004,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDSGJTY04QQ9YZWWSYTMTH",
+      "prompt_tokens": 3290,
+      "completion_tokens": 1242,
+      "total_tokens": 4532
+    },
+    {
+      "id": "81e9bc5a122c",
+      "agent": "claim_drafter",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:21:30.290851+00:00",
+      "input_hash": "3421c965c8e81ce2",
+      "output_hash": "8b0e062a99d0614a",
+      "duration_ms": 4202,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDSRB2XG3QVBX99F3ZCH0V",
+      "prompt_tokens": 1991,
+      "completion_tokens": 704,
+      "total_tokens": 2695
+    },
+    {
+      "id": "49c5faf28033",
+      "agent": "prosecutor",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:21:38.404309+00:00",
+      "input_hash": "0623ec955bccd2ca",
+      "output_hash": "4d50261c0ea2d424",
+      "duration_ms": 8107,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDSWEHXC2TH4WYB12P37HB",
+      "prompt_tokens": 817,
+      "completion_tokens": 1164,
+      "total_tokens": 1981
+    },
+    {
+      "id": "ec35dfa0220a",
+      "agent": "defense",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:21:42.996905+00:00",
+      "input_hash": "29b43fe4a19356c2",
+      "output_hash": "0b178371e22bbbe1",
+      "duration_ms": 4592,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDT4BW2QXGN4H2184BMTRJ",
+      "prompt_tokens": 740,
+      "completion_tokens": 1004,
+      "total_tokens": 1744
+    },
+    {
+      "id": "be8d787a4e10",
+      "agent": "judge",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "judge-grounded-v2",
+      "timestamp": "2026-10-25T02:21:52.112126+00:00",
+      "input_hash": "b3f0e0c9f3ad11ea",
+      "output_hash": "94893de879ee9a5a",
+      "duration_ms": 9114,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDT8VE21F4HMG9D0CR4WYN",
+      "prompt_tokens": 2417,
+      "completion_tokens": 1808,
+      "total_tokens": 4225
+    },
+    {
+      "id": "ef67764df6e5",
+      "agent": "coverage_analyst",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T02:21:59.976847+00:00",
+      "input_hash": "8dee07d7c7f1a262",
+      "output_hash": "f59f6329d4393ce1",
+      "duration_ms": 7852,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDTHRK954A1HFH4F7XZHFG",
+      "prompt_tokens": 2069,
+      "completion_tokens": 1898,
+      "total_tokens": 3967
+    },
+    {
+      "id": "52ba7726fc68",
+      "agent": "synthesizer",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "synthesizer-compact-v2",
+      "timestamp": "2026-10-25T02:22:05.959887+00:00",
+      "input_hash": "dcf607228052766c",
+      "output_hash": "5c52d673c48eeae3",
+      "duration_ms": 5976,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDTSE8J0RYKEP7XV1GZ6T1",
+      "prompt_tokens": 2113,
+      "completion_tokens": 1087,
+      "total_tokens": 3200
+    },
+    {
+      "id": "adfaa54e7dcd",
+      "agent": "report_verifier",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "report-grounding-v1",
+      "timestamp": "2026-10-25T02:22:11.121904+00:00",
+      "input_hash": "d1d8311380e37411",
+      "output_hash": "20025b647336b459",
+      "duration_ms": 5155,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDTZ9735V05CYR1SF49JQS",
+      "prompt_tokens": 1060,
+      "completion_tokens": 1162,
+      "total_tokens": 2222
+    },
+    {
+      "id": "784bd6c5e66e",
+      "agent": "report_verifier",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "report-grounding-v1",
+      "timestamp": "2026-10-25T02:22:17.773503+00:00",
+      "input_hash": "cc6d61640aeaa556",
+      "output_hash": "18c4ea0cd356bb77",
+      "duration_ms": 6651,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RDV4ABE9H147NBNT7EMSKR",
+      "prompt_tokens": 778,
+      "completion_tokens": 1231,
+      "total_tokens": 2009
+    }
+  ],
+  "report_grounding_audit": [
+    {
+      "unit_id": "0",
+      "text": "## Executive Summary",
+      "kept": true,
+      "reason": "Generic organizing heading with no factual assertion.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "1",
+      "text": "Only one claim passed verification for this question. It establishes that FDA's pre-market consultation for food made from cultured animal cells is voluntary [claim:4439a301f9d8] [evidence:9dbc34ccda00]. The report cannot answer the FDA-USDA division of oversight or the scope of what consultation does and does not establish.",
+      "kept": true,
+      "reason": "Accurately states that only one claim (FDA consultation is voluntary) was verified and that the report cannot answer the FDA-USDA division or consultation scope. This is an accurate gap statement.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "3",
+      "text": "## Subquestion Findings",
+      "kept": true,
+      "reason": "Generic organizing heading with no factual assertion.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "5",
+      "text": "### Pre-market consultation: procedural character",
+      "kept": true,
+      "reason": "Organizing heading for the procedural-character subsection; it introduces no factual claim beyond the supported voluntary status.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "6",
+      "text": "- Voluntary status: The consultation is voluntary [claim:4439a301f9d8] [evidence:9dbc34ccda00].",
+      "kept": true,
+      "reason": "States that the consultation is voluntary, which matches accepted claim 4439a301f9d8 and its evidence 9dbc34ccda00.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "8",
+      "text": "### Statutory authority and FDA/USDA-FSIS division of oversight",
+      "kept": true,
+      "reason": "Topic heading naming the subquestion; it does not assert any finding about the statutory authority or division of oversight.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "9",
+      "text": "- No supported claims were verified for this subquestion, so no findings are reported.",
+      "kept": true,
+      "reason": "Accurate gap statement that no supported claims were verified for this subquestion.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "11",
+      "text": "### Determinations established by FDA consultation",
+      "kept": true,
+      "reason": "Organizing heading for the subsection; no factual assertion is made.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "12",
+      "text": "- No supported claims were verified for this subquestion, so no findings are reported.",
+      "kept": true,
+      "reason": "Accurate gap statement that no supported claims exist for determinations established by consultation.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "14",
+      "text": "### Matters not established by FDA consultation",
+      "kept": true,
+      "reason": "Organizing heading for the subsection; no factual assertion is made.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "15",
+      "text": "- No supported claims were verified for this subquestion, so no findings are reported. This includes USDA-FSIS grant of inspection, labeling, and facility requirements.",
+      "kept": true,
+      "reason": "Accurate gap statement that no supported claims were verified; it asserts no finding about USDA-FSIS inspection, labeling, or facility requirements.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "17",
+      "text": "### Applied cases and agency handoff",
+      "kept": true,
+      "reason": "Generic organizing heading with no factual assertion.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "18",
+      "text": "- No supported claims were verified for this subquestion, so no findings are reported.",
+      "kept": true,
+      "reason": "Gap statement. The accepted claims contain no verified findings on the USDA/FDA division of oversight, so reporting no findings for that subquestion is consistent with the record. The unit does not name the subquestion, so this relies on that reading.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "20",
+      "text": "## Limitations",
+      "kept": true,
+      "reason": "Generic organizing heading with no factual content.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "21",
+      "text": "- Verification yielded one supported claim out of the set provided, so the report covers a single point only.",
+      "kept": true,
+      "reason": "Accurate limitation: the accepted claims contain exactly one supported claim, the voluntary nature of FDA pre-market consultation.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "22",
+      "text": "- Evidence passages linked to other subquestions were not promoted to claims and are therefore excluded.",
+      "kept": true,
+      "reason": "Accurate methodological statement. The report excludes evidence not promoted to accepted claims, consistent with the supplied claim set.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "23",
+      "text": "- No unresolved contradictions were recorded.",
+      "kept": true,
+      "reason": "Accurate process statement. No contradictions are recorded among the accepted claims, and the unit makes no substantive factual assertion.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "24",
+      "text": "- The question of what the FDA 'no questions' response legally establishes remains unanswered.",
+      "kept": true,
+      "reason": "Accurate gap statement. The accepted claims do not address the legal effect of the FDA 'no questions' response, so the question correctly remains unanswered.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "25",
+      "text": "- A complete answer would require additional verified claims on each subquestion.",
+      "kept": true,
+      "reason": "Generic statement about what a complete answer would require. It makes no factual claim beyond the report's own limited scope.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    }
+  ],
+  "report_grounding_status": "reviewed",
+  "report_fallback_reason": "",
+  "final_report": "## Executive Summary\nOnly one claim passed verification for this question. It establishes that FDA's pre-market consultation for food made from cultured animal cells is voluntary [claim:4439a301f9d8] [evidence:9dbc34ccda00]. The report cannot answer the FDA-USDA division of oversight or the scope of what consultation does and does not establish.\n\n## Subquestion Findings\n\n### Pre-market consultation: procedural character\n- Voluntary status: The consultation is voluntary [claim:4439a301f9d8] [evidence:9dbc34ccda00].\n\n\n\n\n",
+  "certificate": {
+    "run_id": "ee166f04883a48c0",
+    "original_question": "How do FDA and USDA divide federal oversight of cell-cultivated chicken for human food in the United States, and what does FDA pre-market consultation establish versus not establish?",
+    "execution_timestamp": "2026-10-25T02:22:17.780325+00:00",
+    "mesh_models_used": [
+      "anthropic/claude-haiku-5.5"
+    ],
+    "source_count": 1,
+    "evidence_count": 9,
+    "drafted_claim_count": 2,
+    "supported_claim_count": 1,
+    "rejected_claim_count": 1,
+    "contradiction_count": 0,
+    "groundedness_rate": 0.5,
+    "citation_coverage_rate": 1.0,
+    "citation_mutation_rejection_rate": null,
+    "research_rounds": 2,
+    "source_quality_distribution": {},
+    "prompt_versions": {
+      "planner": "v1",
+      "search_strategist": "v1",
+      "researcher": "v1",
+      "source_critic": "source-critic-provenance-v3",
+      "claim_drafter": "v1",
+      "prosecutor": "v1",
+      "defense": "v1",
+      "judge": "judge-grounded-v2",
+      "coverage_analyst": "v1",
+      "synthesizer": "synthesizer-compact-v2",
+      "report_verifier": "report-grounding-v1"
+    },
+    "source_content_hashes": [
+      "b442ea95a7b2482d"
+    ],
+    "evaluation_limitations": [
+      "Search coverage depends on Brave Search results and retrievable public pages",
+      "Source counts refer to URL records; shared identifiers/snapshots and probable journal/preprint title matches are grouped, but distinct material does not prove independence",
+      "Certificate metrics measure internal claim-to-evidence integrity, not external truth",
+      "Model report review is not a hallucination-free guarantee or independent human verification",
+      "Report review status: reviewed; accepted-claim fallback may be used when generated prose is withheld",
+      "Audit kept decisions describe model review; included_in_final_report records subsequent citation filtering",
+      "Claim counts and verification rates refer to active claims; budget exclusions and prior decisions are recorded separately in claim_selection_audit"
+    ]
+  },
+  "error": null,
+  "warnings": [],
+  "source_material_groups": {
+    "619ad6db99fe": "619ad6db99fe"
+  },
+  "source_independence_note": "Shared publication identifiers, matching snapshots or probable identical journal/preprint titles are grouped. Title matches are heuristic; distinct groups do not prove independence.",
+  "accepted_claim_ids": [
+    "4439a301f9d8"
+  ],
+  "recorded_coverage": [
+    {
+      "subquestion_id": "f88038cff07e",
+      "subquestion_text": "What are the respective statutory authorities and jurisdictional boundaries of FDA and USDA's Food Safety and Inspection Service (FSIS) over cell-cultivated poultry products intended for human food, and which agency oversees which stages of production (cell collection and cell banks, cultivation, harvesting, and final product formulation, labeling, and inspection)?",
+      "evidence_count": 3,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.2,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "28f8b3f3000e",
+      "subquestion_text": "What does the FDA pre-market consultation process for cell-cultivated food ingredients or products involve procedurally (submission contents, pre-market meetings, evaluation criteria, and the 'no questions' letter issuance), and what is the stated legal effect of the resulting FDA response?",
+      "evidence_count": 4,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 1,
+      "contradiction_count": 0,
+      "coverage_score": 0.35,
+      "status": "yellow"
+    },
+    {
+      "subquestion_id": "656ec04be4c8",
+      "subquestion_text": "What specific determinations, such as food safety, regulatory status of the cell source or ingredients, and the substance's classification under the FD&C Act, does FDA pre-market consultation establish for a cell-cultivated chicken product?",
+      "evidence_count": 1,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.1,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "d11b2930d970",
+      "subquestion_text": "What matters does FDA pre-market consultation not establish for a cell-cultivated chicken product, including the need for subsequent USDA FSIS grant of inspection, labeling approval, facility requirements, and any remaining state or other federal obligations?",
+      "evidence_count": 1,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.1,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "23e754eeea2e",
+      "subquestion_text": "How has the FDA-USDA division of oversight been applied in practice to completed cell-cultivated chicken products (for example, the consultations and subsequent USDA label approval or grant of inspection for specific companies), and what do these cases reveal about the handoff between the two agencies?",
+      "evidence_count": 0,
+      "source_count": 0,
+      "primary_source_count": 0,
+      "distinct_material_count": 0,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.0,
+      "status": "red"
+    }
+  ],
+  "coverage_derivation": "Counts derived from saved artifacts; assessment labels remain heuristic and evidence-gated."
+}
