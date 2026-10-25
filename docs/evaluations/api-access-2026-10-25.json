@@ -1,0 +1,55 @@
+{
+  "auth_checks": [
+    {
+      "path": "/research",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "path": "/research",
+      "key": "wrong",
+      "status": 401
+    },
+    {
+      "path": "/research",
+      "key": "owner",
+      "status": 422
+    },
+    {
+      "path": "/runs/parent/follow-up",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "path": "/runs/parent/follow-up",
+      "key": "wrong",
+      "status": 401
+    },
+    {
+      "path": "/runs/parent/follow-up",
+      "key": "owner",
+      "status": 422
+    }
+  ],
+  "run_count": 20,
+  "runs_unchanged": true,
+  "ledger_unchanged": true,
+  "health": {
+    "status": "ok",
+    "mesh_configured": true,
+    "database": "/app/data/deepdive.db",
+    "version": "1.0.0",
+    "db_ok": true
+  },
+  "n8n": {
+    "webhook_status": 200,
+    "execution_id": 415039,
+    "execution_status": "error",
+    "last_node": "Start Research Run",
+    "backend_status": "401",
+    "runs_unchanged": true,
+    "ledger_unchanged": true
+  },
+  "runtime_revision": "e6391af7e0dd32d0d0851e3b25417a842b642c01",
+  "new_paid_calls": 0
+}

@@ -24,3 +24,19 @@ Live endpoint appeared in twelve tracked files, including scripts and fixture do
 - UI tests check password input, header transport, absence from request JSON and no local/session storage.
 - Candidate and production probes use invalid research bodies: rejection cannot create a paid run even if auth is broken.
 - Preserve all stored research runs and budget ledger; do not launch live inference to test access control.
+
+## Verified production release — 2026-10-25
+
+Runtime/source `e6391af7e0dd32d0d0851e3b25417a842b642c01`, image `deepdive:access-e6391af`. Local and isolated backend: **226 passed, one skipped** (Windows lacks fcntl; Linux runtime lacks Node for an optional workflow test). Frontend: **31 passed**; build/TypeScript passed. [Application CI](https://github.com/seelamramesh/deepdive/actions/runs/40201540441) passed backend/frontend. Official organizer workflow still fails recording until a submission exists; this release does not submit or merge anything.
+
+Production probes for both mutation endpoints: missing/wrong key **401**; correct key plus deliberately invalid question **422**. Invalid bodies guarantee no paid inference even if auth regresses. Correct-key successful research was tested with mocked providers only; no new paid run was launched.
+
+Active n8n workflow remains fourteen nodes, version `d4d1169a-fe5f-4170-9c65-755079ed62f0`. Only Start Research Run's header configuration changed; other nodes and connections preserved. Connector SDK helper was unavailable, so the existing VPS CLI path was used with a workflow backup and an idle-instance check. An import-file permission failure was corrected before successful import/publish/restart. No research executions were interrupted.
+
+Anonymous webhook denial probe `415039` stopped at Start Research Run with backend **401** and execution status `error`. n8n returned an outer HTTP 200; do not interpret it as successful research or claim the webhook itself returned 401. Backend authorization is the enforcement boundary. No owner key was sent in that webhook test. Direct backend owner-key validation and offline forwarding checks are separate evidence.
+
+All twenty stored run JSON hashes and evaluation ledger hash match their pre-deployment values. Zero new paid Mesh/Brave calls. Root-only owner key is provisioned on the VPS and preserved in its private deployment configuration; it was never printed, committed or included in screenshots. Public reads and existing reports still work. Live backend safety probes do not prove DoS protection, a production spend cap or a full per-user authorization system.
+
+Backup: `/docker/deepdive-access-e6391af/validation-data/deepdive.db`; previous container retained as `deepdive-rollback-ui-20261025141851`. Rolling back to that older application would remove the new authorization gate; do not revert without preserving equivalent external access restrictions.
+
+Current branch scan found no live hostname literals. Targeted key-pattern scan found no matches (not a complete secret-history audit). Default main branch still has endpoint references in two files; a separate redaction patch awaits approval because application merge remains on hold. Historical commits/caches remain discoverable regardless of redaction.
