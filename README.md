@@ -53,7 +53,7 @@ The orchestrator is ordinary Python, not an additional AI agent. Cache reuse mak
 
 New requests default to `balanced`; `fast`, `quality` and `configured` are also available. Four heavy roles use GPT-4o under balanced; other roles use GPT-4o-mini, all through Mesh. `configured` preserves `MESH_MODEL`. Report verifier is heavy; coordinator remains Python. Historical presets remain unknown.
 
-UI shows catalog input/output token rates and explicitly uncalibrated run cost/time. No latency, accuracy or billing savings are claimed. Reports/API/certificates disclose automated review limitations. See [implementation, routing diagram and test evidence](docs/model-tiering.md). This draft implementation is not yet deployed.
+UI shows catalog input/output token rates and explicitly uncalibrated run cost/time. No latency, accuracy or billing savings are claimed. Reports/API/certificates disclose automated review limitations. See [implementation, routing diagram and test evidence](docs/model-tiering.md). Deployed from `dfd15d6`; see [production verification](docs/deployment-model-tiering-2026-10-25.md).
 
 ## Agent responsibilities
 

@@ -1,0 +1,116 @@
+{
+  "verified_at_utc": "2026-10-25T16:18:37.059904+00:00",
+  "production_revision": "dfd15d6848f9e464b095ebcde7eb7022d36be8dd",
+  "image": "deepdive:tiering-dfd15d6",
+  "container_health": "healthy",
+  "restart_count": 0,
+  "health": {
+    "status": "ok",
+    "mesh_configured": true,
+    "database": "/app/data/deepdive.db",
+    "version": "1.0.0",
+    "db_ok": true
+  },
+  "runs_before": 21,
+  "runs_after": 21,
+  "all_run_json_hashes_unchanged": true,
+  "database_integrity": "ok",
+  "all_ledger_files_unchanged": true,
+  "ledger_files_checked": 24,
+  "owner_key_preserved": true,
+  "auth_checks": [
+    {
+      "route": "/research",
+      "key_case": "missing",
+      "status": 401
+    },
+    {
+      "route": "/research",
+      "key_case": "wrong",
+      "status": 401
+    },
+    {
+      "route": "/research",
+      "key_case": "owner",
+      "status": 422
+    },
+    {
+      "route": "/runs/parent/follow-up",
+      "key_case": "missing",
+      "status": 401
+    },
+    {
+      "route": "/runs/parent/follow-up",
+      "key_case": "wrong",
+      "status": 401
+    },
+    {
+      "route": "/runs/parent/follow-up",
+      "key_case": "owner",
+      "status": 422
+    }
+  ],
+  "presets": [
+    "fast",
+    "balanced",
+    "quality",
+    "configured"
+  ],
+  "default_preset": "balanced",
+  "report_disclaimer_present": true,
+  "certificate_disclaimer_present": true,
+  "legacy_preset": null,
+  "report_review_status": "not_available",
+  "new_paid_smoke_run": false,
+  "deployed_at_utc": "2026-10-25T16:16:51.36685732Z",
+  "backup_database_verified": true,
+  "backup_ledger_files_verified": true,
+  "final_data_and_ledger_unchanged": true,
+  "rollback_needed": false,
+  "rollback_container": "deepdive-rollback-ui-20261025161650",
+  "build_frontend_summary": [
+    "#18 7.766       Tests  34 passed (34)"
+  ],
+  "n8n": {
+    "active": true,
+    "version": "3eabb375-454b-4195-9e38-79d2c13bf73a",
+    "nodes": 14,
+    "presetParameter": {
+      "name": "model_preset",
+      "value": "={{ $json.body.model_preset || 'balanced' }}"
+    },
+    "ownerHeaderPreserved": true,
+    "otherNodesUnchanged": true,
+    "connectionsUnchanged": true
+  },
+  "mobile": [
+    {
+      "choices": [
+        "fast",
+        "balanced",
+        "quality",
+        "configured"
+      ],
+      "dialogWidth": 360,
+      "pageWidth": 360,
+      "presetMinHeight": "44px",
+      "startDisabled": true,
+      "width": 360
+    },
+    {
+      "choices": [
+        "fast",
+        "balanced",
+        "quality",
+        "configured"
+      ],
+      "dialogWidth": 411.8181762695313,
+      "pageWidth": 412,
+      "presetMinHeight": "44px",
+      "startDisabled": true,
+      "width": 412
+    }
+  ],
+  "source_only_image_packaging_verified": true,
+  "deployment_method": "direct branch release; no application merge into main"
+}
