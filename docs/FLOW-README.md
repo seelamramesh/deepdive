@@ -1,6 +1,6 @@
 # DeepDive: the simple flow
 
-This guide describes the checked-out branch. Deployment evidence identifies which revision is actually live.
+Runtime `30312f9` is deployed. See [cache release evidence](deployment-cache-2026-10-24.md) for measured checks and limitations.
 
 Ask a question. DeepDive finds source material, checks claims against it and shows what survived. A report can be partial. It is not a truth guarantee or independent human certification.
 
@@ -61,4 +61,4 @@ An END state does not mean complete coverage. A blank contradiction list does no
 - Evaluation reservations are separate from confirmed billing. Public production requests are not automatically capped by the evaluation-only guard.
 - Physical Android verification and automatic crash resume are not implemented/proven.
 
-See [release evidence](deployment-prejury-2026-10-24.md), [cache details](token-optimization-2026-10-24.md) and [pending validation](current-pending-2026-10-24.md). These documents distinguish completed checks from pending work. Hackathon submission stays on hold until explicit approval.
+See [release evidence](deployment-cache-2026-10-24.md), [cache details](token-optimization-2026-10-24.md) and [pending validation](current-pending-2026-10-24.md). These documents distinguish completed checks from pending work. Hackathon submission stays on hold until explicit approval.

@@ -123,6 +123,8 @@ Import `n8n/deepdive-research.json` into your n8n instance. Set `DEEPDIVE_BACKEN
 
 ## Data Model
 
+Conceptual artifact relationships; SQLite persists serialized runs, not separate relationship tables. Incomplete or failed runs may have no certificate or court decisions.
+
 ```mermaid
 erDiagram
     ResearchRun ||--o{ SubQuestion : has
@@ -131,7 +133,7 @@ erDiagram
     ResearchRun ||--o{ AtomicClaim : drafts
     ResearchRun ||--o{ Contradiction : detects
     ResearchRun ||--o{ CoverageEntry : measures
-    ResearchRun ||--|| VerificationCertificate : produces
+    ResearchRun ||--o| VerificationCertificate : produces
 
     AtomicClaim ||--|| ProsecutorArgument : challenged_by
     AtomicClaim ||--|| DefenseArgument : defended_by
