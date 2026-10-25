@@ -31,4 +31,20 @@ All five fixes implemented in agreed order: search observability → retrieval b
 - Backend API fixture test confirms new outcome fields survive storage/workspace serialization; historical cache telemetry remains null.
 - Existing cached/uncached offline end-to-end scenarios remain passing.
 
-Linux image, copied-database browser and deployment verification are subsequent gates. No live quality improvement or savings is claimed. Remaining reservation capacity at the prior measured checkpoint is $0.659473; it is not confirmed provider balance. Action 3 requires its separate approval and a fresh guarded-budget preflight.
+## Deployment verification — 2026-10-25 UTC
+
+Runtime `26907d91c87526ee57c61844c96303b59eb6c68b`, image `deepdive:preaction3-26907d9`, is deployed. Documentation commits after this code revision do not change the runtime.
+
+- Exact Linux image: 191 passed, one Node-dependent workflow test skipped. Linux lock test passed; the local suite covers the Node test.
+- Image frontend tests: 29 passed; build and TypeScript passed. Known jsdom chart dimension warnings and chunk-size warning remain; these are not physical-device evidence.
+- Staged against consistent copied SQLite database, with no public routing. Synthetic outcome/cache examples existed only in a clearly labeled copied-data replay.
+- Candidate Report/Audit checks requested 360, 375, 390, 412 and 1440 px; no page overflow. Public Audit also checked actual 360, 375, 390, 413 and 1440 px (412 requested rendered as 413 in browser emulation), with no page overflow. Physical Android remains unverified.
+- Browser verified safe HTTP outcome display, cache decision/storage status and deterministic limitations. Public historical fields remain unknown; old reports are not regenerated.
+- Fresh pre-promotion active-run check and consistent backup verified 19 records. Backup: `/docker/deepdive-preaction3-26907d9/validation-data/deepdive.db`.
+- Previous image starts against an independent copied database and serves health/run records without AI keys; automated rollback failure-path test remains passing. No forced live rollback drill was performed.
+- Independent post-promotion verification confirms public health/DB readiness, SQLite integrity `ok`, no active runs, no synthetic fixture in production and all 19 stored JSON records unchanged against backup.
+- Rollback container: `deepdive-rollback-ui-20261025042544`, preserving previous `30312f9` runtime and persistent data mount.
+- Entire evaluation ledger equals the Action 2 ledger, including all prior entries and authorization history: $2.840527 reserved, $3.50 stop, $0.659473 remaining reservation capacity, $4 authorized. Actual provider billing unknown.
+- [Backend/frontend CI for exact runtime passed](https://github.com/seelamramesh/deepdive/actions/runs/40161590583). [Organizer job](https://github.com/seelamramesh/deepdive/actions/runs/40161586745) passed 4/4 critical checks, then failed reporting with 403 because no hackathon submission exists. No submission made to clear CI.
+
+ No live quality improvement or savings is claimed. Remaining reservation capacity at the prior measured checkpoint is $0.659473; it is not confirmed provider balance. Action 3 requires its separate approval and a fresh guarded-budget preflight.

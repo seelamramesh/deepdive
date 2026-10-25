@@ -15,12 +15,18 @@ flowchart TD
     C -->|Yes| REUSE[Reuse structured response and record source call]
     C -->|No| M[Official Mesh API]
     M --> R
-    O --> S[Brave URL search and protected page fetch]
-    S --> SNAP[Immutable sanitized snapshots and bounded windows]
+    O --> S[Brave URL search]
+    S --> Q[Bounded pending URL queue]
+    Q --> F[Protected fetch with failure backfill]
+    F -->|Unfilled slots and attempts remain| Q
+    F --> SNAP[Immutable sanitized snapshots and bounded windows]
+    S --> HTTP[Safe search and retrieval outcome audit]
+    F --> HTTP
     SNAP --> R
     O --> DB[(Bind-mounted SQLite)]
     R --> V[Report review and citation checks]
-    V --> OUT[Cited report, audit and internal certificate]
+    V --> LIMITS[Deterministic limitations from saved artifacts]
+    LIMITS --> OUT[Cited report, audit and internal certificate]
     OUT --> U
 ```
 
@@ -56,9 +62,12 @@ Unrecoverable errors produce FAILED. Some later-stage errors can produce a label
 ```mermaid
 sequenceDiagram
     participant O as Orchestrator
+    participant C as Claim Drafter
     participant P as Prosecutor
     participant D as Defense
     participant J as Judge
+    O->>C: Evidence, question and bounded prior critiques
+    C-->>O: Scoped atomic claims
     O->>P: Claims and original linked passages
     P-->>O: Challenges
     O->>D: Claims and original linked passages
