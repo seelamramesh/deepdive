@@ -4,6 +4,8 @@ A multi-agent research platform that investigates questions, verifies claims aga
 
 New here? Start with [the simple flow guide](docs/FLOW-README.md). Reports may remain partial; an END state means processing finished, not that every research area is complete.
 
+Research now has a [per-process concurrency limiter](docs/concurrency.md). [Deployment verification](docs/deployment-concurrency-2026-10-25.md) records a production cap of three, HTTP 429 rejection when full, and zero new paid calls.
+
 ## Current measured readiness
 
 See [final readiness review](docs/final-readiness-2026-10-25.md) for rules, feature inventory, limitations and ledger reconciliation, and [release verification](docs/final-release-2026-10-25.md) for deployed revision and exact CI. Latest fixes add bounded Brave query compaction, sentence-level numeric passage checks and readable mobile run questions. Old runs are preserved unchanged; regression proof uses copied fixtures, not another paid run.
@@ -24,7 +26,12 @@ These are internal artifact measurements, not an external truth score. No vector
 ```mermaid
 flowchart TD
     U[Browser or 14-node n8n webhook] --> API[FastAPI API]
-    API --> O[Python state-machine orchestrator]
+    API --> AUTH[Authenticate research writes]
+    AUTH --> CAP{Research capacity available?}
+    CAP -->|Yes| O[Python state-machine orchestrator]
+    CAP -->|No, reject mode| BUSY[HTTP 429 server_busy]
+    CAP -->|No, queue mode| WAIT[Wait in process memory]
+    WAIT --> O
     O --> R[12 AI roles]
     R --> ROUTE[Selected preset and role model]
     ROUTE --> C{Identical request cached in this run?}

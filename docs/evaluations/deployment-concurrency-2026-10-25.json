@@ -1,0 +1,26 @@
+{
+  "revision": "6dff95f5102e5fc5b81c86638084b40db4503a8d",
+  "health": "ok",
+  "db_ok": true,
+  "concurrency": {
+    "max_concurrent": 3,
+    "active_runs": 0,
+    "queued": 0
+  },
+  "reject_when_full": true,
+  "saved_runs_preserved": 21,
+  "evaluation_hashes_preserved": 24,
+  "provider_and_access_configuration_preserved": true,
+  "paid_route_invalid_request_statuses": [
+    401,
+    401,
+    422,
+    401,
+    401,
+    422
+  ],
+  "new_paid_calls": 0,
+  "image": "deepdive:concurrency-6dff95f",
+  "main_merged": false,
+  "hackathon_submitted": false
+}

@@ -6,7 +6,9 @@ Ask a question. DeepDive finds source material, checks claims against it and sho
 
 ```mermaid
 flowchart LR
-    Q[Question and optional URLs] --> P[Plan subquestions]
+    Q[Question and optional URLs] --> A[Authenticate and reserve run capacity]
+    A -->|Admitted| P[Plan subquestions]
+    A -->|Full in reject mode| B[HTTP 429 without saving a run]
     P --> S[Search and bounded fetch backfill]
     S --> E[Store snapshots and extract passages]
     E --> C[Draft and check claims]
@@ -19,6 +21,8 @@ flowchart LR
 ```
 
 ## What happens
+
+Before planning, research and follow-up requests share a [process-wide concurrency cap](concurrency.md). Production accepts up to three pipelines and rejects excess admission with 429; optional queue mode waits in memory. This does not cap total spending or provide durable restart recovery.
 
 1. **Plan:** split the question into subquestions and completion criteria.
 2. **Search:** Brave returns URLs. Protected HTTP retrieval stores sanitized snapshots, hashes and selected text offsets. Challenges/error pages are withheld when detected. Failed fetches can promote queued alternatives within separate success/attempt limits. Unfetched alternatives carry to later rounds; safe HTTP outcomes are logged.
