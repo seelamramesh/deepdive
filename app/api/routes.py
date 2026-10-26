@@ -7,6 +7,8 @@ import secrets
 from typing import Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException
+# CHANGED: Exact top-level 429 response, without HTTPException's detail wrapper.
+from fastapi.responses import JSONResponse
 
 from app.core.config import settings
 from app.core.model_presets import AGENT_TIER_MAP, preset_catalog, resolve_model
@@ -19,6 +21,8 @@ from app.models.schemas import (
     RunSummary,
 )
 from app.services.orchestrator import run_research
+# CHANGED: Resolve the shared limiter at call time, including follow-up requests.
+from app.services import orchestrator
 from app.storage.database import load_run, list_runs
 from app.evaluation.benchmark import evaluate_run
 from app.services.coverage import derive_coverage
@@ -43,6 +47,24 @@ _running: dict[str, asyncio.Task] = {}
 def _track_task(run_id: str, task: asyncio.Task) -> None:
     _running[run_id] = task
     task.add_done_callback(lambda _: _running.pop(run_id, None))
+
+
+# CHANGED: Authentication dependencies finish before endpoint admission checks.
+def _reserve_research() -> orchestrator.RunAdmission | JSONResponse:
+    try:
+        return orchestrator.concurrency_limiter.reserve()
+    except orchestrator.ConcurrencyLimitExceeded as exc:
+        return JSONResponse(status_code=429, content={
+            "error": "server_busy", "message": str(exc),
+            "max_concurrent": exc.max_concurrent,
+        })
+
+
+# CHANGED: Preserve unprefixed API conventions and expose the requested alias.
+@router.get("/health/concurrency")
+@router.get("/api/health/concurrency")
+async def health_concurrency():
+    return orchestrator.concurrency_limiter.snapshot()
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -108,19 +130,37 @@ async def start_research(req: ResearchRequest, bg: BackgroundTasks):
     run = ResearchRun(question=req.question, model_preset=req.model_preset, resolved_models={a:resolve_model(req.model_preset,a) for a in AGENT_TIER_MAP})
     # Return immediately with run ID
     from app.storage.database import save_run
-    await save_run(run)
+    # CHANGED: Reserve before saving; rejected requests create no placeholder.
+    admission = _reserve_research()
+    if isinstance(admission, JSONResponse):
+        return admission
+    try:
+        await save_run(run)
+    except BaseException:
+        admission.release()
+        raise
 
     async def _run():
-        await run_research(
-            question=req.question,
-            source_urls=req.source_urls,
-            max_rounds=req.max_rounds,
-            confidence_threshold=req.confidence_threshold,
-            model_preset=req.model_preset,
-            run_id=run.id,
-        )
+        # CHANGED: Hold the reserved slot while preserving run_research's public arguments.
+        async with admission:
+            await run_research(
+                question=req.question,
+                source_urls=req.source_urls,
+                max_rounds=req.max_rounds,
+                confidence_threshold=req.confidence_threshold,
+                model_preset=req.model_preset,
+                run_id=run.id,
+            )
 
-    task = asyncio.create_task(_run())
+    # CHANGED: Release even when scheduling fails or cancellation precedes entry.
+    pending = _run()
+    try:
+        task = asyncio.create_task(pending)
+    except BaseException:
+        pending.close()
+        admission.release()
+        raise
+    task.add_done_callback(lambda _: admission.release())
     _track_task(run.id, task)
 
     return {"run_id": run.id, "status": "started", "question": req.question}
@@ -224,19 +264,37 @@ async def follow_up(run_id: str, req: FollowUpRequest, bg: BackgroundTasks):
     from app.storage.database import save_run
 
     child = ResearchRun(question=req.question, model_preset=req.model_preset, resolved_models={a:resolve_model(req.model_preset,a) for a in AGENT_TIER_MAP})
-    await save_run(child)
+    # CHANGED: Follow-ups share the same process-wide admission budget.
+    admission = _reserve_research()
+    if isinstance(admission, JSONResponse):
+        return admission
+    try:
+        await save_run(child)
+    except BaseException:
+        admission.release()
+        raise
 
     async def _run():
-        await run_research(
-            question=req.question,
-            source_urls=source_urls,
-            max_rounds=req.max_rounds,
-            confidence_threshold=req.confidence_threshold,
-            model_preset=req.model_preset,
-            run_id=child.id,
-        )
+        # CHANGED: Hold the reserved slot while preserving run_research's public arguments.
+        async with admission:
+            await run_research(
+                question=req.question,
+                source_urls=source_urls,
+                max_rounds=req.max_rounds,
+                confidence_threshold=req.confidence_threshold,
+                model_preset=req.model_preset,
+                run_id=child.id,
+            )
 
-    task = asyncio.create_task(_run())
+    # CHANGED: Match initial research cleanup on scheduling/cancellation failure.
+    pending = _run()
+    try:
+        task = asyncio.create_task(pending)
+    except BaseException:
+        pending.close()
+        admission.release()
+        raise
+    task.add_done_callback(lambda _: admission.release())
     _track_task(child.id, task)
 
     return {"run_id": child.id, "parent_run_id": run_id, "status": "started"}

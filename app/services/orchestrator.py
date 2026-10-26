@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import logging
 import asyncio
+# CHANGED: Transfer admission through task-local context without changing call arguments.
+from contextvars import ContextVar
 from typing import Optional
 
 from app.agents.runner import (
@@ -39,6 +41,84 @@ from app.services.provenance import material_groups
 from app.storage.database import save_run as _persist_run
 
 logger = logging.getLogger(__name__)
+
+
+# CHANGED: One semaphore and admission counter set per process/event loop.
+class ConcurrencyLimitExceeded(Exception):
+    def __init__(self, max_concurrent: int):
+        self.max_concurrent = max_concurrent
+        super().__init__("Maximum concurrent research runs reached. Try again later.")
+
+
+# CHANGED: Reservation happens synchronously before API persistence/scheduling.
+class ResearchConcurrencyLimiter:
+    def __init__(self, max_concurrent: int, reject_when_full: bool = False):
+        self.max_concurrent = max_concurrent
+        self.reject_when_full = reject_when_full
+        self.semaphore = asyncio.Semaphore(max_concurrent)
+        self.active_runs = 0
+        self.queued = 0
+
+    def reserve(self) -> RunAdmission:
+        # No await in counter mutations: atomic on the application's event loop.
+        if self.reject_when_full and self.active_runs + self.queued >= self.max_concurrent:
+            raise ConcurrencyLimitExceeded(self.max_concurrent)
+        self.queued += 1
+        return RunAdmission(self)
+
+    def snapshot(self) -> dict[str, int]:
+        return {"max_concurrent": self.max_concurrent,
+                "active_runs": self.active_runs, "queued": self.queued}
+
+
+# CHANGED: Idempotent cleanup also covers cancellation before a task starts.
+class RunAdmission:
+    def __init__(self, limiter: ResearchConcurrencyLimiter):
+        self.limiter = limiter
+        self.acquired = False
+        self.released = False
+        # CHANGED: Inherited context must never let a different task bypass admission.
+        self.owner = None
+        self.context_token = None
+
+    async def __aenter__(self):
+        if self.released or self.acquired:
+            raise RuntimeError("Research admission cannot be reused")
+        try:
+            await self.limiter.semaphore.acquire()
+        except BaseException:
+            self.release()
+            raise
+        self.acquired = True
+        self.limiter.queued -= 1
+        self.limiter.active_runs += 1
+        # CHANGED: The API wrapper and orchestrator share one slot in this task only.
+        self.owner = asyncio.current_task()
+        self.context_token = _current_admission.set(self)
+        return self
+
+    async def __aexit__(self, exc_type, exc, traceback):
+        self.release()
+        # CHANGED: Restore the previous task context on success, error or cancellation.
+        _current_admission.reset(self.context_token)
+
+    def release(self) -> None:
+        if self.released:
+            return
+        self.released = True
+        if self.acquired:
+            self.limiter.active_runs -= 1
+            self.limiter.semaphore.release()
+        else:
+            self.limiter.queued -= 1
+
+
+# CHANGED: Initialized once from validated environment-backed settings.
+concurrency_limiter = ResearchConcurrencyLimiter(
+    settings.deepdive_max_concurrent_runs, settings.deepdive_reject_when_full,
+)
+# CHANGED: Context is task-local; the limiter and its semaphore remain process-global.
+_current_admission: ContextVar[RunAdmission | None] = ContextVar("research_admission", default=None)
 
 
 async def save_run(run: ResearchRun) -> None:
@@ -248,6 +328,27 @@ async def _retrieve_with_backfill(run, seed_urls, queries):
 
 
 async def run_research(
+    question: str,
+    source_urls: list[str] | None = None,
+    max_rounds: int | None = None,
+    confidence_threshold: float | None = None,
+    run_id: str | None = None,
+    model_preset: str = "balanced",
+) -> ResearchRun:
+    # CHANGED: Reuse only this task's API slot; direct callers acquire their own.
+    admission = _current_admission.get()
+    if admission is not None and admission.owner is asyncio.current_task() and not admission.released:
+        return await _run_research(
+            question, source_urls, max_rounds, confidence_threshold, run_id, model_preset,
+        )
+    async with concurrency_limiter.reserve():
+        return await _run_research(
+            question, source_urls, max_rounds, confidence_threshold, run_id, model_preset,
+        )
+
+
+# CHANGED: Original state machine body is unchanged, behind the limiter.
+async def _run_research(
     question: str,
     source_urls: list[str] | None = None,
     max_rounds: int | None = None,

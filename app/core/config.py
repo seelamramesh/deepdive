@@ -19,6 +19,10 @@ class Settings(BaseSettings):
 
     deepdive_api_key: str = Field(default="", alias="DEEPDIVE_API_KEY")
 
+    # CHANGED: Process-wide research admission policy, validated at startup.
+    deepdive_max_concurrent_runs: int = Field(default=3, ge=1, le=20, alias="DEEPDIVE_MAX_CONCURRENT_RUNS")
+    deepdive_reject_when_full: bool = Field(default=False, alias="DEEPDIVE_REJECT_WHEN_FULL")
+
     app_host: str = "0.0.0.0"
     app_port: int = 8000
     log_level: str = "info"
