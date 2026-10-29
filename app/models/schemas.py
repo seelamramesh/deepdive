@@ -9,6 +9,7 @@ from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, Field
+from app.core.model_presets import ModelPreset
 
 
 # ── Enums ──────────────────────────────────────────────────────────────
@@ -101,8 +102,13 @@ class Source(BaseModel):
     retrieved_at: str = Field(default_factory=_now)
     content_hash: str = ""
     content_snippet: str = ""
+    # Exact sanitized/truncated retrieval snapshot; absent on historical records.
+    content_snapshot: Optional[str] = None
+    work_identifiers: list[str] = Field(default_factory=list)
+    publication_date: Optional[str] = None
     trust_score: float = 0.0
     trust_factors: dict = Field(default_factory=dict)
+    trust_limitations: str = ""
 
 
 class Evidence(BaseModel):
@@ -111,6 +117,7 @@ class Evidence(BaseModel):
     subquestion_id: str = ""
     passage: str
     passage_hash: str = ""
+    source_snapshot_hash: str = ""
     relevance: float = 0.0
 
     def compute_hash(self) -> None:
@@ -166,6 +173,7 @@ class CoverageEntry(BaseModel):
     evidence_count: int = 0
     source_count: int = 0
     primary_source_count: int = 0
+    distinct_material_count: int = 0
     verified_claim_count: int = 0
     contradiction_count: int = 0
     coverage_score: float = 0.0
@@ -192,9 +200,29 @@ class AgentCall(BaseModel):
     finish_reason: str = ""
     error: str = ""
     response_preview: str = ""
+    cache_hit: Optional[bool] = None
+    cache_miss_reason: Optional[str] = None
+    cache_store_status: Optional[str] = None
+    request_sent: Optional[bool] = None
+    cache_source_call_id: str = ""
+    cached_prompt_tokens: Optional[int] = None
+    usage_source: str = "unknown"
+    provider_request_id: str = ""
+    prompt_tokens: Optional[int] = None
+    completion_tokens: Optional[int] = None
+    total_tokens: Optional[int] = None
+
+
+VERIFICATION_DISCLAIMER = (
+    "Automated AI review may use the same model or provider as drafting. "
+    "It is not a hallucination-free guarantee or independent human verification. "
+    "See the recorded review status and limitations."
+)
 
 
 class VerificationCertificate(BaseModel):
+    verification_disclaimer: str = VERIFICATION_DISCLAIMER
+    model_preset: Optional[str] = None
     run_id: str
     original_question: str
     execution_timestamp: str = Field(default_factory=_now)
@@ -218,23 +246,41 @@ class VerificationCertificate(BaseModel):
 # ── Run State Container ───────────────────────────────────────────────
 
 class ResearchRun(BaseModel):
+    model_preset: Optional[str] = None
+    resolved_models: dict[str, str] = Field(default_factory=dict)
+    verification_disclaimer: str = VERIFICATION_DISCLAIMER
     id: str = Field(default_factory=lambda: uuid.uuid4().hex[:16])
     question: str
     created_at: str = Field(default_factory=_now)
     current_state: RunState = RunState.START
     research_round: int = 0
+    confidence_threshold: float = 0.7
+    max_rounds: int = 3
 
     subquestions: list[SubQuestion] = Field(default_factory=list)
     search_queries: list[SearchQuery] = Field(default_factory=list)
+    search_audit: list[dict] = Field(default_factory=list)
+    retrieval_audit: list[dict] = Field(default_factory=list)
+    retrieval_pending: list[dict] = Field(default_factory=list)
+    retrieval_attempted_urls: list[str] = Field(default_factory=list)
     sources: list[Source] = Field(default_factory=list)
     evidence: list[Evidence] = Field(default_factory=list)
     claims: list[AtomicClaim] = Field(default_factory=list)
+    claim_selection_audit: list[dict] = Field(default_factory=list)
     judgements: list[ClaimJudgement] = Field(default_factory=list)
+    prosecution: list[ProsecutorArgument] = Field(default_factory=list)
+    defense: list[DefenseArgument] = Field(default_factory=list)
     contradictions: list[Contradiction] = Field(default_factory=list)
+    contradiction_audit: list[dict] = Field(default_factory=list)
     coverage: list[CoverageEntry] = Field(default_factory=list)
     state_transitions: list[StateTransition] = Field(default_factory=list)
     agent_calls: list[AgentCall] = Field(default_factory=list)
 
+    report_grounding_audit: list[dict] = Field(default_factory=list)
+    report_artifact_audit: list[dict] = Field(default_factory=list)
+    report_citation_audit: list[dict] = Field(default_factory=list)
+    report_grounding_status: str = "not_available"
+    report_fallback_reason: str = ""
     final_report: str = ""
     certificate: Optional[VerificationCertificate] = None
     error: Optional[str] = None
@@ -275,14 +321,15 @@ class ResearchRun(BaseModel):
 # ── API Request/Response ──────────────────────────────────────────────
 
 class ResearchRequest(BaseModel):
+    model_preset: ModelPreset = "balanced"
     question: str = Field(min_length=10, max_length=2000)
     source_urls: list[str] = Field(default_factory=list, max_length=20)
     max_rounds: Optional[int] = Field(default=None, ge=1, le=5)
     confidence_threshold: Optional[float] = Field(default=None, ge=0.5, le=1.0)
 
 
-class FollowUpRequest(BaseModel):
-    question: str = Field(min_length=10, max_length=2000)
+class FollowUpRequest(ResearchRequest):
+    pass
 
 
 class HealthResponse(BaseModel):
@@ -290,9 +337,11 @@ class HealthResponse(BaseModel):
     mesh_configured: bool = False
     database: str = ""
     version: str = "1.0.0"
+    db_ok: bool = False
 
 
 class RunSummary(BaseModel):
+    model_preset: Optional[str] = None
     id: str
     question: str
     state: RunState

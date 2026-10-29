@@ -1,0 +1,14 @@
+# Current pending tasks â€” 2026-10-24
+
+Verified now: runtime 26907d9, normal service restored, 20 runs, no active runs; all 19 pre-Action-3 records unchanged. Action 3 n8n execution 414929 succeeded for b23afbee4eda46e0: 25 logical agent calls, 22 Mesh dispatches, 2 Brave searches, 72,029 tokens, 3 local reuses (12%). Quality remains incomplete: one accepted claim, five red areas. Cumulative reservations $3.383747; stop $3.50; remaining capacity $0.116253; actual billing unknown. See [Action 3 results](action3-evaluation-2026-10-25.md).
+
+1. **Completed:** cache deployment, isolated copied-DB validation, consistent backup, rollback control-path/previous-image checks and independent public API verification. See [release evidence](deployment-cache-2026-10-24.md). Physical Android remains unverified; browser screenshot capture failed.
+2. **Completed:** one bounded, programmatically guarded n8n research run. Webhook returned report/certificate; restoration independently verified.
+3. **Measured:** zero local cache hits and zero provider cached-prompt tokens; no positive savings or cached-versus-uncached comparison. TTL/miss reasons not instrumented. All five offline fixes are implemented and deployed through Action 1 gates; see [release evidence](pre-action3-fixes-2026-10-25.md). No new paid run proves live improvement yet.
+4. Reassess report completeness and primary-source currency, especially the four weak areas and historical Geotab statistic in run c324ed4de85d4e3c. Original report remains unchanged.
+5. Action 3 completed a bounded two-round live run plus mocked unsupported-premise and four failure contracts. Positive real-world contradiction retention and natural live failure-backfill remain unproven. No more paid runs authorized by this action. New blockers: out-of-policy Brave query (82 words, HTTP 422), incomplete qualifier closure and sentence-level citation placement. See the measured report before offline follow-up.
+6. Physical Android verification remains absent; responsive browser checks are available. Verify new cache labels in the deployed UI.
+7. Runtime 26907d9 backend/frontend CI passed; organizer reporting failed 403 after 4/4 critical checks. Review documentation-head CI and complete Agent Arena rule-by-rule audit. Organizer reporting remains dependent on a submission entry; do not submit simply to make that job green.
+8. Architecture and simple flow guide updated for this release. Independently render diagrams and, once remaining gates pass, finalize complete feature inventory and jury walkthrough. Merge/release readiness and hackathon submission remain separate decisions; submission requires explicit approval.
+
+Action 3 complete; normal production restored and all prior records preserved. No research process running. Actions 4–8 await confirmation. Overall goal remains incomplete; no hackathon submission made.

@@ -1,0 +1,2163 @@
+{
+  "id": "b23afbee4eda46e0",
+  "question": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences.",
+  "created_at": "2026-10-25T05:15:35.157118+00:00",
+  "current_state": "END",
+  "research_round": 2,
+  "confidence_threshold": 0.7,
+  "max_rounds": 2,
+  "subquestions": [
+    {
+      "id": "800b66279b36",
+      "text": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report?",
+      "completion_criteria": "A source-grounded summary covering the study's sample (workers, job role, tenure, demographics, and selection into the experiment), the exact WFH arrangement and its assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors.",
+      "parent_question": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences."
+    },
+    {
+      "id": "769d31107596",
+      "text": "What were the population, work arrangement (WFH schedule, eligibility, and whether it was full or partial), task type, and design of the Indian data-entry randomized experiment, and what productivity results did it report?",
+      "completion_criteria": "A source-grounded summary covering the sample (workers, job role, tenure, demographics, and selection), the exact WFH arrangement and assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors. Sources must be the study itself or a primary citation, not secondhand characterizations.",
+      "parent_question": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences."
+    },
+    {
+      "id": "55dc14cc7823",
+      "text": "Do the two studies measure productivity in comparable ways, and what are the definitions of their outcome variables?",
+      "completion_criteria": "A side-by-side table of each study's productivity outcome (e.g., calls handled, keystrokes or records per hour, quality measures, attrition, self-reported output), with units, measurement source (administrative logs vs. surveys), and whether quality adjustments were applied. Each non-equivalent measure is explicitly flagged.",
+      "parent_question": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences."
+    },
+    {
+      "id": "b3c0825c0c2c",
+      "text": "After accounting for the outcome definitions and reported effect sizes, do the two studies agree in direction and approximate magnitude of the productivity effect?",
+      "completion_criteria": "A statement of the sign and size of each study's headline productivity effect, expressed in comparable units or standardized form where possible, with confidence intervals. The answer must state explicitly whether the intervals overlap and whether the sign agrees, without relying on the authors' own characterization of agreement.",
+      "parent_question": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences."
+    },
+    {
+      "id": "6cf3a6103d67",
+      "text": "Which differences between the two studies in population, work arrangement, task type, setting, duration, and measurement are contextual rather than substantive, and how might each plausibly moderate the productivity effect?",
+      "completion_criteria": "A catalog listing every material difference identified in the prior subquestions, each classified as contextual (with a stated mechanism by which it could change the effect, such as task complexity, labor market norms, or home-office infrastructure) or unresolved. The catalog must cite evidence for each classification rather than assuming a mechanism.",
+      "parent_question": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences."
+    },
+    {
+      "id": "fa1823a3842f",
+      "text": "Under conditions where the two studies' populations, work arrangements, and task types overlap, do their productivity results conflict, and if so, is the conflict robust to differences in measurement and design?",
+      "completion_criteria": "A determination of whether any overlapping conditions exist. If they do, a comparison of results under those conditions with an assessment of whether a directional or magnitude conflict persists after matching on measurement. If no overlap exists, the answer must state that no like-for-like comparison is possible and that any apparent contradiction is therefore contextual, not genuine.",
+      "parent_question": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences."
+    }
+  ],
+  "search_queries": [
+    {
+      "id": "682c2e07cc20",
+      "subquestion_id": "800b66279b36",
+      "query": "Bloom Liang Roberts Ying \"Does Working from Home Work?\" CTrip call center randomized experiment eligibility lottery volunteers full-time WFH productivity",
+      "source_preference": "peer-reviewed"
+    },
+    {
+      "id": "35cf76d07283",
+      "subquestion_id": "800b66279b36",
+      "query": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report? A source passage that identifies the study as the CTrip call-center experiment (naming the company or linking the 13% result to CTrip). Also, the study's design (for example, whether workers were randomly assigned) should be shown if the causal 'led to' framing is to be retained with full support. authoritative source",
+      "source_preference": "primary"
+    }
+  ],
+  "search_audit": [
+    {
+      "input": {
+        "question": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences.",
+        "round": 1,
+        "query_budget": 1,
+        "subquestions": [
+          {
+            "id": "800b66279b36",
+            "text": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report?",
+            "completion_criteria": "A source-grounded summary covering the study's sample (workers, job role, tenure, demographics, and selection into the experiment), the exact WFH arrangement and its assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors."
+          },
+          {
+            "id": "769d31107596",
+            "text": "What were the population, work arrangement (WFH schedule, eligibility, and whether it was full or partial), task type, and design of the Indian data-entry randomized experiment, and what productivity results did it report?",
+            "completion_criteria": "A source-grounded summary covering the sample (workers, job role, tenure, demographics, and selection), the exact WFH arrangement and assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors. Sources must be the study itself or a primary citation, not secondhand characterizations."
+          },
+          {
+            "id": "55dc14cc7823",
+            "text": "Do the two studies measure productivity in comparable ways, and what are the definitions of their outcome variables?",
+            "completion_criteria": "A side-by-side table of each study's productivity outcome (e.g., calls handled, keystrokes or records per hour, quality measures, attrition, self-reported output), with units, measurement source (administrative logs vs. surveys), and whether quality adjustments were applied. Each non-equivalent measure is explicitly flagged."
+          },
+          {
+            "id": "b3c0825c0c2c",
+            "text": "After accounting for the outcome definitions and reported effect sizes, do the two studies agree in direction and approximate magnitude of the productivity effect?",
+            "completion_criteria": "A statement of the sign and size of each study's headline productivity effect, expressed in comparable units or standardized form where possible, with confidence intervals. The answer must state explicitly whether the intervals overlap and whether the sign agrees, without relying on the authors' own characterization of agreement."
+          },
+          {
+            "id": "6cf3a6103d67",
+            "text": "Which differences between the two studies in population, work arrangement, task type, setting, duration, and measurement are contextual rather than substantive, and how might each plausibly moderate the productivity effect?",
+            "completion_criteria": "A catalog listing every material difference identified in the prior subquestions, each classified as contextual (with a stated mechanism by which it could change the effect, such as task complexity, labor market norms, or home-office infrastructure) or unresolved. The catalog must cite evidence for each classification rather than assuming a mechanism."
+          },
+          {
+            "id": "fa1823a3842f",
+            "text": "Under conditions where the two studies' populations, work arrangements, and task types overlap, do their productivity results conflict, and if so, is the conflict robust to differences in measurement and design?",
+            "completion_criteria": "A determination of whether any overlapping conditions exist. If they do, a comparison of results under those conditions with an assessment of whether a directional or magnitude conflict persists after matching on measurement. If no overlap exists, the answer must state that no like-for-like comparison is possible and that any apparent contradiction is therefore contextual, not genuine."
+          }
+        ],
+        "gap_feedback": [],
+        "previous_queries": []
+      },
+      "planned_queries": [
+        {
+          "id": "682c2e07cc20",
+          "subquestion_id": "800b66279b36",
+          "query": "Bloom Liang Roberts Ying \"Does Working from Home Work?\" CTrip call center randomized experiment eligibility lottery volunteers full-time WFH productivity",
+          "source_preference": "peer-reviewed"
+        },
+        {
+          "id": "b174d222bff6",
+          "subquestion_id": "769d31107596",
+          "query": "randomized controlled trial work from home data entry workers India productivity working paper assignment protocol",
+          "source_preference": "peer-reviewed"
+        },
+        {
+          "id": "bb0113b5bf18",
+          "subquestion_id": "55dc14cc7823",
+          "query": "work from home randomized experiment outcome measures calls handled per hour versus keystrokes records per hour quality adjustment attrition measurement",
+          "source_preference": "peer-reviewed"
+        },
+        {
+          "id": "990509070538",
+          "subquestion_id": "b3c0825c0c2c",
+          "query": "work from home randomized experiment productivity treatment effect standard error confidence interval CTrip India data entry comparison",
+          "source_preference": "peer-reviewed"
+        },
+        {
+          "id": "1b29f874b526",
+          "subquestion_id": "6cf3a6103d67",
+          "query": "work from home productivity heterogeneity task complexity home office infrastructure labor market context randomized studies moderators",
+          "source_preference": "peer-reviewed"
+        },
+        {
+          "id": "48510b7a1d35",
+          "subquestion_id": "fa1823a3842f",
+          "query": "replication or meta-analysis of working from home randomized field experiments productivity sign and magnitude conflicting results",
+          "source_preference": "peer-reviewed"
+        }
+      ],
+      "selected_query_ids": [
+        "682c2e07cc20"
+      ],
+      "attempts": [
+        {
+          "attempt_id": "734ca29b73404f84b92247913b2ba14d",
+          "query": "Bloom Liang Roberts Ying \"Does Working from Home Work?\" CTrip call center randomized experiment eligibility lottery volunteers full-time WFH productivity",
+          "status": "success",
+          "result_count": 2,
+          "http_status": 200,
+          "error_class": null,
+          "request_sent": true,
+          "timestamp": "2026-10-25T05:15:52.615010+00:00",
+          "duration_ms": 956
+        }
+      ]
+    },
+    {
+      "input": {
+        "question": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences.",
+        "round": 2,
+        "query_budget": 1,
+        "subquestions": [
+          {
+            "id": "800b66279b36",
+            "text": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report?",
+            "completion_criteria": "A source-grounded summary covering the study's sample (workers, job role, tenure, demographics, and selection into the experiment), the exact WFH arrangement and its assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors."
+          },
+          {
+            "id": "769d31107596",
+            "text": "What were the population, work arrangement (WFH schedule, eligibility, and whether it was full or partial), task type, and design of the Indian data-entry randomized experiment, and what productivity results did it report?",
+            "completion_criteria": "A source-grounded summary covering the sample (workers, job role, tenure, demographics, and selection), the exact WFH arrangement and assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors. Sources must be the study itself or a primary citation, not secondhand characterizations."
+          },
+          {
+            "id": "55dc14cc7823",
+            "text": "Do the two studies measure productivity in comparable ways, and what are the definitions of their outcome variables?",
+            "completion_criteria": "A side-by-side table of each study's productivity outcome (e.g., calls handled, keystrokes or records per hour, quality measures, attrition, self-reported output), with units, measurement source (administrative logs vs. surveys), and whether quality adjustments were applied. Each non-equivalent measure is explicitly flagged."
+          },
+          {
+            "id": "b3c0825c0c2c",
+            "text": "After accounting for the outcome definitions and reported effect sizes, do the two studies agree in direction and approximate magnitude of the productivity effect?",
+            "completion_criteria": "A statement of the sign and size of each study's headline productivity effect, expressed in comparable units or standardized form where possible, with confidence intervals. The answer must state explicitly whether the intervals overlap and whether the sign agrees, without relying on the authors' own characterization of agreement."
+          },
+          {
+            "id": "6cf3a6103d67",
+            "text": "Which differences between the two studies in population, work arrangement, task type, setting, duration, and measurement are contextual rather than substantive, and how might each plausibly moderate the productivity effect?",
+            "completion_criteria": "A catalog listing every material difference identified in the prior subquestions, each classified as contextual (with a stated mechanism by which it could change the effect, such as task complexity, labor market norms, or home-office infrastructure) or unresolved. The catalog must cite evidence for each classification rather than assuming a mechanism."
+          },
+          {
+            "id": "fa1823a3842f",
+            "text": "Under conditions where the two studies' populations, work arrangements, and task types overlap, do their productivity results conflict, and if so, is the conflict robust to differences in measurement and design?",
+            "completion_criteria": "A determination of whether any overlapping conditions exist. If they do, a comparison of results under those conditions with an assessment of whether a directional or magnitude conflict persists after matching on measurement. If no overlap exists, the answer must state that no like-for-like comparison is possible and that any apparent contradiction is therefore contextual, not genuine."
+          }
+        ],
+        "gap_feedback": [
+          {
+            "subquestion_id": "800b66279b36",
+            "completion_criteria": "A source-grounded summary covering the study's sample (workers, job role, tenure, demographics, and selection into the experiment), the exact WFH arrangement and its assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors.",
+            "coverage_status": "red",
+            "failed_claims": [
+              {
+                "claim_id": "213db0801c65",
+                "text": "Home working led to a 13% performance increase in the CTrip call-center experiment.",
+                "verdict": "partially_supported",
+                "reason": "Evidence a39cc3ac4bea states that 'Home working led to a 13% performance increase,' which matches the claim's figure and causal wording. The passage also describes call-based output ('more calls per minute'), which is consistent with a call-center setting. However, the passage never names CTrip, so the claim's identification of the experiment as the CTrip study is not verified from the cited text. The passage's hedged attribution ('attributed to a quieter working environment') applies only to the 4% calls-per-minute component, and the claim does not make a mechanism claim, so that omission is not a substantive error. The cited passage also does not describe the study design in the excerpt, so the causal framing is taken at the passage's word without visible identification details.",
+                "missing_evidence": "A source passage that identifies the study as the CTrip call-center experiment (naming the company or linking the 13% result to CTrip). Also, the study's design (for example, whether workers were randomly assigned) should be shown if the causal 'led to' framing is to be retained with full support."
+              }
+            ]
+          },
+          {
+            "subquestion_id": "769d31107596",
+            "completion_criteria": "A source-grounded summary covering the sample (workers, job role, tenure, demographics, and selection), the exact WFH arrangement and assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors. Sources must be the study itself or a primary citation, not secondhand characterizations.",
+            "coverage_status": "red",
+            "failed_claims": [
+              {
+                "claim_id": "188aeca19d57",
+                "text": "Workers randomly assigned to work from home in the Indian data-entry experiment were 18% less productive than workers assigned to the office.",
+                "verdict": "partially_supported",
+                "reason": "Evidence 6da09bb0c613 states that 'the productivity of workers randomly assigned to WFH is 18% lower than those in the office.' This verifies the random assignment, the 18% figure, the direction of the gap, and the office comparison group. The claim's additional geographic and task scope ('Indian data-entry experiment') is not in the cited passage, which mentions neither India nor data entry. Under the rules, missing geography and population details are substantive omissions. The passage's 'We first find' also marks this as an initial finding, which the claim does not reflect, though this is a status qualifier rather than a changed number.",
+                "missing_evidence": "A passage stating that the experiment was conducted in India and involved data-entry work, ideally from the same source (a7ac9a0d5cc7). Also, a passage or sentence showing whether the 18% result is a preliminary or final estimate, if the claim is to retain a definitive framing."
+              }
+            ]
+          },
+          {
+            "subquestion_id": "55dc14cc7823",
+            "completion_criteria": "A side-by-side table of each study's productivity outcome (e.g., calls handled, keystrokes or records per hour, quality measures, attrition, self-reported output), with units, measurement source (administrative logs vs. surveys), and whether quality adjustments were applied. Each non-equivalent measure is explicitly flagged.",
+            "coverage_status": "red",
+            "failed_claims": []
+          },
+          {
+            "subquestion_id": "b3c0825c0c2c",
+            "completion_criteria": "A statement of the sign and size of each study's headline productivity effect, expressed in comparable units or standardized form where possible, with confidence intervals. The answer must state explicitly whether the intervals overlap and whether the sign agrees, without relying on the authors' own characterization of agreement.",
+            "coverage_status": "red",
+            "failed_claims": []
+          },
+          {
+            "subquestion_id": "6cf3a6103d67",
+            "completion_criteria": "A catalog listing every material difference identified in the prior subquestions, each classified as contextual (with a stated mechanism by which it could change the effect, such as task complexity, labor market norms, or home-office infrastructure) or unresolved. The catalog must cite evidence for each classification rather than assuming a mechanism.",
+            "coverage_status": "red",
+            "failed_claims": []
+          },
+          {
+            "subquestion_id": "fa1823a3842f",
+            "completion_criteria": "A determination of whether any overlapping conditions exist. If they do, a comparison of results under those conditions with an assessment of whether a directional or magnitude conflict persists after matching on measurement. If no overlap exists, the answer must state that no like-for-like comparison is possible and that any apparent contradiction is therefore contextual, not genuine.",
+            "coverage_status": "red",
+            "failed_claims": []
+          }
+        ],
+        "previous_queries": [
+          "Bloom Liang Roberts Ying \"Does Working from Home Work?\" CTrip call center randomized experiment eligibility lottery volunteers full-time WFH productivity"
+        ]
+      },
+      "planned_queries": [
+        {
+          "id": "ef2f11156b36",
+          "subquestion_id": "769d31107596",
+          "query": "randomized field experiment India data-entry work-from-home versus office productivity 18% lower working paper",
+          "source_preference": "peer-reviewed"
+        },
+        {
+          "id": "35cf76d07283",
+          "subquestion_id": "800b66279b36",
+          "query": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report? A source passage that identifies the study as the CTrip call-center experiment (naming the company or linking the 13% result to CTrip). Also, the study's design (for example, whether workers were randomly assigned) should be shown if the causal 'led to' framing is to be retained with full support. authoritative source",
+          "source_preference": "primary"
+        },
+        {
+          "id": "79c9cfb5175b",
+          "subquestion_id": "55dc14cc7823",
+          "query": "Do the two studies measure productivity in comparable ways, and what are the definitions of their outcome variables? A side-by-side table of each study's productivity outcome (e.g., calls handled, keystrokes or records per hour, quality measures, attrition, self-reported output), with units, measurement source (administrative logs vs. surveys), and whether quality adjustments were applied. Each non-equivalent measure is explicitly flagged. authoritative source",
+          "source_preference": "primary"
+        },
+        {
+          "id": "0a74c7b3a36d",
+          "subquestion_id": "b3c0825c0c2c",
+          "query": "After accounting for the outcome definitions and reported effect sizes, do the two studies agree in direction and approximate magnitude of the productivity effect? A statement of the sign and size of each study's headline productivity effect, expressed in comparable units or standardized form where possible, with confidence intervals. The answer must state explicitly whether the intervals overlap and whether the sign agrees, without relying on the authors' own characterization of agreement. authoritative source",
+          "source_preference": "primary"
+        },
+        {
+          "id": "ca03b3858e66",
+          "subquestion_id": "6cf3a6103d67",
+          "query": "Which differences between the two studies in population, work arrangement, task type, setting, duration, and measurement are contextual rather than substantive, and how might each plausibly moderate the productivity effect? A catalog listing every material difference identified in the prior subquestions, each classified as contextual (with a stated mechanism by which it could change the effect, such as task complexity, labor market norms, or home-office infrastructure) or unresolved. The catalog must cite evidence for each classification rather than assuming a mechanism. authoritative source",
+          "source_preference": "primary"
+        },
+        {
+          "id": "e11abae29b39",
+          "subquestion_id": "fa1823a3842f",
+          "query": "Under conditions where the two studies' populations, work arrangements, and task types overlap, do their productivity results conflict, and if so, is the conflict robust to differences in measurement and design? A determination of whether any overlapping conditions exist. If they do, a comparison of results under those conditions with an assessment of whether a directional or magnitude conflict persists after matching on measurement. If no overlap exists, the answer must state that no like-for-like comparison is possible and that any apparent contradiction is therefore contextual, not genuine. authoritative source",
+          "source_preference": "primary"
+        }
+      ],
+      "selected_query_ids": [
+        "35cf76d07283"
+      ],
+      "attempts": [
+        {
+          "attempt_id": "6bcec17ed88841bfa326480f141a21c3",
+          "query": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report? A source passage that identifies the study as the CTrip call-center experiment (naming the company or linking the 13% result to CTrip). Also, the study's design (for example, whether workers were randomly assigned) should be shown if the causal 'led to' framing is to be retained with full support. authoritative source",
+          "status": "error",
+          "result_count": 0,
+          "http_status": 422,
+          "error_class": "HTTPStatusError",
+          "request_sent": true,
+          "timestamp": "2026-10-25T05:17:01.214041+00:00",
+          "duration_ms": 225
+        }
+      ]
+    }
+  ],
+  "retrieval_audit": [
+    {
+      "round": 1,
+      "seed_urls": [
+        "https://www.nber.org/papers/w18871",
+        "https://www.nber.org/papers/w31515"
+      ],
+      "searches": [
+        {
+          "attempt_id": "734ca29b73404f84b92247913b2ba14d",
+          "query": "Bloom Liang Roberts Ying \"Does Working from Home Work?\" CTrip call center randomized experiment eligibility lottery volunteers full-time WFH productivity",
+          "status": "success",
+          "result_count": 2,
+          "http_status": 200,
+          "error_class": null,
+          "request_sent": true,
+          "timestamp": "2026-10-25T05:15:52.615010+00:00",
+          "duration_ms": 956,
+          "query_id": "682c2e07cc20",
+          "result_urls": [
+            "https://www.nber.org/system/files/working_papers/w18871/w18871.pdf",
+            "https://www.gsb.stanford.edu/faculty-research/publications/does-working-home-work-evidence-chinese-experiment"
+          ],
+          "outcome": "urls_returned"
+        }
+      ],
+      "selection_policy": "seeds_then_pending_then_search_success_bounded",
+      "source_budget": 2,
+      "fetch_attempt_budget": 4,
+      "reused_source_ids": [],
+      "fetched_sources": [
+        {
+          "source_id": "1a2b101f365d",
+          "url": "https://www.nber.org/papers/w18871",
+          "content_hash": "6003c7a7f39939de"
+        },
+        {
+          "source_id": "a7ac9a0d5cc7",
+          "url": "https://www.nber.org/papers/w31515",
+          "content_hash": "5b1a2ec1af674264"
+        }
+      ],
+      "candidate_urls": [
+        "https://www.nber.org/papers/w18871",
+        "https://www.nber.org/papers/w31515",
+        "https://www.nber.org/system/files/working_papers/w18871/w18871.pdf",
+        "https://www.gsb.stanford.edu/faculty-research/publications/does-working-home-work-evidence-chinese-experiment"
+      ],
+      "candidate_provenance": [
+        {
+          "url": "https://www.nber.org/papers/w18871",
+          "provenance": [
+            {
+              "origin": "seed",
+              "subquestion_id": null
+            }
+          ]
+        },
+        {
+          "url": "https://www.nber.org/papers/w31515",
+          "provenance": [
+            {
+              "origin": "seed",
+              "subquestion_id": null
+            }
+          ]
+        },
+        {
+          "url": "https://www.nber.org/system/files/working_papers/w18871/w18871.pdf",
+          "provenance": [
+            {
+              "origin": "search",
+              "query_id": "682c2e07cc20",
+              "subquestion_id": "800b66279b36",
+              "round": 1
+            }
+          ]
+        },
+        {
+          "url": "https://www.gsb.stanford.edu/faculty-research/publications/does-working-home-work-evidence-chinese-experiment",
+          "provenance": [
+            {
+              "origin": "search",
+              "query_id": "682c2e07cc20",
+              "subquestion_id": "800b66279b36",
+              "round": 1
+            }
+          ]
+        }
+      ],
+      "selected_urls": [
+        "https://www.nber.org/papers/w18871",
+        "https://www.nber.org/papers/w31515"
+      ],
+      "unfetched_urls": [
+        "https://www.nber.org/system/files/working_papers/w18871/w18871.pdf",
+        "https://www.gsb.stanford.edu/faculty-research/publications/does-working-home-work-evidence-chinese-experiment"
+      ],
+      "fetch_outcomes": [
+        {
+          "url": "https://www.nber.org/papers/w18871",
+          "outcome": "retrieved",
+          "reason": "usable_snapshot",
+          "attempt_id": "6585c6787c354f21884aa59b521cb15a",
+          "http_status": 200,
+          "error_class": null,
+          "timestamp": "2026-10-25T05:15:53.863037+00:00",
+          "duration_ms": 291,
+          "request_index": 1
+        },
+        {
+          "url": "https://www.nber.org/papers/w31515",
+          "outcome": "retrieved",
+          "reason": "usable_snapshot",
+          "attempt_id": "a64f303e3eaf47229d931cbd54f0498c",
+          "http_status": 200,
+          "error_class": null,
+          "timestamp": "2026-10-25T05:15:54.239510+00:00",
+          "duration_ms": 375,
+          "request_index": 1
+        }
+      ],
+      "extraction_inputs": [
+        {
+          "source_id": "1a2b101f365d",
+          "url": "https://www.nber.org/papers/w18871",
+          "characters_sent": 5339,
+          "analyzed_content_hash": "6003c7a7f39939de",
+          "source_record_hash": "6003c7a7f39939de",
+          "snapshot_hash": "6003c7a7f39939de",
+          "snapshot_start": 0,
+          "snapshot_end": 5339,
+          "selection_policy": "gap_lexical_window_v2",
+          "selection_query": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences.",
+          "previous_windows": [],
+          "snapshot_characters": 5339
+        },
+        {
+          "source_id": "a7ac9a0d5cc7",
+          "url": "https://www.nber.org/papers/w31515",
+          "characters_sent": 4348,
+          "analyzed_content_hash": "5b1a2ec1af674264",
+          "source_record_hash": "5b1a2ec1af674264",
+          "snapshot_hash": "5b1a2ec1af674264",
+          "snapshot_start": 0,
+          "snapshot_end": 4348,
+          "selection_policy": "gap_lexical_window_v2",
+          "selection_query": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences.",
+          "previous_windows": [],
+          "snapshot_characters": 4348
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "seed_urls": [
+        "https://www.nber.org/papers/w18871",
+        "https://www.nber.org/papers/w31515"
+      ],
+      "searches": [
+        {
+          "attempt_id": "6bcec17ed88841bfa326480f141a21c3",
+          "query": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report? A source passage that identifies the study as the CTrip call-center experiment (naming the company or linking the 13% result to CTrip). Also, the study's design (for example, whether workers were randomly assigned) should be shown if the causal 'led to' framing is to be retained with full support. authoritative source",
+          "status": "error",
+          "result_count": 0,
+          "http_status": 422,
+          "error_class": "HTTPStatusError",
+          "request_sent": true,
+          "timestamp": "2026-10-25T05:17:01.214041+00:00",
+          "duration_ms": 225,
+          "query_id": "35cf76d07283",
+          "result_urls": [],
+          "outcome": "no_urls_or_search_unavailable"
+        }
+      ],
+      "selection_policy": "seeds_then_pending_then_search_success_bounded",
+      "source_budget": 2,
+      "fetch_attempt_budget": 4,
+      "reused_source_ids": [
+        "1a2b101f365d",
+        "a7ac9a0d5cc7"
+      ],
+      "fetched_sources": [],
+      "candidate_urls": [
+        "https://www.nber.org/papers/w18871",
+        "https://www.nber.org/papers/w31515",
+        "https://www.nber.org/system/files/working_papers/w18871/w18871.pdf",
+        "https://www.gsb.stanford.edu/faculty-research/publications/does-working-home-work-evidence-chinese-experiment"
+      ],
+      "candidate_provenance": [
+        {
+          "url": "https://www.nber.org/papers/w18871",
+          "provenance": [
+            {
+              "origin": "seed",
+              "subquestion_id": null
+            }
+          ]
+        },
+        {
+          "url": "https://www.nber.org/papers/w31515",
+          "provenance": [
+            {
+              "origin": "seed",
+              "subquestion_id": null
+            }
+          ]
+        },
+        {
+          "url": "https://www.nber.org/system/files/working_papers/w18871/w18871.pdf",
+          "provenance": [
+            {
+              "origin": "search",
+              "query_id": "682c2e07cc20",
+              "subquestion_id": "800b66279b36",
+              "round": 1
+            }
+          ]
+        },
+        {
+          "url": "https://www.gsb.stanford.edu/faculty-research/publications/does-working-home-work-evidence-chinese-experiment",
+          "provenance": [
+            {
+              "origin": "search",
+              "query_id": "682c2e07cc20",
+              "subquestion_id": "800b66279b36",
+              "round": 1
+            }
+          ]
+        }
+      ],
+      "selected_urls": [
+        "https://www.nber.org/system/files/working_papers/w18871/w18871.pdf",
+        "https://www.gsb.stanford.edu/faculty-research/publications/does-working-home-work-evidence-chinese-experiment"
+      ],
+      "unfetched_urls": [],
+      "fetch_outcomes": [
+        {
+          "url": "https://www.nber.org/system/files/working_papers/w18871/w18871.pdf",
+          "outcome": "evaluation_limit",
+          "reason": "max_total_sources_2",
+          "attempt_id": null,
+          "http_status": null,
+          "error_class": null,
+          "timestamp": "2026-10-25T05:17:01.439434+00:00",
+          "duration_ms": 0,
+          "request_index": 0
+        },
+        {
+          "url": "https://www.gsb.stanford.edu/faculty-research/publications/does-working-home-work-evidence-chinese-experiment",
+          "outcome": "evaluation_limit",
+          "reason": "max_total_sources_2",
+          "attempt_id": null,
+          "http_status": null,
+          "error_class": null,
+          "timestamp": "2026-10-25T05:17:01.439469+00:00",
+          "duration_ms": 0,
+          "request_index": 0
+        }
+      ],
+      "extraction_inputs": [
+        {
+          "source_id": "1a2b101f365d",
+          "url": "https://www.nber.org/papers/w18871",
+          "characters_sent": 5339,
+          "analyzed_content_hash": "6003c7a7f39939de",
+          "source_record_hash": "6003c7a7f39939de",
+          "snapshot_hash": "6003c7a7f39939de",
+          "snapshot_start": 0,
+          "snapshot_end": 5339,
+          "selection_policy": "gap_lexical_window_v2",
+          "selection_query": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report? A source-grounded summary covering the study's sample (workers, job role, tenure, demographics, and selection into the experiment), the exact WFH arrangement and its assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors. What were the population, work arrangement (WFH schedule, eligibility, and whether it was full or partial), task type, and design of the Indian data-entry randomized experiment, and what productivity results did it report? A source-grounded summary covering the sample (workers, job role, tenure, demographics, and selection), the exact WFH arrangement and assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors. Sources must be the study itself or a primary citation, not secondhand characterizations. Do the two studies measure productivity in comparable ways, and what are the definitions of their outcome variables? A side-by-side table of each study's productivity outcome (e.g., calls handled, keystrokes or records per hour, quality measures, attrition, self-reported output), with units, measurement source (administrative logs vs. surveys), and whether quality adjustments were applied. Each non-equivalent measure is explicitly flagged. After accounting for the outcome definitions and reported effect sizes, do the two studies agree in direction and approximate magnitude of the productivity effect? A statement of the sign and size of each study's headline productivity effect, expressed in comparable units or standardized form where possible, with confidence intervals. The answer must state explicitly whether the intervals overlap and whether the sign agrees, without relying on the authors' own characterization of agreement. Which differences between the two studies in population, work arrangement, task type, setting, duration, and measurement are contextual rather than substantive, and how might each plausibly moderate the productivity effect? A catalog listing every material difference identified in the prior subquestions, each classified as contextual (with a stated mechanism by which it could change the effect, such as task complexity, labor market norms, or home-office infrastructure) or unresolved. The catalog must cite evidence for each classification rather than assuming a mechanism. Under conditions where the two studies' populations, work arrangements, and task types overlap, do their productivity results conflict, and if so, is the conflict robust to differences in measurement and design? A determination of whether any overlapping conditions exist. If they do, a comparison of results under those conditions with an assessment of whether a directional or magnitude conflict persists after matching on measurement. If no overlap exists, the answer must state that no like-for-like comparison is possible and that any apparent contradiction is therefore contextual, not genuine.",
+          "previous_windows": [
+            [
+              0,
+              5339
+            ]
+          ],
+          "snapshot_characters": 5339
+        },
+        {
+          "source_id": "a7ac9a0d5cc7",
+          "url": "https://www.nber.org/papers/w31515",
+          "characters_sent": 4348,
+          "analyzed_content_hash": "5b1a2ec1af674264",
+          "source_record_hash": "5b1a2ec1af674264",
+          "snapshot_hash": "5b1a2ec1af674264",
+          "snapshot_start": 0,
+          "snapshot_end": 4348,
+          "selection_policy": "gap_lexical_window_v2",
+          "selection_query": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report? A source-grounded summary covering the study's sample (workers, job role, tenure, demographics, and selection into the experiment), the exact WFH arrangement and its assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors. What were the population, work arrangement (WFH schedule, eligibility, and whether it was full or partial), task type, and design of the Indian data-entry randomized experiment, and what productivity results did it report? A source-grounded summary covering the sample (workers, job role, tenure, demographics, and selection), the exact WFH arrangement and assignment mechanism, the randomization unit and procedure, the duration, the productivity metrics used, and the reported effect estimates with confidence intervals or standard errors. Sources must be the study itself or a primary citation, not secondhand characterizations. Do the two studies measure productivity in comparable ways, and what are the definitions of their outcome variables? A side-by-side table of each study's productivity outcome (e.g., calls handled, keystrokes or records per hour, quality measures, attrition, self-reported output), with units, measurement source (administrative logs vs. surveys), and whether quality adjustments were applied. Each non-equivalent measure is explicitly flagged. After accounting for the outcome definitions and reported effect sizes, do the two studies agree in direction and approximate magnitude of the productivity effect? A statement of the sign and size of each study's headline productivity effect, expressed in comparable units or standardized form where possible, with confidence intervals. The answer must state explicitly whether the intervals overlap and whether the sign agrees, without relying on the authors' own characterization of agreement. Which differences between the two studies in population, work arrangement, task type, setting, duration, and measurement are contextual rather than substantive, and how might each plausibly moderate the productivity effect? A catalog listing every material difference identified in the prior subquestions, each classified as contextual (with a stated mechanism by which it could change the effect, such as task complexity, labor market norms, or home-office infrastructure) or unresolved. The catalog must cite evidence for each classification rather than assuming a mechanism. Under conditions where the two studies' populations, work arrangements, and task types overlap, do their productivity results conflict, and if so, is the conflict robust to differences in measurement and design? A determination of whether any overlapping conditions exist. If they do, a comparison of results under those conditions with an assessment of whether a directional or magnitude conflict persists after matching on measurement. If no overlap exists, the answer must state that no like-for-like comparison is possible and that any apparent contradiction is therefore contextual, not genuine.",
+          "previous_windows": [
+            [
+              0,
+              4348
+            ]
+          ],
+          "snapshot_characters": 4348
+        }
+      ]
+    }
+  ],
+  "retrieval_pending": [],
+  "retrieval_attempted_urls": [
+    "https://www.nber.org/papers/w18871",
+    "https://www.nber.org/papers/w31515",
+    "https://www.nber.org/system/files/working_papers/w18871/w18871.pdf",
+    "https://www.gsb.stanford.edu/faculty-research/publications/does-working-home-work-evidence-chinese-experiment"
+  ],
+  "sources": [
+    {
+      "id": "1a2b101f365d",
+      "url": "https://www.nber.org/papers/w18871",
+      "title": "Does Working from Home Work? Evidence from a Chinese Experiment | NBER",
+      "retrieved_at": "2026-10-25T05:15:53.863516+00:00",
+      "content_hash": "6003c7a7f39939de",
+      "content_snippet": "Does Working from Home Work? Evidence from a Chinese Experiment | NBER\nSkip to main content\nDoes Working from Home Work? Evidence from a Chinese Experiment\nNicholas Bloom\n,\nJames Liang\n,\nJohn Roberts\n&\nZhichun Jenny Ying\nShare\nX\nLinkedIn\nFacebook\nBluesky\nThreads\nEmail\nLink\nWorking Paper\n18871\nDOI\n10.3386/w18871\nIssue Date\nMarch 2013\nAbout 10% of US employees now regularly work from home (WFH), but there are concerns this can lead to \"shirking from home.\" We report the results of a WFH experiment",
+      "work_identifiers": [
+        "doi:10.3386/w18871"
+      ],
+      "publication_date": "2013-03-08",
+      "trust_score": 0.68,
+      "trust_factors": {
+        "primary_source": true,
+        "government_regulatory": false,
+        "peer_reviewed": true,
+        "publisher_reputation": "high",
+        "publication_recency": "dated",
+        "direct_relevance": 0.85,
+        "independence": false,
+        "methodology_present": true,
+        "corroborated": false
+      },
+      "trust_limitations": "Only a partial snapshot window (0-5,339 characters) was supplied, so the full paper's design, attrition, and robustness checks cannot be reviewed. The visible text describes a randomized experiment at CTrip (call-center staff, 9 months, volunteers randomly assigned to home or office), but the analysis details are not in the window. The working paper is dated March 2013; the page also lists a 2015 Quarterly Journal of Economics version, which supports peer-review status, but the reviewed text is the working-paper abstract, not the published article. Conflict of interest: co-author James Liang is CTrip's CEO (described on the page as co-founder, former CEO, and current Chairman, with inconsistent titles across the page). The authors state CTrip provided no funding and results were not pre-screened, but the firm supplied the setting and the conflict is material. The population is volunteer call-center workers in China at one firm, so it does not directly generalize to other sectors or countries. Its 13% (later 22% after re-selection) performance gains are specific to that setting and arrangement. Recency is dated relative to current remote-work conditions. Corroboration within this pair is absent because the other source reports a contrasting result in a different population."
+    },
+    {
+      "id": "a7ac9a0d5cc7",
+      "url": "https://www.nber.org/papers/w31515",
+      "title": "Working from Home, Worker Sorting and Development | NBER",
+      "retrieved_at": "2026-10-25T05:15:54.240065+00:00",
+      "content_hash": "5b1a2ec1af674264",
+      "content_snippet": "Working from Home, Worker Sorting and Development | NBER\nSkip to main content\nWorking from Home, Worker Sorting and Development\nDavid Atkin\n,\nAntoinette Schoar\n&\nSumit Shinde\nShare\nX\nLinkedIn\nFacebook\nBluesky\nThreads\nEmail\nLink\nWorking Paper\n31515\nDOI\n10.3386/w31515\nIssue Date\nJuly 2023\nRevision Date\nDecember 2023\nDifferences in the productivity of home-based versus office-based work may arise due to a treatment effect of the office or from workers with different abilities sorting into these loc",
+      "work_identifiers": [
+        "doi:10.3386/w31515"
+      ],
+      "publication_date": "2023-07-31",
+      "trust_score": 0.74,
+      "trust_factors": {
+        "primary_source": true,
+        "government_regulatory": false,
+        "peer_reviewed": false,
+        "publisher_reputation": "high",
+        "publication_recency": "recent",
+        "direct_relevance": 0.85,
+        "independence": true,
+        "methodology_present": true,
+        "corroborated": false
+      },
+      "trust_limitations": "Only a partial snapshot window (0-4,348 characters) was supplied. The visible abstract describes an RCT in India's data-entry sector that randomly allocated workers to WFH or office, with reported effects (18% lower WFH productivity, selection effects, and heterogeneity by children and home-care responsibilities). The full results tables, sample size, time frame, and robustness analysis are not in the window, so the magnitudes cannot be verified here. This is a working paper (revised December 2023) and the snapshot does not show a journal publication, so peer-review status is unconfirmed. Recency is recent relative to the other source but the revision date does not confirm current labor-market conditions. Funding came from DFID-ESRC and the International Growth Centre, with IRB approval noted, and no firm-level conflict is visible in the window. Its population (data-entry workers in India, with a sorting-focused design) and arrangement (assigned, not volunteer, fully remote vs. office) differ from the CTrip call-center setting, so the two results are not directly comparable without qualification. The 'Mentioned in the News' items are not evidence of the study's findings and were not used for scoring. No independent replication is visible in the window, so corroboration is marked false."
+    }
+  ],
+  "evidence": [
+    {
+      "id": "144c6a897877",
+      "source_id": "1a2b101f365d",
+      "subquestion_id": "800b66279b36",
+      "passage": "We report the results of a WFH experiment at CTrip, a 16,000- employee, NASDAQ-listed Chinese travel agency. Call center employees who volunteered to WFH were randomly assigned to work from home or in the office for 9 months.",
+      "passage_hash": "a4da65804e280050",
+      "source_snapshot_hash": "6003c7a7f39939de",
+      "relevance": 0.95
+    },
+    {
+      "id": "a39cc3ac4bea",
+      "source_id": "1a2b101f365d",
+      "subquestion_id": "800b66279b36",
+      "passage": "Home working led to a 13% performance increase, of which about 9% was from working more minutes per shift (fewer breaks and sick-days) and 4% from more calls per minute (attributed to a quieter working environment).",
+      "passage_hash": "7d40eb2e7ded98eb",
+      "source_snapshot_hash": "6003c7a7f39939de",
+      "relevance": 0.95
+    },
+    {
+      "id": "7be2756f4eee",
+      "source_id": "1a2b101f365d",
+      "subquestion_id": "800b66279b36",
+      "passage": "Home workers increased the minutes they worked on each shift by 9.2 percent.",
+      "passage_hash": "2f28305df680c4b4",
+      "source_snapshot_hash": "6003c7a7f39939de",
+      "relevance": 0.7
+    },
+    {
+      "id": "5270c861c682",
+      "source_id": "1a2b101f365d",
+      "subquestion_id": "800b66279b36",
+      "passage": "Home workers also reported improved work satisfaction and experienced less turnover, but their promotion rate conditional on performance fell.",
+      "passage_hash": "cb157242147f5411",
+      "source_snapshot_hash": "6003c7a7f39939de",
+      "relevance": 0.5
+    },
+    {
+      "id": "e5b93db44877",
+      "source_id": "1a2b101f365d",
+      "subquestion_id": "800b66279b36",
+      "passage": "Interestingly, over half of them switched, which led to the gains from WFH almost doubling to 22%.",
+      "passage_hash": "b3e04cc11ee406cf",
+      "source_snapshot_hash": "6003c7a7f39939de",
+      "relevance": 0.6
+    },
+    {
+      "id": "f895697853b3",
+      "source_id": "1a2b101f365d",
+      "subquestion_id": "800b66279b36",
+      "passage": "Due to the success of the experiment, CTrip rolled-out the option to WFH to the whole firm and allowed the experimental employees to re-select between the home or office.",
+      "passage_hash": "2b9aca0759cd0826",
+      "source_snapshot_hash": "6003c7a7f39939de",
+      "relevance": 0.4
+    },
+    {
+      "id": "f218324b19a3",
+      "source_id": "a7ac9a0d5cc7",
+      "subquestion_id": "769d31107596",
+      "passage": "We conduct an RCT in the data entry sector in India that exogenously allocates workers to work from home (WFH) or from the office.",
+      "passage_hash": "0adabab6da4e8fc8",
+      "source_snapshot_hash": "5b1a2ec1af674264",
+      "relevance": 0.9
+    },
+    {
+      "id": "6da09bb0c613",
+      "source_id": "a7ac9a0d5cc7",
+      "subquestion_id": "769d31107596",
+      "passage": "We first find that the productivity of workers randomly assigned to WFH is 18% lower than those in the office.",
+      "passage_hash": "12dc48cf474e8246",
+      "source_snapshot_hash": "5b1a2ec1af674264",
+      "relevance": 0.95
+    },
+    {
+      "id": "1b865bfffdaa",
+      "source_id": "a7ac9a0d5cc7",
+      "subquestion_id": "769d31107596",
+      "passage": "Two-thirds of the effect manifests itself from the first day of work with the remainder due to quicker learning in the office.",
+      "passage_hash": "a73f7531cdf3a9d7",
+      "source_snapshot_hash": "5b1a2ec1af674264",
+      "relevance": 0.7
+    },
+    {
+      "id": "e183341d0902",
+      "source_id": "a7ac9a0d5cc7",
+      "subquestion_id": "6cf3a6103d67",
+      "passage": "workers who prefer home-based work are 12% faster and more accurate at baseline.",
+      "passage_hash": "ba322aa2ebdcacc5",
+      "source_snapshot_hash": "5b1a2ec1af674264",
+      "relevance": 0.6
+    },
+    {
+      "id": "c2c392f491bc",
+      "source_id": "a7ac9a0d5cc7",
+      "subquestion_id": "6cf3a6103d67",
+      "passage": "workers who prefer WFH are substantially less productive at home than the office (27% less compared to 13% less for workers who prefer the office).",
+      "passage_hash": "12c9a3b0fd4ed06f",
+      "source_snapshot_hash": "5b1a2ec1af674264",
+      "relevance": 0.6
+    },
+    {
+      "id": "319227437a4e",
+      "source_id": "a7ac9a0d5cc7",
+      "subquestion_id": "6cf3a6103d67",
+      "passage": "These negative selection effects are partially explained by subgroups that face bigger constraints on selecting into office work and additional demands on their attention when at home, such as those with children or other home care responsibilities.",
+      "passage_hash": "759c830b7bf975f5",
+      "source_snapshot_hash": "5b1a2ec1af674264",
+      "relevance": 0.7
+    }
+  ],
+  "claims": [
+    {
+      "id": "5727c921d759",
+      "text": "The CTrip randomized experiment reported that home working led to a 13% performance increase.",
+      "evidence_ids": [
+        "a39cc3ac4bea",
+        "144c6a897877"
+      ],
+      "subquestion_id": "800b66279b36"
+    },
+    {
+      "id": "dc9e72722a08",
+      "text": "In the Indian data-entry randomized experiment, the first finding is that workers randomly assigned to work from home were 18% less productive than workers in the office.",
+      "evidence_ids": [
+        "6da09bb0c613",
+        "f218324b19a3"
+      ],
+      "subquestion_id": "769d31107596"
+    }
+  ],
+  "claim_selection_audit": [
+    {
+      "round": 1,
+      "limit": 2,
+      "policy": "retain_accepted_then_balance_subquestions",
+      "selected_claim_ids": [
+        "213db0801c65",
+        "188aeca19d57"
+      ],
+      "merged_duplicate_ids": {},
+      "excluded_from_active_budget": []
+    },
+    {
+      "round": 2,
+      "limit": 2,
+      "policy": "retain_accepted_then_balance_subquestions",
+      "selected_claim_ids": [
+        "5727c921d759",
+        "dc9e72722a08"
+      ],
+      "merged_duplicate_ids": {},
+      "excluded_from_active_budget": [
+        {
+          "claim": {
+            "id": "213db0801c65",
+            "text": "Home working led to a 13% performance increase in the CTrip call-center experiment.",
+            "evidence_ids": [
+              "a39cc3ac4bea"
+            ],
+            "subquestion_id": "800b66279b36"
+          },
+          "reason": "active_claim_budget",
+          "previous_judgement": {
+            "claim_id": "213db0801c65",
+            "verdict": "partially_supported",
+            "confidence": 0.6,
+            "supporting_evidence_ids": [
+              "a39cc3ac4bea"
+            ],
+            "contradicting_evidence_ids": [],
+            "explanation": "Evidence a39cc3ac4bea states that 'Home working led to a 13% performance increase,' which matches the claim's figure and causal wording. The passage also describes call-based output ('more calls per minute'), which is consistent with a call-center setting. However, the passage never names CTrip, so the claim's identification of the experiment as the CTrip study is not verified from the cited text. The passage's hedged attribution ('attributed to a quieter working environment') applies only to the 4% calls-per-minute component, and the claim does not make a mechanism claim, so that omission is not a substantive error. The cited passage also does not describe the study design in the excerpt, so the causal framing is taken at the passage's word without visible identification details.",
+            "missing_evidence": "A source passage that identifies the study as the CTrip call-center experiment (naming the company or linking the 13% result to CTrip). Also, the study's design (for example, whether workers were randomly assigned) should be shown if the causal 'led to' framing is to be retained with full support.",
+            "recommended_action": "revise"
+          }
+        },
+        {
+          "claim": {
+            "id": "188aeca19d57",
+            "text": "Workers randomly assigned to work from home in the Indian data-entry experiment were 18% less productive than workers assigned to the office.",
+            "evidence_ids": [
+              "6da09bb0c613"
+            ],
+            "subquestion_id": "769d31107596"
+          },
+          "reason": "active_claim_budget",
+          "previous_judgement": {
+            "claim_id": "188aeca19d57",
+            "verdict": "partially_supported",
+            "confidence": 0.6,
+            "supporting_evidence_ids": [
+              "6da09bb0c613"
+            ],
+            "contradicting_evidence_ids": [],
+            "explanation": "Evidence 6da09bb0c613 states that 'the productivity of workers randomly assigned to WFH is 18% lower than those in the office.' This verifies the random assignment, the 18% figure, the direction of the gap, and the office comparison group. The claim's additional geographic and task scope ('Indian data-entry experiment') is not in the cited passage, which mentions neither India nor data entry. Under the rules, missing geography and population details are substantive omissions. The passage's 'We first find' also marks this as an initial finding, which the claim does not reflect, though this is a status qualifier rather than a changed number.",
+            "missing_evidence": "A passage stating that the experiment was conducted in India and involved data-entry work, ideally from the same source (a7ac9a0d5cc7). Also, a passage or sentence showing whether the 18% result is a preliminary or final estimate, if the claim is to retain a definitive framing.",
+            "recommended_action": "revise"
+          }
+        }
+      ]
+    }
+  ],
+  "judgements": [
+    {
+      "claim_id": "5727c921d759",
+      "verdict": "partially_supported",
+      "confidence": 0.7,
+      "supporting_evidence_ids": [
+        "a39cc3ac4bea",
+        "144c6a897877"
+      ],
+      "contradicting_evidence_ids": [],
+      "explanation": "Passage a39cc3ac4bea states that home working led to a 13% performance increase. It shares source 1a2b101f365d with passage 144c6a897877, which identifies the CTrip WFH experiment with random assignment. So the 13% figure and the attribution to the CTrip experiment are verified, and the causal wording ('led to') matches the passage. However, the claim omits the population qualifier from 144c6a897877: the randomized employees were call-center staff who volunteered to WFH, over a 9-month period. The claim also does not mention that the 13% is composed of about 9% from more minutes per shift and about 4% from more calls per minute. The prosecution's concerns about generalization are not in the claim text itself, but the missing volunteer and call-center scope is a substantive qualifier omission under the rules.",
+      "missing_evidence": "No further evidence is needed for the figure or attribution. The claim should be revised to add the scope: call-center volunteers at CTrip, randomly assigned for 9 months. Optionally, include the decomposition (about 9% from more minutes worked, about 4% from more calls per minute).",
+      "recommended_action": "revise"
+    },
+    {
+      "claim_id": "dc9e72722a08",
+      "verdict": "supported",
+      "confidence": 0.9,
+      "supporting_evidence_ids": [
+        "6da09bb0c613",
+        "f218324b19a3"
+      ],
+      "contradicting_evidence_ids": [],
+      "explanation": "Passage f218324b19a3 describes an RCT in the Indian data entry sector that randomly allocates workers to WFH or office. Passage 6da09bb0c613 (same source a7ac9a0d5cc7) states 'We first find that the productivity of workers randomly assigned to WFH is 18% lower than those in the office.' The 18% figure, the direction (lower for WFH), the random-assignment comparison, and the 'first finding' wording all match. The prosecution's concerns about confidence intervals, generalization, and comparison with CTrip concern content the claim does not assert, so they do not undermine the claim as written.",
+      "missing_evidence": "Optional: a confidence interval or significance level for the 18% estimate, if the claim is to convey precision. This is not required for the claim as stated.",
+      "recommended_action": "accept"
+    }
+  ],
+  "prosecution": [
+    {
+      "claim_id": "5727c921d759",
+      "weaknesses": [
+        "The 13% figure is reported for a single 9-month experiment at one firm, so it is not established as a general effect of home working.",
+        "The sample is call-center employees who volunteered to work from home, which the claim omits. Volunteers may differ from other workers in ways that affect the result.",
+        "The claim does not state that the 13% gain is a composite of about 9% from more minutes worked and about 4% from more calls per minute. Readers may take it as a single productivity mechanism.",
+        "The evidence has no independent replication or corroboration of the 13% figure, so it rests on one study's reporting.",
+        "'Performance' is undefined in the claim. The passage measures it only through minutes worked and calls per minute."
+      ],
+      "unsupported_components": [
+        "Generalization of the 13% effect beyond call-center volunteers at CTrip",
+        "The implied general claim that home working improves performance",
+        "Omission of the volunteer-only sampling and 9-month duration"
+      ]
+    },
+    {
+      "claim_id": "dc9e72722a08",
+      "weaknesses": [
+        "The passage gives only a point estimate of 18%. Neither the passage nor the claim provides a confidence interval or significance level, so the size of the effect is not qualified.",
+        "The claim is limited to one data-entry sector in India, but the phrasing could be read as a general finding about home working.",
+        "The claim says 'first finding,' which signals other findings that the evidence does not describe. This is a scope issue, not an error in the 18% figure.",
+        "Setting this result beside the CTrip result without context could imply a direct contradiction. The two studies differ in sector, country, task type, and sample selection, so they do not test the same question."
+      ],
+      "unsupported_components": [
+        "Implied generalization of the 18% productivity loss beyond Indian data-entry workers",
+        "Any inference that the CTrip and India results conflict as evidence about home working in general"
+      ]
+    }
+  ],
+  "defense": [
+    {
+      "claim_id": "5727c921d759",
+      "supporting_passages": [
+        {
+          "evidence_id": "144c6a897877",
+          "passage_excerpt": "We report the results of a WFH experiment at CTrip, a 16,000- employee, NASDAQ-listed Chinese travel agency. Call center employees who volunteered to WFH were randomly assigned to work from home or in the office for 9 months.",
+          "supports_component": "\"The CTrip randomized experiment\": identifies the CTrip WFH experiment and confirms that employees were randomly assigned to work from home or in the office."
+        },
+        {
+          "evidence_id": "a39cc3ac4bea",
+          "passage_excerpt": "Home working led to a 13% performance increase, of which about 9% was from working more minutes per shift (fewer breaks and sick-days) and 4% from more calls per minute (attributed to a quieter working environment).",
+          "supports_component": "\"Reported ... a 13% performance increase\": states the 13% performance increase attributed to home working."
+        }
+      ]
+    },
+    {
+      "claim_id": "dc9e72722a08",
+      "supporting_passages": [
+        {
+          "evidence_id": "f218324b19a3",
+          "passage_excerpt": "We conduct an RCT in the data entry sector in India that exogenously allocates workers to work from home (WFH) or from the office.",
+          "supports_component": "\"In the Indian data-entry randomized experiment\": confirms an RCT in the Indian data entry sector with workers randomly allocated to WFH or office."
+        },
+        {
+          "evidence_id": "6da09bb0c613",
+          "passage_excerpt": "We first find that the productivity of workers randomly assigned to WFH is 18% lower than those in the office.",
+          "supports_component": "\"The first finding is that workers randomly assigned to work from home were 18% less productive than workers in the office\": the word \"first\" and the 18% lower productivity for randomly assigned WFH workers relative to office workers both match."
+        }
+      ]
+    }
+  ],
+  "contradictions": [],
+  "contradiction_audit": [
+    {
+      "round": 1,
+      "status": "completed_comparison",
+      "claim_linked_source_count": 2,
+      "eligible_cross_source_pairs": 1,
+      "compared_candidate_pairs": 1,
+      "uncompared_candidate_pairs": 0,
+      "rejected_candidates": 0,
+      "batches": [
+        {
+          "claim_ids": [
+            "213db0801c65",
+            "188aeca19d57"
+          ],
+          "evidence_ids": [
+            "6da09bb0c613",
+            "a39cc3ac4bea"
+          ],
+          "status": "completed",
+          "returned_candidates": 0
+        }
+      ],
+      "claim_linked_material_count": 2,
+      "independence_note": "Distinct groups do not prove independence; shared identifiers/snapshots and probable matching journal/preprint titles are grouped.",
+      "retained_contradictions": 0
+    },
+    {
+      "round": 2,
+      "status": "completed_comparison",
+      "claim_linked_source_count": 2,
+      "eligible_cross_source_pairs": 1,
+      "compared_candidate_pairs": 1,
+      "uncompared_candidate_pairs": 0,
+      "rejected_candidates": 0,
+      "batches": [
+        {
+          "claim_ids": [
+            "5727c921d759",
+            "dc9e72722a08"
+          ],
+          "evidence_ids": [
+            "144c6a897877",
+            "6da09bb0c613",
+            "a39cc3ac4bea",
+            "f218324b19a3"
+          ],
+          "status": "completed",
+          "returned_candidates": 0
+        }
+      ],
+      "claim_linked_material_count": 2,
+      "independence_note": "Distinct groups do not prove independence; shared identifiers/snapshots and probable matching journal/preprint titles are grouped.",
+      "retained_contradictions": 0
+    }
+  ],
+  "coverage": [
+    {
+      "subquestion_id": "800b66279b36",
+      "subquestion_text": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report?",
+      "evidence_count": 6,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.2,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "769d31107596",
+      "subquestion_text": "What were the population, work arrangement (WFH schedule, eligibility, and whether it was full or partial), task type, and design of the Indian data-entry randomized experiment, and what productivity results did it report?",
+      "evidence_count": 3,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 1,
+      "contradiction_count": 0,
+      "coverage_score": 0.4,
+      "status": "yellow"
+    },
+    {
+      "subquestion_id": "55dc14cc7823",
+      "subquestion_text": "Do the two studies measure productivity in comparable ways, and what are the definitions of their outcome variables?",
+      "evidence_count": 0,
+      "source_count": 0,
+      "primary_source_count": 0,
+      "distinct_material_count": 0,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.0,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "b3c0825c0c2c",
+      "subquestion_text": "After accounting for the outcome definitions and reported effect sizes, do the two studies agree in direction and approximate magnitude of the productivity effect?",
+      "evidence_count": 0,
+      "source_count": 0,
+      "primary_source_count": 0,
+      "distinct_material_count": 0,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.0,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "6cf3a6103d67",
+      "subquestion_text": "Which differences between the two studies in population, work arrangement, task type, setting, duration, and measurement are contextual rather than substantive, and how might each plausibly moderate the productivity effect?",
+      "evidence_count": 3,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.1,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "fa1823a3842f",
+      "subquestion_text": "Under conditions where the two studies' populations, work arrangements, and task types overlap, do their productivity results conflict, and if so, is the conflict robust to differences in measurement and design?",
+      "evidence_count": 0,
+      "source_count": 0,
+      "primary_source_count": 0,
+      "distinct_material_count": 0,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.0,
+      "status": "red"
+    }
+  ],
+  "state_transitions": [
+    {
+      "from_state": "START",
+      "to_state": "PLAN",
+      "timestamp": "2026-10-25T05:15:35.157242+00:00",
+      "reason": "Starting research planning"
+    },
+    {
+      "from_state": "PLAN",
+      "to_state": "SEARCH",
+      "timestamp": "2026-10-25T05:15:46.313063+00:00",
+      "reason": "Round 1: generating queries"
+    },
+    {
+      "from_state": "SEARCH",
+      "to_state": "RETRIEVE",
+      "timestamp": "2026-10-25T05:15:52.611927+00:00",
+      "reason": "Fetching sources"
+    },
+    {
+      "from_state": "RETRIEVE",
+      "to_state": "EXTRACT_EVIDENCE",
+      "timestamp": "2026-10-25T05:15:54.249329+00:00",
+      "reason": "Extracting evidence"
+    },
+    {
+      "from_state": "EXTRACT_EVIDENCE",
+      "to_state": "SCORE_SOURCES",
+      "timestamp": "2026-10-25T05:16:05.387845+00:00",
+      "reason": "Scoring source quality"
+    },
+    {
+      "from_state": "SCORE_SOURCES",
+      "to_state": "DRAFT_ATOMIC_CLAIMS",
+      "timestamp": "2026-10-25T05:16:15.210446+00:00",
+      "reason": "Drafting claims"
+    },
+    {
+      "from_state": "DRAFT_ATOMIC_CLAIMS",
+      "to_state": "CLAIM_COURTROOM",
+      "timestamp": "2026-10-25T05:16:20.519352+00:00",
+      "reason": "Running Claim Courtroom"
+    },
+    {
+      "from_state": "CLAIM_COURTROOM",
+      "to_state": "DETECT_CONTRADICTIONS",
+      "timestamp": "2026-10-25T05:16:43.693220+00:00",
+      "reason": "Detecting contradictions"
+    },
+    {
+      "from_state": "DETECT_CONTRADICTIONS",
+      "to_state": "MEASURE_COVERAGE",
+      "timestamp": "2026-10-25T05:16:48.024600+00:00",
+      "reason": "Measuring coverage"
+    },
+    {
+      "from_state": "MEASURE_COVERAGE",
+      "to_state": "RESEARCH_GAPS",
+      "timestamp": "2026-10-25T05:16:56.094601+00:00",
+      "reason": "Thin coverage in 6 areas"
+    },
+    {
+      "from_state": "RESEARCH_GAPS",
+      "to_state": "SEARCH",
+      "timestamp": "2026-10-25T05:16:56.094641+00:00",
+      "reason": "Round 2: generating queries"
+    },
+    {
+      "from_state": "SEARCH",
+      "to_state": "RETRIEVE",
+      "timestamp": "2026-10-25T05:17:01.200750+00:00",
+      "reason": "Fetching sources"
+    },
+    {
+      "from_state": "RETRIEVE",
+      "to_state": "EXTRACT_EVIDENCE",
+      "timestamp": "2026-10-25T05:17:01.471303+00:00",
+      "reason": "Extracting evidence"
+    },
+    {
+      "from_state": "EXTRACT_EVIDENCE",
+      "to_state": "SCORE_SOURCES",
+      "timestamp": "2026-10-25T05:17:01.506983+00:00",
+      "reason": "Scoring source quality"
+    },
+    {
+      "from_state": "SCORE_SOURCES",
+      "to_state": "DRAFT_ATOMIC_CLAIMS",
+      "timestamp": "2026-10-25T05:17:01.526587+00:00",
+      "reason": "Drafting claims"
+    },
+    {
+      "from_state": "DRAFT_ATOMIC_CLAIMS",
+      "to_state": "CLAIM_COURTROOM",
+      "timestamp": "2026-10-25T05:17:09.728321+00:00",
+      "reason": "Running Claim Courtroom"
+    },
+    {
+      "from_state": "CLAIM_COURTROOM",
+      "to_state": "DETECT_CONTRADICTIONS",
+      "timestamp": "2026-10-25T05:17:42.739552+00:00",
+      "reason": "Detecting contradictions"
+    },
+    {
+      "from_state": "DETECT_CONTRADICTIONS",
+      "to_state": "MEASURE_COVERAGE",
+      "timestamp": "2026-10-25T05:17:47.120121+00:00",
+      "reason": "Measuring coverage"
+    },
+    {
+      "from_state": "MEASURE_COVERAGE",
+      "to_state": "SYNTHESIZE",
+      "timestamp": "2026-10-25T05:17:55.403875+00:00",
+      "reason": "Synthesizing final report"
+    },
+    {
+      "from_state": "SYNTHESIZE",
+      "to_state": "VERIFY_FINAL_REPORT",
+      "timestamp": "2026-10-25T05:18:05.324152+00:00",
+      "reason": "Verifying final report"
+    },
+    {
+      "from_state": "VERIFY_FINAL_REPORT",
+      "to_state": "EXPORT",
+      "timestamp": "2026-10-25T05:18:16.028080+00:00",
+      "reason": "Generating certificate"
+    },
+    {
+      "from_state": "EXPORT",
+      "to_state": "END",
+      "timestamp": "2026-10-25T05:18:16.033992+00:00",
+      "reason": "Research complete"
+    }
+  ],
+  "agent_calls": [
+    {
+      "id": "8611844b7e65",
+      "agent": "planner",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:15:46.308320+00:00",
+      "input_hash": "6ef3068e49ac855d",
+      "output_hash": "8c9d596928423f9e",
+      "duration_ms": 11150,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQRMHVSNDE2TENDYBV1YYV",
+      "prompt_tokens": 260,
+      "completion_tokens": 1947,
+      "total_tokens": 2207
+    },
+    {
+      "id": "59b7f2faf204",
+      "agent": "search_strategist",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:15:52.607588+00:00",
+      "input_hash": "109b9ed513833b4c",
+      "output_hash": "6363dd933fbd76b8",
+      "duration_ms": 6294,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQRZD3GHTD7M22BEPJN0DN",
+      "prompt_tokens": 1533,
+      "completion_tokens": 1155,
+      "total_tokens": 2688
+    },
+    {
+      "id": "aff7b9aeafd7",
+      "agent": "researcher",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:15:58.720607+00:00",
+      "input_hash": "a5cb6897b3046573",
+      "output_hash": "66c53d69b72ff880",
+      "duration_ms": 4470,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQS754AH4VXQHJCSMV8GAR",
+      "prompt_tokens": 3130,
+      "completion_tokens": 1176,
+      "total_tokens": 4306
+    },
+    {
+      "id": "dbc02e891e0c",
+      "agent": "researcher",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:16:05.379044+00:00",
+      "input_hash": "19f480997724471e",
+      "output_hash": "572061023e28686c",
+      "duration_ms": 6656,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "different_key",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQSCAFX40706AKR6TV7C5A",
+      "prompt_tokens": 2626,
+      "completion_tokens": 1223,
+      "total_tokens": 3849
+    },
+    {
+      "id": "e03e12bd0bb9",
+      "agent": "source_critic",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "source-critic-provenance-v3",
+      "timestamp": "2026-10-25T05:16:15.204529+00:00",
+      "input_hash": "08b9ad2cea7014da",
+      "output_hash": "bc269b50315b6c42",
+      "duration_ms": 9816,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQSJ18JYC9G42X0QC16QMF",
+      "prompt_tokens": 5582,
+      "completion_tokens": 1868,
+      "total_tokens": 7450
+    },
+    {
+      "id": "a3f9df6e9f9e",
+      "agent": "claim_drafter",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "claim-drafter-feedback-v2",
+      "timestamp": "2026-10-25T05:16:20.512918+00:00",
+      "input_hash": "8666c3c81ac861d4",
+      "output_hash": "71b978464cc4529b",
+      "duration_ms": 5302,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQSWDXDE9KKD61WJVS8X1C",
+      "prompt_tokens": 2108,
+      "completion_tokens": 833,
+      "total_tokens": 2941
+    },
+    {
+      "id": "7a9358bcbe68",
+      "agent": "prosecutor",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:16:30.804895+00:00",
+      "input_hash": "abc1f52e46224b8f",
+      "output_hash": "1f22ec35470f636c",
+      "duration_ms": 10285,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQT0TMPBG3BG6VP71CEH7Y",
+      "prompt_tokens": 645,
+      "completion_tokens": 1804,
+      "total_tokens": 2449
+    },
+    {
+      "id": "d2fdf4ab413c",
+      "agent": "defense",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:16:35.500791+00:00",
+      "input_hash": "7b29302115006700",
+      "output_hash": "64ba9648d43200db",
+      "duration_ms": 4695,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQTAVQMCRW2M4K35GKBFAA",
+      "prompt_tokens": 568,
+      "completion_tokens": 921,
+      "total_tokens": 1489
+    },
+    {
+      "id": "87b4636e2202",
+      "agent": "judge",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "judge-grounded-v2",
+      "timestamp": "2026-10-25T05:16:43.687261+00:00",
+      "input_hash": "9b9296970b6df6a7",
+      "output_hash": "3bb2531195c51ac4",
+      "duration_ms": 8186,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQTFE5NS7HXNCPT0K6ZQTC",
+      "prompt_tokens": 1923,
+      "completion_tokens": 1625,
+      "total_tokens": 3548
+    },
+    {
+      "id": "c7d215d8de78",
+      "agent": "contradiction_analyst",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "contradiction-material-groups-v4",
+      "timestamp": "2026-10-25T05:16:48.018574+00:00",
+      "input_hash": "5f9e30e3513767a6",
+      "output_hash": "565087fc1984d4f1",
+      "duration_ms": 4324,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "ineligible_result",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQTR7S8MSSVXPHZWQ1S8ZX",
+      "prompt_tokens": 999,
+      "completion_tokens": 521,
+      "total_tokens": 1520
+    },
+    {
+      "id": "6fb5f99040c3",
+      "agent": "coverage_analyst",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:16:56.088184+00:00",
+      "input_hash": "012465b221aa6b35",
+      "output_hash": "0d85e532cc2c06bf",
+      "duration_ms": 8063,
+      "success": true,
+      "finish_reason": "length",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQTVNNQNWT4CXZ7MSMTKVP",
+      "prompt_tokens": 2220,
+      "completion_tokens": 2048,
+      "total_tokens": 4268
+    },
+    {
+      "id": "9aa52bbb6f7b",
+      "agent": "search_strategist",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:17:01.174308+00:00",
+      "input_hash": "2ae8c00e6dd516f5",
+      "output_hash": "81eb7481e3015829",
+      "duration_ms": 5079,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "different_key",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQV3HRVCKXS08GNVQ5SPKM",
+      "prompt_tokens": 3299,
+      "completion_tokens": 844,
+      "total_tokens": 4143
+    },
+    {
+      "id": "8957e340f8f1",
+      "agent": "researcher",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:17:01.473707+00:00",
+      "input_hash": "a5cb6897b3046573",
+      "output_hash": "66c53d69b72ff880",
+      "duration_ms": 0,
+      "success": true,
+      "finish_reason": "local_exact_cache",
+      "cache_hit": true,
+      "cache_miss_reason": null,
+      "cache_store_status": "reused",
+      "request_sent": false,
+      "cache_source_call_id": "aff7b9aeafd7",
+      "cached_prompt_tokens": null,
+      "usage_source": "local_cache_incremental",
+      "provider_request_id": "",
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0
+    },
+    {
+      "id": "3dbddef9ef9f",
+      "agent": "researcher",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:17:01.481289+00:00",
+      "input_hash": "19f480997724471e",
+      "output_hash": "572061023e28686c",
+      "duration_ms": 0,
+      "success": true,
+      "finish_reason": "local_exact_cache",
+      "cache_hit": true,
+      "cache_miss_reason": null,
+      "cache_store_status": "reused",
+      "request_sent": false,
+      "cache_source_call_id": "dbc02e891e0c",
+      "cached_prompt_tokens": null,
+      "usage_source": "local_cache_incremental",
+      "provider_request_id": "",
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0
+    },
+    {
+      "id": "bb10d35287b0",
+      "agent": "source_critic",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "source-critic-provenance-v3",
+      "timestamp": "2026-10-25T05:17:01.507496+00:00",
+      "input_hash": "08b9ad2cea7014da",
+      "output_hash": "bc269b50315b6c42",
+      "duration_ms": 0,
+      "success": true,
+      "finish_reason": "local_exact_cache",
+      "cache_hit": true,
+      "cache_miss_reason": null,
+      "cache_store_status": "reused",
+      "request_sent": false,
+      "cache_source_call_id": "e03e12bd0bb9",
+      "cached_prompt_tokens": null,
+      "usage_source": "local_cache_incremental",
+      "provider_request_id": "",
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0
+    },
+    {
+      "id": "5d2dcafdd8f8",
+      "agent": "claim_drafter",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "claim-drafter-feedback-v2",
+      "timestamp": "2026-10-25T05:17:09.717989+00:00",
+      "input_hash": "b2411de5a2c2844f",
+      "output_hash": "e536f4eddd17c68d",
+      "duration_ms": 8190,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "different_key",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQV8VY8MR4H4RFJ00XTEC5",
+      "prompt_tokens": 3447,
+      "completion_tokens": 1464,
+      "total_tokens": 4911
+    },
+    {
+      "id": "1274c8c7cc83",
+      "agent": "prosecutor",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:17:20.722478+00:00",
+      "input_hash": "0c490bedc6690683",
+      "output_hash": "48378be351f9f1ea",
+      "duration_ms": 10993,
+      "success": false,
+      "finish_reason": "length",
+      "cache_hit": false,
+      "cache_miss_reason": "different_key",
+      "cache_store_status": "response_not_stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQVGW4CVWRKDBRCHMYKGZ6",
+      "prompt_tokens": 866,
+      "completion_tokens": 2048,
+      "total_tokens": 2914
+    },
+    {
+      "id": "2763ecfc8f84",
+      "agent": "prosecutor",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:17:29.763831+00:00",
+      "input_hash": "103531910e20e2e3",
+      "output_hash": "252b8df8624e378b",
+      "duration_ms": 9041,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "different_key",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQVVKC5Q46BYDASJEARM4N",
+      "prompt_tokens": 944,
+      "completion_tokens": 1511,
+      "total_tokens": 2455
+    },
+    {
+      "id": "070906b392a3",
+      "agent": "defense",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:17:35.148585+00:00",
+      "input_hash": "283b3053eb863300",
+      "output_hash": "ad817c21c177a158",
+      "duration_ms": 5384,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "different_key",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQW4DZQADSCHXS7A5E3BYB",
+      "prompt_tokens": 789,
+      "completion_tokens": 1206,
+      "total_tokens": 1995
+    },
+    {
+      "id": "8171c2aabdcd",
+      "agent": "judge",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "judge-grounded-v2",
+      "timestamp": "2026-10-25T05:17:42.732281+00:00",
+      "input_hash": "01c9476bcb875f88",
+      "output_hash": "ae24162e3db3b283",
+      "duration_ms": 7583,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "different_key",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQW9P7YGMPR96BQPSK0BE6",
+      "prompt_tokens": 2451,
+      "completion_tokens": 1726,
+      "total_tokens": 4177
+    },
+    {
+      "id": "afb7b7d80b9d",
+      "agent": "contradiction_analyst",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "contradiction-material-groups-v4",
+      "timestamp": "2026-10-25T05:17:47.115215+00:00",
+      "input_hash": "441dacb47b7860d1",
+      "output_hash": "565087fc1984d4f1",
+      "duration_ms": 4375,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "different_key",
+      "cache_store_status": "ineligible_result",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQWH3KSX883P2BJMD8GJ0A",
+      "prompt_tokens": 1220,
+      "completion_tokens": 475,
+      "total_tokens": 1695
+    },
+    {
+      "id": "66ca23270ca8",
+      "agent": "coverage_analyst",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "v1",
+      "timestamp": "2026-10-25T05:17:55.397368+00:00",
+      "input_hash": "274d44720a25a7d6",
+      "output_hash": "761daaf5d0fa6f98",
+      "duration_ms": 8276,
+      "success": true,
+      "finish_reason": "length",
+      "cache_hit": false,
+      "cache_miss_reason": "different_key",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQWNC8G6VXSWZ72WZ0X297",
+      "prompt_tokens": 2332,
+      "completion_tokens": 2048,
+      "total_tokens": 4380
+    },
+    {
+      "id": "78832af8c2d7",
+      "agent": "synthesizer",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "synthesizer-compact-v2",
+      "timestamp": "2026-10-25T05:18:05.316891+00:00",
+      "input_hash": "81cb428375036570",
+      "output_hash": "88d9689d2a51cd8e",
+      "duration_ms": 9912,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQWXF70HZAP6N32AS1S4DV",
+      "prompt_tokens": 2036,
+      "completion_tokens": 1801,
+      "total_tokens": 3837
+    },
+    {
+      "id": "54b0280aabf7",
+      "agent": "report_verifier",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "report-grounding-v1",
+      "timestamp": "2026-10-25T05:18:12.783124+00:00",
+      "input_hash": "48757eed63cdca38",
+      "output_hash": "1b85bc09b0283489",
+      "duration_ms": 7458,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "first",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQX75W373C8XNQFNXXHPH5",
+      "prompt_tokens": 1541,
+      "completion_tokens": 1748,
+      "total_tokens": 3289
+    },
+    {
+      "id": "7ed5712066cf",
+      "agent": "report_verifier",
+      "model": "anthropic/claude-haiku-5.5",
+      "prompt_version": "report-grounding-v1",
+      "timestamp": "2026-10-25T05:18:16.020706+00:00",
+      "input_hash": "ccf5a93d9bbcb28a",
+      "output_hash": "dfc5e2ecec0f8ffc",
+      "duration_ms": 3237,
+      "success": true,
+      "finish_reason": "stop",
+      "cache_hit": false,
+      "cache_miss_reason": "different_key",
+      "cache_store_status": "stored",
+      "request_sent": true,
+      "cache_source_call_id": "",
+      "cached_prompt_tokens": 0,
+      "usage_source": "provider_response",
+      "provider_request_id": "req_01M5RQXEE8K46H7PYNXKYG63Z8",
+      "prompt_tokens": 894,
+      "completion_tokens": 624,
+      "total_tokens": 1518
+    }
+  ],
+  "report_grounding_audit": [
+    {
+      "unit_id": "0",
+      "text": "# Working From Home and Productivity: CTrip vs. India Data-Entry Experiments",
+      "kept": true,
+      "reason": "Generic report title with no factual assertion.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "2",
+      "text": "## Executive Summary",
+      "kept": true,
+      "reason": "Generic section heading with no factual assertion.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "3",
+      "text": "Only one claim passed verification, so this report can establish only one finding. The Indian data-entry experiment found that workers randomly assigned to work from home were 18% less productive than office workers [claim:dc9e72722a08] [evidence:6da09bb0c613]. No claim about the CTrip call-center experiment is marked supported, so its results are excluded here. A direct comparison, and any judgment about genuine contradictions versus contextual differences, is therefore not possible from verified material.",
+      "kept": true,
+      "reason": "Accurately states that only one claim is accepted. The Indian 18% finding matches claim dc9e72722a08 and its cited evidence, and the statement that no CTrip claim is supported is accurate.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "5",
+      "text": "## Subquestion Findings",
+      "kept": true,
+      "reason": "Generic section heading with no factual assertion.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "7",
+      "text": "**Indian data-entry experiment (population, design, results).** The study randomly allocated workers to work from home or the office [claim:dc9e72722a08] [evidence:f218324b19a3]. The verified result is the 18% productivity shortfall for the home group [claim:dc9e72722a08]. The verified claims do not establish the population's full eligibility rules, whether arrangements were full-time or partial, or the exact WFH schedule, so these qualifiers remain unresolved.",
+      "kept": true,
+      "reason": "Random allocation to WFH or office matches evidence f218324b19a3. The 18% shortfall matches claim dc9e72722a08. The statement that eligibility, full-time versus partial arrangements, and schedule remain unestablished is an accurate gap statement.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "9",
+      "text": "**CTrip call-center experiment (population, design, results).** Evidence was retrieved describing a randomized WFH experiment at a Chinese travel agency with call-center volunteers over nine months [evidence:144c6a897877]. However, no supported claim covers its design or productivity results, so no CTrip finding is reported here.",
+      "kept": false,
+      "reason": "Cites evidence 144c6a897877, which is not among the supplied evidence and is not linked to any accepted claim. The described CTrip design details (Chinese travel agency, call-center volunteers, nine months) are therefore not approved for this report.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "11",
+      "text": "**Outcome measurement and comparability.** No verified claim defines either study's outcome variable. Whether the two studies measure productivity comparably cannot be determined.",
+      "kept": true,
+      "reason": "Accurate gap statement that no accepted claim defines either study's outcome variable, so comparability cannot be determined.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "13",
+      "text": "**Direction and magnitude of agreement.** Only one study's result is verified, so agreement or disagreement cannot be assessed.",
+      "kept": true,
+      "reason": "Accurate gap statement that only one study's result is verified, so agreement cannot be assessed.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "15",
+      "text": "**Contextual versus substantive differences.** The verified claims do not support a comparison of population, task type, setting, or duration across the two studies, so no differences can be classified.",
+      "kept": true,
+      "reason": "Accurate gap statement that no accepted claim supports comparing population, task, setting, or duration, so differences cannot be classified.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "17",
+      "text": "**Conflict under overlapping conditions.** Because no overlap has been established and only one result is verified, no conflict can be confirmed or ruled out.",
+      "kept": true,
+      "reason": "Accurate gap statement that no overlap is established and only one result is verified, so conflict can be neither confirmed nor ruled out.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "19",
+      "text": "## Unresolved Contradictions",
+      "kept": true,
+      "reason": "Generic section heading with no factual assertion.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "20",
+      "text": "No contradictions are recorded in the verification output. This is because the verification did not cover both studies' results, not because the studies agree.",
+      "kept": true,
+      "reason": "Accurately reports that no contradictions are recorded and attributes this to incomplete verification coverage, not to agreement between studies, which is consistent with the single accepted claim.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "22",
+      "text": "## Limitations",
+      "kept": true,
+      "reason": "Generic organizing heading with no factual content.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "23",
+      "text": "- Only one claim is supported, and it covers only the Indian study's headline productivity effect.",
+      "kept": true,
+      "reason": "Accurately states that only one claim is accepted, and that it covers only the Indian study's headline productivity effect (18% lower productivity for WFH workers).",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "24",
+      "text": "- The CTrip evidence exists but was not verified into a supported claim, so its reported effects, including any worker-mix or arrangement qualifiers, are omitted.",
+      "kept": true,
+      "reason": "Explicit gap statement. No CTrip claim is among the accepted claims, so omitting its effects and qualifiers is accurate.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "25",
+      "text": "- Outcome definitions, population details, and task types for both studies are unverified.",
+      "kept": true,
+      "reason": "Explicit gap statement. The accepted claims contain no outcome definitions, population details, or task types for either study, so calling them unverified is accurate.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    },
+    {
+      "unit_id": "26",
+      "text": "- Consequently, the question of whether randomized WFH studies agree on productivity cannot be answered from this verified set. Further verification of the CTrip claims and the outcome-definition subquestions is required.",
+      "kept": true,
+      "reason": "Explicit gap statement. With only one accepted claim and no CTrip claim, the agreement question cannot be answered from the verified set, so this is accurate.",
+      "method": "model_review",
+      "prompt_version": "report-grounding-v1",
+      "included_in_final_report": false
+    }
+  ],
+  "report_artifact_audit": [
+    {
+      "unit_id": "artifact-0",
+      "text": "## Run limitations (recorded artifacts)",
+      "method": "deterministic_artifact",
+      "based_on": "saved_run_counts_and_derived_coverage",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "artifact-1",
+      "text": "- Coverage area 800b66279b36: red; 6 passages; 0 accepted claims; 1 sources.",
+      "method": "deterministic_artifact",
+      "based_on": "saved_run_counts_and_derived_coverage",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "artifact-2",
+      "text": "- Coverage area 769d31107596: yellow; 3 passages; 1 accepted claims; 1 sources.",
+      "method": "deterministic_artifact",
+      "based_on": "saved_run_counts_and_derived_coverage",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "artifact-3",
+      "text": "- Coverage area 55dc14cc7823: red; 0 passages; 0 accepted claims; 0 sources.",
+      "method": "deterministic_artifact",
+      "based_on": "saved_run_counts_and_derived_coverage",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "artifact-4",
+      "text": "- Coverage area b3c0825c0c2c: red; 0 passages; 0 accepted claims; 0 sources.",
+      "method": "deterministic_artifact",
+      "based_on": "saved_run_counts_and_derived_coverage",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "artifact-5",
+      "text": "- Coverage area 6cf3a6103d67: red; 3 passages; 0 accepted claims; 1 sources.",
+      "method": "deterministic_artifact",
+      "based_on": "saved_run_counts_and_derived_coverage",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "artifact-6",
+      "text": "- Coverage area fa1823a3842f: red; 0 passages; 0 accepted claims; 0 sources.",
+      "method": "deterministic_artifact",
+      "based_on": "saved_run_counts_and_derived_coverage",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "artifact-7",
+      "text": "- Recorded research rounds: 2; retained sources: 2; retained contradictions: 0.",
+      "method": "deterministic_artifact",
+      "based_on": "saved_run_counts_and_derived_coverage",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "artifact-8",
+      "text": "- No contradictions retained. This does not establish agreement across all sources.",
+      "method": "deterministic_artifact",
+      "based_on": "saved_run_counts_and_derived_coverage",
+      "included_in_final_report": true
+    },
+    {
+      "unit_id": "artifact-9",
+      "text": "- Coverage labels are heuristic. Internal checks are not independent human verification.",
+      "method": "deterministic_artifact",
+      "based_on": "saved_run_counts_and_derived_coverage",
+      "included_in_final_report": true
+    }
+  ],
+  "report_grounding_status": "reviewed_partial",
+  "report_fallback_reason": "",
+  "final_report": "# Working From Home and Productivity: CTrip vs. India Data-Entry Experiments\n\n## Executive Summary\nOnly one claim passed verification, so this report can establish only one finding. The Indian data-entry experiment found that workers randomly assigned to work from home were 18% less productive than office workers [claim:dc9e72722a08] [evidence:6da09bb0c613]. No claim about the CTrip call-center experiment is marked supported, so its results are excluded here. A direct comparison, and any judgment about genuine contradictions versus contextual differences, is therefore not possible from verified material.\n\n## Subquestion Findings\n\n**Indian data-entry experiment (population, design, results).** The study randomly allocated workers to work from home or the office [claim:dc9e72722a08] [evidence:f218324b19a3]. The verified result is the 18% productivity shortfall for the home group [claim:dc9e72722a08]. The verified claims do not establish the population's full eligibility rules, whether arrangements were full-time or partial, or the exact WFH schedule, so these qualifiers remain unresolved.\n\n## Run limitations (recorded artifacts)\n\n- Coverage area 800b66279b36: red; 6 passages; 0 accepted claims; 1 sources.\n\n- Coverage area 769d31107596: yellow; 3 passages; 1 accepted claims; 1 sources.\n\n- Coverage area 55dc14cc7823: red; 0 passages; 0 accepted claims; 0 sources.\n\n- Coverage area b3c0825c0c2c: red; 0 passages; 0 accepted claims; 0 sources.\n\n- Coverage area 6cf3a6103d67: red; 3 passages; 0 accepted claims; 1 sources.\n\n- Coverage area fa1823a3842f: red; 0 passages; 0 accepted claims; 0 sources.\n\n- Recorded research rounds: 2; retained sources: 2; retained contradictions: 0.\n\n- No contradictions retained. This does not establish agreement across all sources.\n\n- Coverage labels are heuristic. Internal checks are not independent human verification.",
+  "certificate": {
+    "run_id": "b23afbee4eda46e0",
+    "original_question": "Do randomized studies of working from home agree on productivity effects? Compare the Chinese CTrip call-center experiment with the Indian data-entry experiment, preserve population and work-arrangement qualifiers, and distinguish genuine contradictions from contextual differences.",
+    "execution_timestamp": "2026-10-25T05:18:16.028236+00:00",
+    "mesh_models_used": [
+      "anthropic/claude-haiku-5.5"
+    ],
+    "source_count": 2,
+    "evidence_count": 12,
+    "drafted_claim_count": 2,
+    "supported_claim_count": 1,
+    "rejected_claim_count": 1,
+    "contradiction_count": 0,
+    "groundedness_rate": 0.5,
+    "citation_coverage_rate": 1.0,
+    "citation_mutation_rejection_rate": null,
+    "research_rounds": 2,
+    "source_quality_distribution": {},
+    "prompt_versions": {
+      "planner": "v1",
+      "search_strategist": "v1",
+      "researcher": "v1",
+      "source_critic": "source-critic-provenance-v3",
+      "claim_drafter": "claim-drafter-feedback-v2",
+      "prosecutor": "v1",
+      "defense": "v1",
+      "judge": "judge-grounded-v2",
+      "contradiction_analyst": "contradiction-material-groups-v4",
+      "coverage_analyst": "v1",
+      "synthesizer": "synthesizer-compact-v2",
+      "report_verifier": "report-grounding-v1"
+    },
+    "source_content_hashes": [
+      "6003c7a7f39939de",
+      "5b1a2ec1af674264"
+    ],
+    "evaluation_limitations": [
+      "Search coverage depends on Brave Search results and retrievable public pages",
+      "Source counts refer to URL records; shared identifiers/snapshots and probable journal/preprint title matches are grouped, but distinct material does not prove independence",
+      "Certificate metrics measure internal claim-to-evidence integrity, not external truth",
+      "Model report review is not a hallucination-free guarantee or independent human verification",
+      "Report review status: reviewed_partial; accepted-claim fallback may be used when generated prose is withheld",
+      "Audit kept decisions describe model review; included_in_final_report records subsequent citation filtering",
+      "Claim counts and verification rates refer to active claims; budget exclusions and prior decisions are recorded separately in claim_selection_audit"
+    ]
+  },
+  "error": null,
+  "warnings": [],
+  "source_material_groups": {
+    "1a2b101f365d": "1a2b101f365d",
+    "a7ac9a0d5cc7": "a7ac9a0d5cc7"
+  },
+  "source_independence_note": "Shared publication identifiers, matching snapshots or probable identical journal/preprint titles are grouped. Title matches are heuristic; distinct groups do not prove independence.",
+  "accepted_claim_ids": [
+    "dc9e72722a08"
+  ],
+  "recorded_coverage": [
+    {
+      "subquestion_id": "800b66279b36",
+      "subquestion_text": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report?",
+      "evidence_count": 6,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.2,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "769d31107596",
+      "subquestion_text": "What were the population, work arrangement (WFH schedule, eligibility, and whether it was full or partial), task type, and design of the Indian data-entry randomized experiment, and what productivity results did it report?",
+      "evidence_count": 3,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 1,
+      "contradiction_count": 0,
+      "coverage_score": 0.4,
+      "status": "yellow"
+    },
+    {
+      "subquestion_id": "55dc14cc7823",
+      "subquestion_text": "Do the two studies measure productivity in comparable ways, and what are the definitions of their outcome variables?",
+      "evidence_count": 0,
+      "source_count": 0,
+      "primary_source_count": 0,
+      "distinct_material_count": 0,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.0,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "b3c0825c0c2c",
+      "subquestion_text": "After accounting for the outcome definitions and reported effect sizes, do the two studies agree in direction and approximate magnitude of the productivity effect?",
+      "evidence_count": 0,
+      "source_count": 0,
+      "primary_source_count": 0,
+      "distinct_material_count": 0,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.0,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "6cf3a6103d67",
+      "subquestion_text": "Which differences between the two studies in population, work arrangement, task type, setting, duration, and measurement are contextual rather than substantive, and how might each plausibly moderate the productivity effect?",
+      "evidence_count": 3,
+      "source_count": 1,
+      "primary_source_count": 1,
+      "distinct_material_count": 1,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.1,
+      "status": "red"
+    },
+    {
+      "subquestion_id": "fa1823a3842f",
+      "subquestion_text": "Under conditions where the two studies' populations, work arrangements, and task types overlap, do their productivity results conflict, and if so, is the conflict robust to differences in measurement and design?",
+      "evidence_count": 0,
+      "source_count": 0,
+      "primary_source_count": 0,
+      "distinct_material_count": 0,
+      "verified_claim_count": 0,
+      "contradiction_count": 0,
+      "coverage_score": 0.0,
+      "status": "red"
+    }
+  ],
+  "coverage_derivation": "Counts derived from saved artifacts; assessment labels remain heuristic and evidence-gated."
+}

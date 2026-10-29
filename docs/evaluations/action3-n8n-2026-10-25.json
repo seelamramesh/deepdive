@@ -1,0 +1,334 @@
+{
+  "run_id": "b23afbee4eda46e0",
+  "runtime_revision": "26907d9",
+  "evaluation_wrapper_revision": "6464cee",
+  "state": "END",
+  "rounds": 2,
+  "n8n": {
+    "execution_id": 414929,
+    "status": "success",
+    "started_at": "2026-10-25 05:15:35.111",
+    "stopped_at": "2026-10-25 05:18:16.116",
+    "duration_ms": 161005,
+    "workflow_version": "9e0edda7-3082-4f5a-97d5-e7265edde36e",
+    "started_run_ids": [
+      "b23afbee4eda46e0"
+    ],
+    "executed_nodes": [
+      "Webhook",
+      "Validate Request",
+      "Start Research Run",
+      "Poll Status",
+      "Is Complete?",
+      "Is Failed?",
+      "Is Timed Out?",
+      "Wait",
+      "Get Report",
+      "Get Certificate",
+      "Respond Success"
+    ],
+    "wait_visits": 32,
+    "wait_durations_ms": [
+      5001,
+      5000,
+      5001,
+      5000,
+      5000,
+      5001,
+      5001,
+      5000,
+      5001,
+      5000,
+      5000,
+      5000,
+      5000,
+      5000,
+      5001,
+      5001,
+      5001,
+      5001,
+      5000,
+      5001,
+      5001,
+      5000,
+      5000,
+      5001,
+      5001,
+      5000,
+      5000,
+      5000,
+      5000,
+      5002,
+      5000,
+      5003
+    ],
+    "respond_success_executed": true
+  },
+  "latency": {
+    "webhook_wall_ms": 161051,
+    "n8n_execution_ms": 161005,
+    "backend_checkpoint_seconds": 160.876874,
+    "sum_recorded_mesh_ms": 158769,
+    "mean_sent_attempt_ms": 7216.772727272727,
+    "mean_recorded_cache_ms": 0,
+    "cache_timing_note": "Zero is recorded default in cache branch, not an independently timed latency saving."
+  },
+  "cache": {
+    "logical_agent_calls": 25,
+    "local_hits": 3,
+    "hit_rate": 0.12,
+    "mesh_dispatch_attempts": 22,
+    "mesh_response_events": 22,
+    "miss_reasons": {
+      "first": 12,
+      "different_key": 10
+    },
+    "store_outcomes": {
+      "stored": 19,
+      "ineligible_result": 2,
+      "reused": 3,
+      "response_not_stored": 1
+    },
+    "cache_origins": [
+      {
+        "call_id": "8957e340f8f1",
+        "source_call_id": "aff7b9aeafd7",
+        "agent": "researcher",
+        "origin_metadata_hashes_match": true,
+        "incremental_tokens": 0
+      },
+      {
+        "call_id": "3dbddef9ef9f",
+        "source_call_id": "dbc02e891e0c",
+        "agent": "researcher",
+        "origin_metadata_hashes_match": true,
+        "incremental_tokens": 0
+      },
+      {
+        "call_id": "bb10d35287b0",
+        "source_call_id": "e03e12bd0bb9",
+        "agent": "source_critic",
+        "origin_metadata_hashes_match": true,
+        "incremental_tokens": 0
+      }
+    ],
+    "provider_cached_prompt_tokens": 0,
+    "provider_cache_metadata_responses": 22,
+    "independent_paid_ab_test": false
+  },
+  "tokens": {
+    "prompt_tokens": 41413,
+    "completion_tokens": 30616,
+    "total_tokens": 72029
+  },
+  "usage_missing_sent_attempts": 0,
+  "quality": {
+    "sources": 2,
+    "primary_sources_model_classified": 2,
+    "evidence": 12,
+    "active_claims": 2,
+    "accepted": 1,
+    "partially_supported": 1,
+    "contradictions": 0,
+    "coverage_statuses": {
+      "red": 5,
+      "yellow": 1
+    },
+    "zero_evidence_areas": 3,
+    "model_review_units": 17,
+    "model_review_kept": 16,
+    "model_review_withheld": 1,
+    "final_model_units": 5,
+    "deterministic_units": 10,
+    "final_accepted_claim_count_round1": 0,
+    "round1_recorded_failed_claims": [
+      {
+        "claim_id": "213db0801c65",
+        "verdict": "partially_supported"
+      },
+      {
+        "claim_id": "188aeca19d57",
+        "verdict": "partially_supported"
+      }
+    ],
+    "feedback_input_counts": [
+      0,
+      4
+    ],
+    "coverage": [
+      {
+        "subquestion_id": "800b66279b36",
+        "subquestion_text": "What were the population, work arrangement (full-time vs. partial, WFH schedule, eligibility rules), task type, and design of the Chinese CTrip call-center randomized experiment, and what productivity results did it report?",
+        "evidence_count": 6,
+        "source_count": 1,
+        "primary_source_count": 1,
+        "distinct_material_count": 1,
+        "verified_claim_count": 0,
+        "contradiction_count": 0,
+        "coverage_score": 0.2,
+        "status": "red"
+      },
+      {
+        "subquestion_id": "769d31107596",
+        "subquestion_text": "What were the population, work arrangement (WFH schedule, eligibility, and whether it was full or partial), task type, and design of the Indian data-entry randomized experiment, and what productivity results did it report?",
+        "evidence_count": 3,
+        "source_count": 1,
+        "primary_source_count": 1,
+        "distinct_material_count": 1,
+        "verified_claim_count": 1,
+        "contradiction_count": 0,
+        "coverage_score": 0.4,
+        "status": "yellow"
+      },
+      {
+        "subquestion_id": "55dc14cc7823",
+        "subquestion_text": "Do the two studies measure productivity in comparable ways, and what are the definitions of their outcome variables?",
+        "evidence_count": 0,
+        "source_count": 0,
+        "primary_source_count": 0,
+        "distinct_material_count": 0,
+        "verified_claim_count": 0,
+        "contradiction_count": 0,
+        "coverage_score": 0.0,
+        "status": "red"
+      },
+      {
+        "subquestion_id": "b3c0825c0c2c",
+        "subquestion_text": "After accounting for the outcome definitions and reported effect sizes, do the two studies agree in direction and approximate magnitude of the productivity effect?",
+        "evidence_count": 0,
+        "source_count": 0,
+        "primary_source_count": 0,
+        "distinct_material_count": 0,
+        "verified_claim_count": 0,
+        "contradiction_count": 0,
+        "coverage_score": 0.0,
+        "status": "red"
+      },
+      {
+        "subquestion_id": "6cf3a6103d67",
+        "subquestion_text": "Which differences between the two studies in population, work arrangement, task type, setting, duration, and measurement are contextual rather than substantive, and how might each plausibly moderate the productivity effect?",
+        "evidence_count": 3,
+        "source_count": 1,
+        "primary_source_count": 1,
+        "distinct_material_count": 1,
+        "verified_claim_count": 0,
+        "contradiction_count": 0,
+        "coverage_score": 0.1,
+        "status": "red"
+      },
+      {
+        "subquestion_id": "fa1823a3842f",
+        "subquestion_text": "Under conditions where the two studies' populations, work arrangements, and task types overlap, do their productivity results conflict, and if so, is the conflict robust to differences in measurement and design?",
+        "evidence_count": 0,
+        "source_count": 0,
+        "primary_source_count": 0,
+        "distinct_material_count": 0,
+        "verified_claim_count": 0,
+        "contradiction_count": 0,
+        "coverage_score": 0.0,
+        "status": "red"
+      }
+    ],
+    "completeness": "Insufficient: one accepted study finding; full comparison unresolved"
+  },
+  "fix_observations": {
+    "backfill": "Natural failure backfill NOT TRIGGERED; queue carryover observed; extra fetches blocked by explicit two-source evaluation cap",
+    "observability": "OBSERVED: search HTTP 200 then 422; both actual page retrievals HTTP 200 with IDs/timings",
+    "qualifiers": "OBSERVED/PARTIAL: four prior critiques reached round two; Indian claim gained scope evidence and passed, CTrip scope still partial",
+    "limitations": "OBSERVED: ten deterministic units, separate from five final model-derived units",
+    "cache_telemetry": "OBSERVED: all 22 miss reasons known, three local reuses with valid origin hashes"
+  },
+  "search": {
+    "dispatch_attempts": 2,
+    "outcomes": [
+      {
+        "status": "success",
+        "http_status": 200,
+        "query_characters": 153,
+        "query_words": 20
+      },
+      {
+        "status": "error",
+        "http_status": 422,
+        "query_characters": 543,
+        "query_words": 82
+      }
+    ],
+    "actual_fetch_outcomes": [
+      {
+        "url": "https://www.nber.org/papers/w18871",
+        "outcome": "retrieved",
+        "reason": "usable_snapshot",
+        "attempt_id": "6585c6787c354f21884aa59b521cb15a",
+        "http_status": 200,
+        "error_class": null,
+        "timestamp": "2026-10-25T05:15:53.863037+00:00",
+        "duration_ms": 291,
+        "request_index": 1
+      },
+      {
+        "url": "https://www.nber.org/papers/w31515",
+        "outcome": "retrieved",
+        "reason": "usable_snapshot",
+        "attempt_id": "a64f303e3eaf47229d931cbd54f0498c",
+        "http_status": 200,
+        "error_class": null,
+        "timestamp": "2026-10-25T05:15:54.239510+00:00",
+        "duration_ms": 375,
+        "request_index": 1
+      }
+    ],
+    "evaluation_limit_records": 2
+  },
+  "transient_failures": [
+    {
+      "agent": "prosecutor",
+      "finish_reason": "length",
+      "success": false
+    }
+  ],
+  "cost": {
+    "prior_reserved_usd": "2.840527",
+    "planning_allowance_usd": "0.62",
+    "max_new_reservation_usd": "0.65",
+    "new_reservations_usd": "0.543220",
+    "cumulative_reserved_usd": "3.383747",
+    "authorized_total_usd": "4",
+    "reservation_stop_usd": "3.50",
+    "remaining_reservation_capacity_usd": "0.116253",
+    "confirmed_billed_usd": null,
+    "new_reservation_entries": 24,
+    "prior_history_preserved": true,
+    "every_dispatch_preceded_by_reservation": true
+  },
+  "offline": {
+    "false_premise": "PASS: fabricated unquoted passage rejected, explicit unverifiable-evidence result; not live temporal judgment",
+    "drafter_timeout": "PASS: FAILED with sources/evidence persisted and no invented verified report",
+    "all_fetches_fail": "PASS: END with explicit insufficient-evidence report",
+    "late_failure": "PASS: caught post-judgment timeout preserves accepted checkpoint with warning; not hard-process crash/resume",
+    "error_pages": "PASS: mock HTTP 404 retained as failed retrieval with safe metadata",
+    "local_backend": "199 passed, one Linux-only skip",
+    "isolated_linux_guard_and_offline": "21 passed"
+  },
+  "new_findings": [
+    {
+      "kind": "search_query_policy",
+      "observed_status": 422,
+      "query_characters": 543,
+      "query_words": 82,
+      "documented_max_characters": 600,
+      "documented_max_words": 75,
+      "source": "https://api-dashboard.search.brave.com/api-reference/web/search/get",
+      "caveat": "Query exceeds documented word limit; exact response-body validation reason was not logged."
+    },
+    {
+      "kind": "citation_placement",
+      "report_unit_id": "7",
+      "cited_evidence_ids": [
+        "f218324b19a3"
+      ],
+      "numeric_result_evidence_id": "6da09bb0c613",
+      "finding": "The 18% sentence has a claim marker but no evidence marker. Preceding cited excerpt establishes randomization, not the numeric result. The same source supports 18%, and the summary cites it correctly; this is a clause-to-passage traceability gap, not an invented number."
+    }
+  ]
+}

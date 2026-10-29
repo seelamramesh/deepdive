@@ -41,10 +41,21 @@ def threshold_run() -> ResearchRun:
     return run
 
 
-def test_research_request_validation_rejects_short_question():
-    response = client().post("/research", json={"question": "short"})
+def test_research_request_validation_rejects_short_question(monkeypatch):
+    monkeypatch.setattr(routes.settings, "deepdive_api_key", "offline-test-key-" + "x" * 32)
+    response = client().post("/research", headers={"X-DeepDive-API-Key": "offline-test-key-" + "x" * 32}, json={"question": "short"})
 
     assert response.status_code == 422
+
+
+def test_health_reports_configured_storage_path(monkeypatch):
+    monkeypatch.setattr(routes.settings, "database_path", "/app/data/actual.db")
+    monkeypatch.setattr(routes.settings, "database_url", "sqlite:///unused.db")
+
+    response = client().get("/health")
+
+    assert response.status_code == 200
+    assert response.json()["database"] == "/app/data/actual.db"
 
 
 def test_missing_run_endpoints_return_404(monkeypatch):

@@ -49,7 +49,7 @@ async def resume(run_id: str) -> None:
         prosecution = await run_prosecutor(run, run.claims, trusted_evidence)
         defense = await run_defense(run, run.claims, trusted_evidence)
         run.judgements = await run_judge(
-            run, run.claims, prosecution, defense, settings.confidence_threshold
+            run, run.claims, prosecution, defense, settings.confidence_threshold, trusted_evidence
         )
         await save_run(run)
 

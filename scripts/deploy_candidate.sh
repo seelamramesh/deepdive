@@ -25,6 +25,7 @@ docker run -d \
   --name deepdive \
   --restart unless-stopped \
   --env-file .env \
+  --env DEEPDIVE_DB_PATH=/app/data/deepdive.db \
   --volume /docker/deepdive/data:/app/data \
   --network n8n_n8n_network \
   --label 'traefik.enable=true' \

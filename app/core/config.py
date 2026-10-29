@@ -14,7 +14,14 @@ class Settings(BaseSettings):
     mesh_model: str = Field(default="anthropic/claude-haiku-5.5", alias="MESH_MODEL")
     mesh_max_output_tokens: int = Field(default=4096, ge=256, le=16384, alias="MESH_MAX_OUTPUT_TOKENS")
     mesh_json_attempts: int = Field(default=2, ge=1, le=3, alias="MESH_JSON_ATTEMPTS")
+    mesh_run_cache: bool = Field(default=True, alias="MESH_RUN_CACHE")
     brave_search_api_key: str = Field(default="", alias="BRAVE_SEARCH_API_KEY")
+
+    deepdive_api_key: str = Field(default="", alias="DEEPDIVE_API_KEY")
+
+    # CHANGED: Process-wide research admission policy, validated at startup.
+    deepdive_max_concurrent_runs: int = Field(default=3, ge=1, le=20, alias="DEEPDIVE_MAX_CONCURRENT_RUNS")
+    deepdive_reject_when_full: bool = Field(default=False, alias="DEEPDIVE_REJECT_WHEN_FULL")
 
     app_host: str = "0.0.0.0"
     app_port: int = 8000
@@ -25,8 +32,10 @@ class Settings(BaseSettings):
 
     max_research_rounds: int = 3
     max_sources_per_round: int = 10
+    max_fetch_attempts_per_round: int = Field(default=20, ge=1, le=100, alias="MAX_FETCH_ATTEMPTS_PER_ROUND")
     max_search_queries_per_round: int = 2
     max_claims: int = 12
+    max_contradiction_batches: int = Field(default=3, ge=1, le=6, alias="MAX_CONTRADICTION_BATCHES")
     confidence_threshold: float = 0.7
     min_source_trust: float = Field(default=0.4, ge=0.0, le=1.0, alias="MIN_SOURCE_TRUST")
     request_timeout: int = 30

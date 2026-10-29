@@ -12,6 +12,7 @@ from app.models.schemas import (
     SearchQuery,
     Source,
     SubQuestion,
+    _hash,
 )
 from app.services.orchestrator import (
     _build_certificate,
@@ -220,7 +221,8 @@ def test_trusted_evidence_excludes_sources_below_threshold(monkeypatch):
 @pytest.mark.asyncio
 async def test_late_failure_returns_checkpoint_report_with_warning(monkeypatch):
     subquestion = SubQuestion(id="sq1", text="Subquestion")
-    source = Source(id="s1", url="https://example.com", title="Source")
+    source = Source(id="s1", url="https://example.com", title="Source",
+                    content_snapshot="Exact fact", content_hash=_hash("Exact fact"))
     evidence = Evidence(id="e1", source_id="s1", subquestion_id="sq1", passage="Exact fact")
     claim = AtomicClaim(id="c1", text="Exact fact", evidence_ids=["e1"], subquestion_id="sq1")
     judgement = ClaimJudgement(
@@ -237,9 +239,6 @@ async def test_late_failure_returns_checkpoint_report_with_warning(monkeypatch):
     monkeypatch.setattr("app.services.orchestrator.run_planner", lambda run: async_value([subquestion]))
     monkeypatch.setattr("app.services.orchestrator.run_search_strategist", lambda run, items: async_value([]))
     monkeypatch.setattr("app.services.orchestrator.fetch_sources", lambda urls: async_value([source]))
-    monkeypatch.setattr("app.services.orchestrator.fetch_url", lambda url: async_value({
-        "url": url, "title": "Source", "content": "Exact fact", "content_hash": "hash"
-    }))
     monkeypatch.setattr("app.services.orchestrator.run_researcher", lambda *args: async_value([evidence]))
     monkeypatch.setattr("app.services.orchestrator.run_source_critic", lambda *args: async_value({
         "s1": {"trust_score": 0.8, "factors": {}}
@@ -274,3 +273,22 @@ async def test_late_failure_returns_checkpoint_report_with_warning(monkeypatch):
 
 async def async_value(value):
     return value
+
+
+def test_report_verifier_rejects_partly_unlinked_multi_citation_line():
+    run = ResearchRun(question="Two independent findings")
+    run.evidence = [Evidence(id="e1", source_id="s1", passage="First fact"),
+                    Evidence(id="e2", source_id="s2", passage="Second fact")]
+    run.claims = [AtomicClaim(id="c1", text="First fact", evidence_ids=["e1"]),
+                  AtomicClaim(id="c2", text="Second fact", evidence_ids=["e2"])]
+    run.judgements = [ClaimJudgement(claim_id=c.id, verdict=ClaimVerdict.SUPPORTED,
+        confidence=0.9, supporting_evidence_ids=c.evidence_ids) for c in run.claims]
+    run.final_report = ("# Report\nFirst fact [claim:c1] [evidence:e1]\n"
+        "Partly unlinked sentence [claim:c1] [claim:c2] [evidence:e1]\n"
+        "Extra unrelated citation [claim:c1] [evidence:e1] [evidence:e2]\n"
+        "Both linked [claim:c1] [claim:c2] [evidence:e1] [evidence:e2]")
+    _verify_report_citations(run)
+    assert "Partly unlinked sentence" not in run.final_report
+    assert "Extra unrelated citation" not in run.final_report
+    assert "Both linked" in run.final_report
+    assert "First fact [claim:c1] [evidence:e1]" in run.final_report

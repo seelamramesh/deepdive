@@ -2,33 +2,84 @@
 
 A multi-agent research platform that investigates questions, verifies claims against sources, and produces auditable cited reports. Built for **Agent Arena 2026 — Track 01**.
 
+New here? Start with [the simple flow guide](docs/FLOW-README.md). Reports may remain partial; an END state means processing finished, not that every research area is complete.
+
+Research now has a [per-process concurrency limiter](docs/concurrency.md). [Deployment verification](docs/deployment-concurrency-2026-10-25.md) records a production cap of three, HTTP 429 rejection when full, and zero new paid calls.
+
+## Current measured readiness
+
+See [final readiness review](docs/final-readiness-2026-10-25.md) for rules, feature inventory, limitations and ledger reconciliation, and [release verification](docs/final-release-2026-10-25.md) for deployed revision and exact CI. Latest fixes add bounded Brave query compaction, sentence-level numeric passage checks and readable mobile run questions. Old runs are preserved unchanged; regression proof uses copied fixtures, not another paid run.
+
+| Self-evaluation | Observed result |
+|---|---|
+| Claim/source verification | Partial: one of two active claims accepted in each guarded run; numeric citation gap found and offline regression fixed |
+| Research loop | Two rounds observed; Action 3 still five red/one yellow coverage areas |
+| Contradictions | Zero in guarded Action 2/3; four legacy records unvalidated; positive accuracy unproven |
+| Cache | Action 3: 3/25 local reuses (12%), 22 Mesh calls, 72,029 tokens; Action 2: 0/20 reuses, 61,237 tokens |
+| Cost | $3.383747 reserved, not billed; $0.116253 remains below $3.50 stop; actual billing unknown |
+| Failure handling | Four pipeline stages tested with mocked failures; no live failure-injection claim |
+
+These are internal artifact measurements, not an external truth score. No vector DB, production-wide cost guard, durable crash resume or physical Android validation is claimed. Submission remains on hold.
+
 ## Architecture
 
 ```mermaid
-graph TD
-    User[User / n8n Webhook] -->|question + URLs| API[FastAPI Backend]
-    API --> Coord[Coordinator Agent]
-    Coord --> Planner[Planner Agent]
-    Planner --> SearchStrat[Search Strategist]
-    SearchStrat --> Researcher[Researcher Agent]
-    Researcher --> SourceCritic[Source Critic]
-    SourceCritic --> ClaimDrafter[Claim Drafter]
-    ClaimDrafter --> Courtroom[Claim Courtroom]
-    Courtroom --> Prosecutor[Prosecutor Agent]
-    Courtroom --> Defense[Defense Agent]
-    Courtroom --> Judge[Judge Agent]
-    Judge --> ContraAnalyst[Contradiction Analyst]
-    ContraAnalyst --> CoverageAnalyst[Coverage Analyst]
-    CoverageAnalyst -->|thin coverage| SearchStrat
-    CoverageAnalyst -->|sufficient| Synthesizer[Synthesizer Agent]
-    Synthesizer --> Report[Cited Report + Certificate]
-
-    subgraph "Verification Layer"
-        Prosecutor
-        Defense
-        Judge
-    end
+flowchart TD
+    U[Browser or 14-node n8n webhook] --> API[FastAPI API]
+    API --> AUTH[Authenticate research writes]
+    AUTH --> CAP{Research capacity available?}
+    CAP -->|Yes| O[Python state-machine orchestrator]
+    CAP -->|No, reject mode| BUSY[HTTP 429 server_busy]
+    CAP -->|No, queue mode| WAIT[Wait in process memory]
+    WAIT --> O
+    O --> R[12 AI roles]
+    R --> ROUTE[Selected preset and role model]
+    ROUTE --> C{Identical request cached in this run?}
+    C -->|Yes| REUSE[Reuse structured response and record source call]
+    C -->|No| G[Normal dispatch or evaluation-only reservation guard]
+    G --> M[Official Mesh API]
+    M --> R
+    O --> S[Brave URL search]
+    S --> Q[Bounded pending URL queue]
+    Q --> F[Protected fetch with failure backfill]
+    F -->|Unfilled slots and attempts remain| Q
+    F --> SNAP[Immutable sanitized snapshots and bounded windows]
+    S --> HTTP[Safe search and retrieval outcome audit]
+    F --> HTTP
+    SNAP --> R
+    O --> DB[(Bind-mounted SQLite)]
+    R --> V[Report review and citation checks]
+    V --> LIMITS[Deterministic limitations from saved artifacts]
+    LIMITS --> OUT[Cited report, audit and internal certificate]
+    OUT --> U
 ```
+
+The orchestrator is ordinary Python, not an additional AI agent. Cache reuse makes no new AI call; all actual inference uses Mesh. Cache entries expire after five minutes or run completion. Different evidence, prompts, versions, models or generation settings require a new request. Distinct source URLs/material groups do not establish independent studies.
+
+## Model selection and verification disclosure
+
+New requests default to `balanced`; `fast`, `quality` and `configured` are also available. Four heavy roles use GPT-4o under balanced; other roles use GPT-4o-mini, all through Mesh. `configured` preserves `MESH_MODEL`. Report verifier is heavy; coordinator remains Python. Historical presets remain unknown.
+
+UI shows catalog input/output token rates and explicitly uncalibrated run cost/time. No latency, accuracy or billing savings are claimed. Reports/API/certificates disclose automated review limitations. See [implementation, routing diagram and test evidence](docs/model-tiering.md). Deployed from `dfd15d6`; see [production verification](docs/deployment-model-tiering-2026-10-25.md).
+
+## Agent responsibilities
+
+The Python coordinator dispatches twelve AI roles, each with a separate prompt:
+
+| Role | Responsibility |
+|---|---|
+| planner | Subquestions and completion criteria |
+| search_strategist | Search queries, including research gaps |
+| researcher | Extract passages from retrieved source windows |
+| source_critic | Source-quality factors and scores |
+| claim_drafter | Atomic claims with evidence links and attributed judge feedback |
+| prosecutor | Challenge support, scope and missing qualifiers |
+| defense | Present supporting source passages |
+| judge | Decide supported, partial or unsupported claims |
+| contradiction_analyst | Compare scoped claims across material groups |
+| coverage_analyst | Identify thin areas for another bounded round |
+| synthesizer | Draft structured prose from accepted claims |
+| report_verifier | Review generated report units against linked passages |
 
 ## State Machine
 
@@ -44,35 +95,41 @@ stateDiagram-v2
     DRAFT_ATOMIC_CLAIMS --> CLAIM_COURTROOM
     CLAIM_COURTROOM --> DETECT_CONTRADICTIONS
     DETECT_CONTRADICTIONS --> MEASURE_COVERAGE
-    MEASURE_COVERAGE --> SEARCH : gaps found (max 3 rounds)
-    MEASURE_COVERAGE --> SYNTHESIZE
+    MEASURE_COVERAGE --> RESEARCH_GAPS: thin coverage and rounds remain
+    RESEARCH_GAPS --> SEARCH
+    MEASURE_COVERAGE --> SYNTHESIZE: complete or round limit reached
     SYNTHESIZE --> VERIFY_FINAL_REPORT
     VERIFY_FINAL_REPORT --> EXPORT
     EXPORT --> END
     END --> [*]
 ```
 
+Unrecoverable errors produce FAILED. Some later-stage errors can produce a labelled partial report from accepted claims; abrupt crashes do not resume automatically. Default research limit is three rounds; the request schema permits one to five.
+
 ## Claim Verification Sequence
 
 ```mermaid
 sequenceDiagram
-    participant D as Claim Drafter
+    participant O as Orchestrator
+    participant C as Claim Drafter
     participant P as Prosecutor
-    participant Df as Defense
+    participant D as Defense
     participant J as Judge
-
-    D->>P: atomic_claim + evidence
-    P->>Df: prosecution_argument
-    Df->>J: defense_argument
-    J->>J: weigh arguments
-    J-->>D: verdict (supported|refuted|insufficient|contested)
+    O->>C: Evidence, question and bounded prior critiques
+    C-->>O: Scoped atomic claims
+    O->>P: Claims and original linked passages
+    P-->>O: Challenges
+    O->>D: Claims and original linked passages
+    D-->>O: Quote mappings
+    O->>J: Claims, original passages, challenges and checked quotes
+    J-->>O: supported / partially_supported / contradicted / unsupported
+    O->>O: Apply confidence threshold and valid evidence-ID guards
 ```
 
 ## 12 Specialized Agents
 
 | Agent | Role |
 |-------|------|
-| **Coordinator** | Orchestrates the full research pipeline |
 | **Planner** | Decomposes questions into sub-questions |
 | **Search Strategist** | Generates diverse search queries |
 | **Researcher** | Extracts structured evidence from sources |
@@ -83,7 +140,8 @@ sequenceDiagram
 | **Judge** | Issues structured verdicts |
 | **Contradiction Analyst** | Detects inter-claim contradictions |
 | **Coverage Analyst** | Maps coverage per sub-question |
-| **Synthesizer** | Produces the final cited report |
+| **Synthesizer** | Drafts a cited report using accepted claims |
+| **Report Verifier** | Reviews generated prose against accepted claims and supporting passages |
 
 ## Mesh API Compliance
 
@@ -92,8 +150,8 @@ All LLM calls route through the **Mesh API** gateway (`https://api.meshapi.ai/v1
 - **Gateway**: `app/core/mesh_gateway.py` — singleton `AsyncOpenAI` client with `base_url` override
 - **Key**: `MESH_API_KEY` environment variable (prefix `rsk_`)
 - **Model**: Configurable via `MESH_MODEL` (default: `anthropic/claude-haiku-5.5`)
-- **Temperature**: 0 for deterministic outputs
-- **Output**: JSON-only responses with Pydantic validation
+- **Temperature**: 0 by default; model outputs are not guaranteed deterministic
+- **Output**: structured JSON parsing and agent guards; stored records use Pydantic validation
 
 ### Anti-Drift Controls
 
@@ -119,9 +177,11 @@ graph LR
     Fetch --> Respond[Return Results]
 ```
 
-Import `n8n/deepdive-research.json` into your n8n instance. Set `DEEPDIVE_BACKEND_URL` environment variable to point at your running DeepDive API.
+Import `n8n/deepdive-research.json` into your n8n instance. Set `DEEPDIVE_BACKEND_URL` environment variable to point at your running DeepDive API. Callers must send `X-DeepDive-API-Key`; the workflow forwards it to the protected research endpoint.
 
 ## Data Model
+
+Conceptual artifact relationships; SQLite persists serialized runs, not separate relationship tables. Incomplete or failed runs may have no certificate or court decisions.
 
 ```mermaid
 erDiagram
@@ -131,7 +191,7 @@ erDiagram
     ResearchRun ||--o{ AtomicClaim : drafts
     ResearchRun ||--o{ Contradiction : detects
     ResearchRun ||--o{ CoverageEntry : measures
-    ResearchRun ||--|| VerificationCertificate : produces
+    ResearchRun ||--o| VerificationCertificate : produces
 
     AtomicClaim ||--|| ProsecutorArgument : challenged_by
     AtomicClaim ||--|| DefenseArgument : defended_by
@@ -141,7 +201,23 @@ erDiagram
     AtomicClaim }o--o{ Evidence : supported_by
 ```
 
+## Research access
+
+New research and follow-ups require a separate owner key in `X-DeepDive-API-Key`; the UI asks for it. Configure `DEEPDIVE_API_KEY` privately (32+ random bytes). Empty/short server keys lock research; public reports remain readable. n8n forwards the caller key and cannot grant anonymous callers paid access. See [access and endpoint policy](docs/api-access.md). Hiding the domain is not authentication.
+
 ## Installation
+
+### React research workspace
+
+The frontend in `frontend/` adapts the supplied shadcn design to real FastAPI data. It uses React 19, TanStack Query, generated file-based TanStack Router routes, Tailwind v4, IBM Plex fonts and Recharts. This deployment uses a static SPA served from FastAPI on the same HTTPS origin; no separate Lovable/SSR runtime is required.
+
+Views: Report, Coverage, Courtroom, Audit, Contradictions, Sources and engineering Control Flow. The engineering view explains each stage's input/output, selected queries, source→passage→claim mappings, recorded loopbacks and browser API traces. New runs persist strategist payloads, selected query IDs, returned Brave URLs and extraction-input hashes; missing historical telemetry is explicitly labeled.
+
+New research and follow-ups support bounded rounds and confidence thresholds. Report print/PDF uses the browser print dialog and includes a source-evidence appendix. Original runs retain their original certificate and any missing token/argument metadata. New Mesh calls record provider-returned token counts when supplied, and new runs persist courtroom arguments. Delete is disabled pending user authentication; this public workspace does not expose an unauthenticated destructive endpoint.
+
+Local frontend development: `cd frontend`, `npm ci`, `npm run dev` (Vite proxies API requests to FastAPI on port 8000). Verification: `npm run build` and `npm test`. Docker's multi-stage build compiles the UI, checks TypeScript and runs frontend tests. FastAPI retains legacy Jinja views when a frontend build is absent.
+
+Additive APIs: `GET /runs` lists stored runs; `GET /runs/{id}/workspace` returns frontend run details without raw agent response previews. Existing n8n status/report/certificate endpoints retain their response shapes. `/health` includes a real SQLite readiness check; Mesh configuration status is key presence, not an inference connectivity probe.
 
 ```bash
 # Clone
@@ -202,7 +278,13 @@ python -m pytest tests/test_mesh_compliance.py -v  # Architecture compliance
 - **Coverage completeness**: % of sub-questions adequately covered
 - **Mutation rejection rate**: % of evaluated citation mutations rejected
 
+Latest deployed runtime and CI evidence: [`docs/deployment-prejury-2026-10-24.md`](docs/deployment-prejury-2026-10-24.md). Runtime revision 03e239a: Linux candidate had 150 backend tests pass and 1 Node-dependent test skip; 25 frontend tests, build and TypeScript passed. These are not live model accuracy measurements.
+
 Measured production results and limitations: [`docs/evaluation-results.md`](docs/evaluation-results.md).
+
+Measured examples (2026-10-18): EV run `2ed2c8150b91476e` retrieved 6 sources and 34 evidence passages, accepting 6 of 12 claims with 7/7 valid citation links. AGI run `0d67c451657b4525` retrieved 4 sources and 19 passages, accepting 5 of 12 claims with 5/5 valid citation links. Both reports have incomplete coverage; citation integrity measures internal references, not independent truth.
+
+The bounded live mutation evaluation rejected or downgraded 6/6 adversarial cases, with 0/6 false accepts and only 1/2 positive controls fully accepted. This small sample exposes conservative false rejection. The local automated suite recorded 73 passing tests; that count does not claim tests ran inside the production container.
 Hackathon rule mapping: [`docs/hackathon-compliance.md`](docs/hackathon-compliance.md).
 Prompt-reference review: [`docs/prompt-reference-review.md`](docs/prompt-reference-review.md).
 
@@ -218,6 +300,7 @@ Prompt-reference review: [`docs/prompt-reference-review.md`](docs/prompt-referen
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/health` | Health check + Mesh connectivity |
+| GET | `/model-presets` | Presets and snapshot token rates; no inference |
 | POST | `/research` | Start a research run |
 | GET | `/runs/{id}` | Run status and state |
 | GET | `/runs/{id}/audit` | Full audit trail |

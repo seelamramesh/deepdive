@@ -9,6 +9,8 @@ from typing import Any
 from app.agents import prompts
 from app.core.config import settings
 from app.core.mesh_gateway import mesh
+from app.services.coverage import derive_coverage, verified_claims_with_sources
+from app.services.provenance import material_groups
 from app.models.schemas import (
     AtomicClaim,
     ClaimJudgement,
@@ -51,29 +53,84 @@ async def run_search_strategist(
     run: ResearchRun, subquestions: list[SubQuestion]
 ) -> list[SearchQuery]:
     """Generate search queries for subquestions."""
-    sq_data = [{"id": s.id, "text": s.text} for s in subquestions]
+    sq_data = [{"id": s.id, "text": s.text, "completion_criteria": s.completion_criteria} for s in subquestions]
+    coverage_by_id = {entry.subquestion_id: entry for entry in run.coverage}
+    judgement_by_id = {item.claim_id: item for item in run.judgements}
+    gap_feedback = []
+    if run.research_round > 1:
+        for subquestion in subquestions:
+            coverage = coverage_by_id.get(subquestion.id)
+            failed_claims = []
+            for claim in run.claims:
+                judgement = judgement_by_id.get(claim.id)
+                if claim.subquestion_id != subquestion.id or not judgement:
+                    continue
+                if judgement.verdict != ClaimVerdict.SUPPORTED:
+                    failed_claims.append({
+                        "claim_id": claim.id,
+                        "text": claim.text,
+                        "verdict": judgement.verdict.value,
+                        "reason": judgement.explanation,
+                        "missing_evidence": judgement.missing_evidence,
+                    })
+            if coverage is None or coverage.status != CoverageStatus.GREEN or failed_claims:
+                gap_feedback.append({
+                    "subquestion_id": subquestion.id,
+                    "completion_criteria": subquestion.completion_criteria,
+                    "coverage_status": coverage.status.value if coverage else "red",
+                    "failed_claims": failed_claims[:12],
+                })
+    previous_queries = {query.query.strip().casefold() for query in run.search_queries}
+    search_input = {
+        "question": run.question,
+        "round": run.research_round,
+        "query_budget": settings.max_search_queries_per_round,
+        "subquestions": sq_data,
+        "gap_feedback": gap_feedback,
+        "previous_queries": [query.query for query in run.search_queries],
+    }
+    run.search_audit.append({"input": search_input})
     result = await mesh.complete(
         agent_name="search_strategist",
         system_prompt=prompts.SEARCH_STRATEGIST_PROMPT,
-        user_prompt=json.dumps({"subquestions": sq_data}),
+        user_prompt=json.dumps(search_input),
         response_format={"type": "json_object"},
     )
     queries = []
+    valid_subquestion_ids = {subquestion.id for subquestion in subquestions}
+    seen_queries = set(previous_queries)
     for item in result.get("queries", []):
+        query_text = item.get("query", "")
+        if not isinstance(query_text, str) or not query_text.strip():
+            continue
+        query_key = query_text.strip().casefold()
+        if item.get("subquestion_id") not in valid_subquestion_ids or query_key in seen_queries:
+            continue
+        seen_queries.add(query_key)
         q = SearchQuery(
             subquestion_id=item.get("subquestion_id", ""),
-            query=item["query"],
+            query=query_text.strip(),
             source_preference=item.get("source_preference", ""),
         )
         queries.append(q)
     covered = {query.subquestion_id for query in queries}
     for subquestion in subquestions:
         if subquestion.id not in covered:
+            missing = next((gap for gap in gap_feedback if gap["subquestion_id"] == subquestion.id), None)
+            missing_detail = " ".join(
+                claim["missing_evidence"] for claim in (missing or {}).get("failed_claims", [])
+                if claim["missing_evidence"]
+            )
+            query_text = " ".join(filter(None, [subquestion.text, missing_detail or subquestion.completion_criteria, "authoritative source"]))
+            if query_text.casefold() in seen_queries:
+                continue
+            seen_queries.add(query_text.casefold())
             queries.append(SearchQuery(
                 subquestion_id=subquestion.id,
-                query=f"{subquestion.text} authoritative source",
+                query=query_text,
                 source_preference="primary",
             ))
+    run.search_audit[-1]["planned_queries"] = [query.model_dump() for query in queries]
     return queries
 
 
@@ -86,6 +143,7 @@ async def run_researcher(
     sq_data = [{"id": s.id, "text": s.text} for s in subquestions]
     evidence_list = []
     source_text = {item["source_id"]: item["content"] for item in source_contents}
+    snapshot_hashes = {item["source_id"]: item.get("snapshot_hash", "") for item in source_contents}
 
     def normalize(value: str) -> str:
         return re.sub(r"\s+", " ", value).strip().casefold()
@@ -108,6 +166,7 @@ async def run_researcher(
                 source_id=source_id,
                 subquestion_id=item.get("subquestion_id", ""),
                 passage=passage,
+                source_snapshot_hash=snapshot_hashes.get(source_id, ""),
                 relevance=item.get("relevance", 0.5),
             )
             e.compute_hash()
@@ -125,8 +184,9 @@ async def run_source_critic(
         result = await mesh.complete(
             agent_name="source_critic",
             system_prompt=prompts.SOURCE_CRITIC_PROMPT,
-            user_prompt=json.dumps({"sources": batch}),
+            user_prompt=json.dumps({"question": run.question, "sources": batch}),
             response_format={"type": "json_object"},
+            prompt_version="source-critic-provenance-v3",
         )
         batch_ids = {source["source_id"] for source in batch}
         for item in result.get("scores", []):
@@ -136,12 +196,65 @@ async def run_source_critic(
                 trust_score = max(0.0, min(1.0, float(item.get("trust_score", 0.5))))
             except (TypeError, ValueError):
                 trust_score = 0.0
+            factors = item.get("factors", {})
+            factors = dict(factors) if isinstance(factors, dict) else {}
+            supplied_source = next(source for source in batch if source["source_id"] == item["source_id"])
+            if not supplied_source.get("publication_date"):
+                factors["publication_recency"] = "unknown"
+            group = supplied_source.get("material_group")
+            if group and sum(source.get("material_group") == group for source in sources) > 1:
+                factors["reported_independence"] = factors.get("independence")
+                factors["reported_corroborated"] = factors.get("corroborated")
+                factors["independence"] = False
+                factors["corroborated"] = False
+                factors["material_group_note"] = "Matching or probable duplicate material does not establish independent corroboration"
             scores[item["source_id"]] = {
                 "trust_score": trust_score,
-                "factors": item.get("factors", {}),
+                "factors": factors,
                 "limitations": item.get("limitations", ""),
             }
     return scores
+
+
+def _revision_feedback(run, subquestions):
+    """Bounded attributed critiques; these are requirements to check, not evidence."""
+    allowed = {item.id for item in subquestions}
+    claims = {claim.id: claim for claim in run.claims}
+    records = []
+    for event in run.claim_selection_audit:
+        for excluded in event.get("excluded_from_active_budget", []):
+            claim = excluded.get("claim", {})
+            judgement = excluded.get("previous_judgement")
+            if judgement:
+                records.append((claim.get("subquestion_id"), judgement))
+    for event in run.search_audit:
+        for gap in event.get("input", {}).get("gap_feedback", []):
+            for judgement in gap.get("failed_claims", []):
+                records.append((gap.get("subquestion_id"), judgement))
+    records.extend((claims[j.claim_id].subquestion_id, j.model_dump(mode="json"))
+                   for j in run.judgements if j.claim_id in claims and j.verdict != ClaimVerdict.SUPPORTED)
+    result = []
+    seen = set()
+    for subquestion_id, judgement in reversed(records):
+        if subquestion_id not in allowed:
+            continue
+        key = (subquestion_id, judgement.get("claim_id"), judgement.get("missing_evidence", ""))
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append({"source": "judge", "subquestion_id": subquestion_id,
+            "claim_id": judgement.get("claim_id"), "verdict": judgement.get("verdict"),
+            "reason": str(judgement.get("explanation", judgement.get("reason", "")))[:600],
+            "missing_evidence": str(judgement.get("missing_evidence", ""))[:800]})
+        if len(result) == 8:
+            break
+    for argument in run.prosecution:
+        claim = claims.get(argument.claim_id)
+        if claim and claim.subquestion_id in allowed and len(result) < 12:
+            result.append({"source": "prosecutor", "claim_id": claim.id, "subquestion_id": claim.subquestion_id,
+                "weaknesses": [text[:300] for text in argument.weaknesses[:3]],
+                "unsupported_components": [text[:300] for text in argument.unsupported_components[:3]]})
+    return result
 
 
 async def run_claim_drafter(
@@ -159,7 +272,11 @@ async def run_claim_drafter(
     result = await mesh.complete(
         agent_name="claim_drafter",
         system_prompt=prompts.CLAIM_DRAFTER_PROMPT,
+        prompt_version="claim-drafter-feedback-v2",
         user_prompt=json.dumps({
+            "question": run.question,
+            "revision_feedback": _revision_feedback(run, subquestions),
+            "feedback_is_evidence": False,
             "evidence": ev_data,
             "subquestions": sq_data,
             "max_claims": min(settings.max_claims, 12),
@@ -227,6 +344,7 @@ async def run_defense(
 ) -> list[DefenseArgument]:
     """Map claims to supporting passages."""
     defs = []
+    claims_by_id = {claim.id: claim for claim in claims}
     evidence_by_id = {item.id: item for item in evidence}
     for offset in range(0, len(claims), 3):
         claim_batch = claims[offset: offset + 3]
@@ -253,9 +371,31 @@ async def run_defense(
                 continue
             defs.append(DefenseArgument(
                 claim_id=item["claim_id"],
-                supporting_passages=item.get("supporting_passages", []),
+                supporting_passages=_verified_defense_passages(
+                    claims_by_id[item["claim_id"]], item.get("supporting_passages", []), evidence_by_id
+                ),
             ))
     return defs
+
+
+def _verified_defense_passages(claim: AtomicClaim, passages: list, evidence_by_id: dict[str, Evidence]) -> list[dict]:
+    """Check quote membership, not semantic entailment. Normalize whitespace only."""
+    verified = []
+    if not isinstance(passages, list):
+        return verified
+    for item in passages:
+        if not isinstance(item, dict):
+            continue
+        evidence_id = item.get("evidence_id")
+        excerpt = item.get("passage_excerpt")
+        if not isinstance(evidence_id, str) or evidence_id not in claim.evidence_ids:
+            continue
+        evidence = evidence_by_id.get(evidence_id)
+        if evidence is None or not isinstance(excerpt, str) or not excerpt.strip():
+            continue
+        if " ".join(excerpt.split()) in " ".join(evidence.passage.split()):
+            verified.append(item)
+    return verified
 
 
 async def run_judge(
@@ -264,23 +404,37 @@ async def run_judge(
     prosecution: list[ProsecutorArgument],
     defense: list[DefenseArgument],
     confidence_threshold: float,
+    evidence: list[Evidence] | None = None,
 ) -> list[ClaimJudgement]:
     """Render verdicts on claims."""
     judgements = []
     claims_by_id = {claim.id: claim for claim in claims}
+    evidence_by_id = {item.id: item for item in (run.evidence if evidence is None else evidence)}
     for offset in range(0, len(claims), 3):
         claim_batch = claims[offset: offset + 3]
         claim_ids = {claim.id for claim in claim_batch}
+        batch_evidence_ids = {eid for claim in claim_batch for eid in claim.evidence_ids if eid in evidence_by_id}
         result = await mesh.complete(
             agent_name="judge",
             system_prompt=prompts.JUDGE_PROMPT,
             user_prompt=json.dumps({
-                "claims": [{"id": c.id, "text": c.text} for c in claim_batch],
+                "claims": [{"id": c.id, "text": c.text, "evidence_ids": c.evidence_ids} for c in claim_batch],
+                "evidence": [
+                    {"id": eid, "source_id": evidence_by_id[eid].source_id,
+                     "passage": evidence_by_id[eid].passage}
+                    for eid in sorted(batch_evidence_ids)
+                ],
                 "prosecution": [a.model_dump() for a in prosecution if a.claim_id in claim_ids],
-                "defense": [d.model_dump() for d in defense if d.claim_id in claim_ids],
+                "defense": [
+                    {"claim_id": d.claim_id, "supporting_passages": _verified_defense_passages(
+                        claims_by_id[d.claim_id], d.supporting_passages, evidence_by_id
+                    )}
+                    for d in defense if d.claim_id in claim_ids
+                ],
                 "confidence_threshold": confidence_threshold,
             }),
             response_format={"type": "json_object"},
+            prompt_version="judge-grounded-v2",
         )
         for item in result.get("verdicts", []):
             if item.get("claim_id") not in claim_ids:
@@ -294,7 +448,7 @@ async def run_judge(
             claim = claims_by_id[item["claim_id"]]
             supporting_ids = [
                 eid for eid in item.get("supporting_evidence_ids", [])
-                if eid in claim.evidence_ids
+                if eid in claim.evidence_ids and eid in evidence_by_id
             ]
             if verdict == ClaimVerdict.SUPPORTED and (
                 confidence < confidence_threshold or not supporting_ids
@@ -305,7 +459,9 @@ async def run_judge(
                 verdict=verdict,
                 confidence=confidence,
                 supporting_evidence_ids=supporting_ids,
-                contradicting_evidence_ids=item.get("contradicting_evidence_ids", []),
+                contradicting_evidence_ids=[
+                    eid for eid in item.get("contradicting_evidence_ids", []) if eid in batch_evidence_ids
+                ],
                 explanation=item.get("explanation", ""),
                 missing_evidence=item.get("missing_evidence", ""),
                 recommended_action=item.get("recommended_action", ""),
@@ -330,68 +486,99 @@ async def run_contradiction_analyst(
     claims: list[AtomicClaim],
     evidence: list[Evidence],
 ) -> list[Contradiction]:
-    """Detect contradictions across sources."""
-    contradictions = []
-    evidence_by_id = {item.id: item for item in evidence}
-    claims_by_subquestion: dict[str, list[AtomicClaim]] = {}
-    for claim in claims:
-        claims_by_subquestion.setdefault(claim.subquestion_id or "unassigned", []).append(claim)
+    """Compare bounded cross-source candidate pairs; disclose incomplete coverage."""
+    from itertools import combinations
 
-    for related_claims in claims_by_subquestion.values():
-        for offset in range(0, len(related_claims), 6):
-            claim_batch = related_claims[offset: offset + 6]
-            evidence_ids = {eid for claim in claim_batch for eid in claim.evidence_ids}
+    evidence_by_id = {item.id: item for item in evidence}
+    claims_by_id = {claim.id: claim for claim in claims}
+    linked = {claim.id: {evidence_by_id[eid].source_id for eid in claim.evidence_ids
+                        if eid in evidence_by_id and evidence_by_id[eid].source_id} for claim in claims}
+    groups = material_groups(run.sources)
+    remaining = [(a.id, b.id) for a, b in combinations(claims, 2)
+                 if any(groups.get(sa,sa) != groups.get(sb,sb) for sa in linked[a.id] for sb in linked[b.id])]
+    audit = {"round": run.research_round, "status": "running",
+             "claim_linked_source_count": len(set().union(*linked.values())) if linked else 0,
+             "eligible_cross_source_pairs": len(remaining), "compared_candidate_pairs": 0,
+             "uncompared_candidate_pairs": len(remaining), "rejected_candidates": 0, "batches": []}
+    audit["claim_linked_material_count"] = len({groups.get(sid,sid) for ids in linked.values() for sid in ids})
+    audit["independence_note"] = "Distinct groups do not prove independence; shared identifiers/snapshots and probable matching journal/preprint titles are grouped."
+    run.contradiction_audit.append(audit)
+    contradictions = list(run.contradictions)
+    if not remaining:
+        audit["status"] = ("skipped_single_source" if audit["claim_linked_source_count"] < 2 else
+                           "skipped_same_material" if audit["claim_linked_material_count"] < 2 else "no_cross_source_pairs")
+        return contradictions
+
+    for _ in range(settings.max_contradiction_batches):
+        if not remaining:
+            break
+        # Greedily cover pairs, including pairs split across former topic/chunk boundaries.
+        batch_ids = list(remaining[0])
+        while len(batch_ids) < 6:
+            choices = [cid for cid in claims_by_id if cid not in batch_ids]
+            scores = {cid: sum(cid in pair and any(other in batch_ids for other in pair if other != cid)
+                               for pair in remaining) for cid in choices}
+            if not scores or max(scores.values()) == 0:
+                break
+            batch_ids.append(max(scores, key=scores.get))
+        claim_batch = [claims_by_id[cid] for cid in batch_ids]
+        evidence_ids = {eid for claim in claim_batch for eid in claim.evidence_ids if eid in evidence_by_id}
+        batch_audit = {"claim_ids": batch_ids, "evidence_ids": sorted(evidence_ids), "status": "running", "returned_candidates": 0}
+        audit["batches"].append(batch_audit)
+        try:
             result = await mesh.complete(
                 agent_name="contradiction_analyst",
                 system_prompt=prompts.CONTRADICTION_ANALYST_PROMPT,
                 user_prompt=json.dumps({
-                    "claims": [
-                        {"id": c.id, "text": c.text, "evidence_ids": c.evidence_ids}
-                        for c in claim_batch
-                    ],
-                    "evidence": [
-                        {"id": evidence_by_id[eid].id, "passage": evidence_by_id[eid].passage,
-                         "source_id": evidence_by_id[eid].source_id}
-                        for eid in evidence_ids if eid in evidence_by_id
-                    ],
+                    "claims": [{"id": c.id, "text": c.text, "evidence_ids": c.evidence_ids,
+                                "subquestion_id": c.subquestion_id} for c in claim_batch],
+                    "evidence": [{"id": eid, "passage": evidence_by_id[eid].passage,
+                                  "source_id": evidence_by_id[eid].source_id} for eid in sorted(evidence_ids)],
                 }),
                 response_format={"type": "json_object"},
+                prompt_version="contradiction-material-groups-v4",
             )
-            for item in result.get("contradictions", [])[:3]:
-                valid_evidence_a = [eid for eid in item.get("evidence_a", []) if eid in evidence_ids]
-                valid_evidence_b = [eid for eid in item.get("evidence_b", []) if eid in evidence_ids]
-                if not valid_evidence_a or not valid_evidence_b:
-                    continue
-                try:
-                    ctype = ContradictionType(item.get("type", "definition"))
-                except ValueError:
-                    ctype = ContradictionType.DEFINITION
-                try:
-                    severity = ContradictionSeverity(item.get("severity", "medium"))
-                except ValueError:
-                    severity = ContradictionSeverity.MEDIUM
-                try:
-                    resolution = ContradictionResolution(item.get("resolution", "unresolved"))
-                except ValueError:
-                    resolution = ContradictionResolution.UNRESOLVED
-                contradictions.append(Contradiction(
-                    topic=item.get("topic", ""),
-                    claim_a=item.get("claim_a", ""),
-                    claim_b=item.get("claim_b", ""),
-                    evidence_a=valid_evidence_a,
-                    evidence_b=valid_evidence_b,
-                    type=ctype,
-                    severity=severity,
-                    resolution=resolution,
-                    explanation=item.get("explanation", "")[:300],
-                ))
-
+        except Exception:
+            batch_audit["status"] = "failed"
+            audit["status"] = "failed"
+            raise
+        batch_audit["status"] = "completed"
+        remaining = [pair for pair in remaining if not set(pair) <= set(batch_ids)]
+        audit["uncompared_candidate_pairs"] = len(remaining)
+        audit["compared_candidate_pairs"] = audit["eligible_cross_source_pairs"] - len(remaining)
+        for item in result.get("contradictions", []):
+            batch_audit["returned_candidates"] += 1
+            a = [eid for eid in item.get("evidence_a", []) if isinstance(eid, str) and eid in evidence_ids]
+            b = [eid for eid in item.get("evidence_b", []) if isinstance(eid, str) and eid in evidence_ids]
+            if (not a or not b or not any(groups.get(evidence_by_id[x].source_id,evidence_by_id[x].source_id) != groups.get(evidence_by_id[y].source_id,evidence_by_id[y].source_id) for x in a for y in b)
+                    or not item.get("claim_a") or not item.get("claim_b")):
+                audit["rejected_candidates"] += 1
+                continue
+            try:
+                ctype = ContradictionType(item.get("type", "definition"))
+            except ValueError:
+                ctype = ContradictionType.DEFINITION
+            try:
+                severity = ContradictionSeverity(item.get("severity", "medium"))
+            except ValueError:
+                severity = ContradictionSeverity.MEDIUM
+            try:
+                resolution = ContradictionResolution(item.get("resolution", "unresolved"))
+            except ValueError:
+                resolution = ContradictionResolution.UNRESOLVED
+            contradictions.append(Contradiction(
+                topic=item.get("topic", ""), claim_a=item["claim_a"], claim_b=item["claim_b"],
+                evidence_a=a, evidence_b=b, type=ctype, severity=severity, resolution=resolution,
+                explanation=item.get("explanation", "")[:300],
+            ))
     unique = {}
-    for contradiction in contradictions:
-        key = (contradiction.topic.casefold(), contradiction.claim_a.casefold(), contradiction.claim_b.casefold())
-        unique.setdefault(key, contradiction)
-    contradictions = list(unique.values())
-    return contradictions
+    for item in contradictions:
+        # Count source-pair/type disagreements, independent of generated titles.
+        key = (tuple(sorted((tuple(sorted(item.evidence_a)), tuple(sorted(item.evidence_b))))), item.type)
+        unique[key] = item
+    audit["status"] = "limited_comparison" if remaining else "completed_comparison"
+    audit["retained_contradictions"] = len(unique)
+    return list(unique.values())
 
 
 async def run_coverage_analyst(
@@ -402,7 +589,10 @@ async def run_coverage_analyst(
     contradictions: list[Contradiction],
 ) -> list[CoverageEntry]:
     """Score coverage per subquestion."""
-    sq_data = [{"id": s.id, "text": s.text} for s in subquestions]
+    sq_data = [{"id": s.id, "text": s.text, "completion_criteria": s.completion_criteria} for s in subquestions]
+    snapshot = run.model_copy(update={"subquestions": subquestions, "evidence": evidence,
+                                      "judgements": judgements, "contradictions": contradictions})
+    verified_claims = verified_claims_with_sources(snapshot)
     ev_data = [
         {"id": e.id, "subquestion_id": e.subquestion_id, "source_id": e.source_id}
         for e in evidence
@@ -413,29 +603,15 @@ async def run_coverage_analyst(
         user_prompt=json.dumps({
             "subquestions": sq_data,
             "evidence": ev_data,
+            "verified_claims": [claim.model_dump() for claim in verified_claims],
+            "source_material_groups": material_groups(run.sources),
+            "independence_note": "Different URLs or material groups do not establish independent studies.",
             "judgement_count": len(judgements),
             "contradiction_count": len(contradictions),
         }),
         response_format={"type": "json_object"},
     )
-    entries = []
-    for item in result.get("coverage", []):
-        try:
-            status = CoverageStatus(item.get("status", "red"))
-        except ValueError:
-            status = CoverageStatus.RED
-        entries.append(CoverageEntry(
-            subquestion_id=item.get("subquestion_id", ""),
-            subquestion_text=item.get("subquestion_text", ""),
-            evidence_count=item.get("evidence_count", 0),
-            source_count=item.get("source_count", 0),
-            primary_source_count=item.get("primary_source_count", 0),
-            verified_claim_count=item.get("verified_claim_count", 0),
-            contradiction_count=item.get("contradiction_count", 0),
-            coverage_score=item.get("coverage_score", 0.0),
-            status=status,
-        ))
-    return entries
+    return derive_coverage(snapshot, result.get("coverage", []))
 
 
 async def run_synthesizer(
@@ -469,5 +645,6 @@ async def run_synthesizer(
             "subquestions": sq_data,
         }),
         response_format={"type": "json_object"},
+        prompt_version="synthesizer-compact-v2",
     )
     return result.get("report", "")

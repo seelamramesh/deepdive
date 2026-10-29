@@ -7,7 +7,7 @@ import re
 from markupsafe import Markup
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -41,6 +41,9 @@ if os.path.isdir(_static_dir):
     app.mount("/static", StaticFiles(directory=_static_dir), name="static")
 
 templates = Jinja2Templates(directory=_template_dir)
+_frontend_dir = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+if os.path.isdir(os.path.join(_frontend_dir, "assets")):
+    app.mount("/assets", StaticFiles(directory=os.path.join(_frontend_dir, "assets")), name="frontend-assets")
 
 
 def _display_warning(warning: str) -> str:
@@ -56,6 +59,8 @@ def _display_warning(warning: str) -> str:
 
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
+    if os.path.isfile(os.path.join(_frontend_dir, "index.html")):
+        return FileResponse(os.path.join(_frontend_dir, "index.html"), headers={"Cache-Control": "no-cache"})
     runs = await list_runs()
     return templates.TemplateResponse(request=request, name="dashboard.html", context={"runs": runs})
 
@@ -65,6 +70,8 @@ async def run_detail(request: Request, run_id: str):
     run = await load_run(run_id)
     if not run:
         return HTMLResponse("<h1>Run not found</h1>", status_code=404)
+    if os.path.isfile(os.path.join(_frontend_dir, "index.html")):
+        return FileResponse(os.path.join(_frontend_dir, "index.html"), headers={"Cache-Control": "no-cache"})
     evidence_ids = set(re.findall(r"\[evidence:(\w+)\]", run.final_report))
     report_evidence = []
     for evidence in run.evidence:

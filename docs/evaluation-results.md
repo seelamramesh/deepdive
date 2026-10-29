@@ -1,5 +1,7 @@
 # Measured Evaluation Results
 
+New local-only regression results: [2026-10-24 readiness audit](readiness-audit-2026-10-24.md). That audit records 104 passing backend tests and six mocked-I/O integrations; it does not replace the historical live research results below or claim new model accuracy.
+
 Date: 2026-10-18. Environment: production deployment at `[production endpoint redacted]`. Each run used two research rounds. Results below come from persisted run artifacts and `/runs/{id}/evaluation`; no score is invented.
 
 ## Questions
@@ -67,6 +69,20 @@ All unrelated swaps, similar-topic swaps, and altered-statistic cases were rejec
 - Public deployment health returned HTTP 200 with Mesh configured, and persisted run `2ed2c8150b91476e` retained 7/7 valid judge-approved citation links.
 
 ## Official Workflow Status
+
+### Prompt-calibration retest (2026-10-18)
+
+An isolated container ran the updated prosecutor/judge prompts against the same eight stored EV mutation cases, with production data mounted read-only. Production service was unchanged. The retest made nine audited Mesh calls and zero Brave searches.
+
+| Measure | Prior evaluation | Updated prompts |
+|---|---:|---:|
+| Positive controls accepted | 1/2 | 2/2 |
+| Mutations withheld from supported output | 6/6 | 6/6 |
+| False accepts | 0/6 | 0/6 |
+
+Exact expected-verdict agreement was 7/8: one unrelated swap was marked partially_supported rather than unsupported. It still cannot enter supported-only synthesis. One numeric mutation changed a year into 5062.5; this is an easy malformed-date case, not a realistic statistical manipulation. The two positive controls share a source passage, limiting independence. These small-sample results do not establish general recall improvement or production readiness.
+
+The local regression suite passed 75 tests. Targeted gap payloads, repeated-query filtering, and unknown-subquestion rejection passed mocked tests; their live end-to-end retrieval benefit was not measured by this courtroom-only retest.
 
 - Public repository `seelamramesh/deepdive` is synchronized through commit `8b2e880` before this documentation update.
 - Repository secret names `MESH_API_KEY` and `SUBMISSION_TOKEN` are present; values were not read.

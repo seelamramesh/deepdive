@@ -12,6 +12,15 @@ from app.models.schemas import ResearchRun
 DB_PATH = settings.database_path
 
 
+async def database_ready() -> bool:
+    try:
+        async with aiosqlite.connect(f"file:{DB_PATH}?mode=ro", uri=True) as db:
+            await db.execute("SELECT id FROM runs LIMIT 1")
+        return True
+    except aiosqlite.Error:
+        return False
+
+
 async def init_db() -> None:
     """Create tables if they don't exist."""
     async with aiosqlite.connect(DB_PATH) as db:

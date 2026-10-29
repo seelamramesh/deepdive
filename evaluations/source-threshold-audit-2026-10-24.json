@@ -1,0 +1,55 @@
+{
+  "threshold": 0.4,
+  "records": [
+    {
+      "run_id": "eval20261024sql01",
+      "source_id": "b3fe7f3a911e",
+      "url": "https://www.sqlite.org/wal.html",
+      "recorded_score": 0.85,
+      "retained_at_0_4": true,
+      "manual_topical_relevance": true,
+      "manual_relevance_basis": "Recorded passage addresses the question; topical relevance is not authority or entailment.",
+      "primary_material_label": true
+    },
+    {
+      "run_id": "eval20261024sql01",
+      "source_id": "40829b2171c7",
+      "url": "https://coddy.tech/docs/sqlite/wal-mode-and-concurrency",
+      "recorded_score": 0.2,
+      "retained_at_0_4": false,
+      "manual_topical_relevance": true,
+      "manual_relevance_basis": "Recorded passage addresses the question; topical relevance is not authority or entailment.",
+      "primary_material_label": false
+    },
+    {
+      "run_id": "eval20261024exo01",
+      "source_id": "22b0aad6b079",
+      "url": "https://iopscience.iop.org/article/10.3847/2041-8213/adc1c8",
+      "recorded_score": 0.72,
+      "retained_at_0_4": true,
+      "manual_topical_relevance": true,
+      "manual_relevance_basis": "Recorded passage addresses the question; topical relevance is not authority or entailment.",
+      "primary_material_label": true
+    },
+    {
+      "run_id": "eval20261024exo01",
+      "source_id": "5f328b94149d",
+      "url": "https://arxiv.org/abs/2504.12267",
+      "recorded_score": 0.45,
+      "retained_at_0_4": true,
+      "manual_topical_relevance": true,
+      "manual_relevance_basis": "Recorded passage addresses the question; topical relevance is not authority or entailment.",
+      "primary_material_label": true
+    }
+  ],
+  "sample_size": 4,
+  "topically_relevant_records_excluded": 1,
+  "primary_material_records": 3,
+  "primary_material_records_excluded": 0,
+  "threshold_changed": false,
+  "limitations": [
+    "Four selected records from two questions, including journal/preprint versions of one study; not an independent calibration sample.",
+    "No irrelevant-source negative controls or authority-labelled gold set; cannot estimate scoring precision, false rejection or optimal cutoff.",
+    "Current source-scoring changes have offline tests; no new paid calibration performed."
+  ]
+}
